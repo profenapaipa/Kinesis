@@ -1,8 +1,5 @@
-"use client";
-
 import Link from "next/link";
 import { CheckCircle2, ChevronRight } from "lucide-react";
-import { useSession } from "@/components/SessionProvider";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -11,22 +8,25 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { findMockStudentBySessionName } from "@/lib/legacyStudentBridge";
+import { requireRole } from "@/lib/auth/session";
+import { getMyPedagogicalSummary, getMyStudentProfile } from "@/lib/data/students";
 import { mockLessonPlans } from "@/lib/mockData";
-import { STUDENT_FRIENDLY_ADJUSTMENTS } from "@/lib/studentFriendlyText";
+import { LEARNING_PREFERENCE_LABEL } from "@/lib/studentFriendlyText";
 import { MEN_SUBJECTS } from "@/lib/subjects";
 
-export default function EstudiantePage() {
-  const { session } = useSession();
-  const student = findMockStudentBySessionName(session.fullName);
-  const firstName = student.fullName.split(" ")[0];
+export default async function EstudiantePage() {
+  const session = await requireRole("estudiante");
+  const profile = await getMyStudentProfile(session);
+  const pedagogical = await getMyPedagogicalSummary(session);
+  const firstName = profile.fullName.split(" ")[0];
 
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
         <h1 className="text-2xl font-semibold tracking-tight">Hola, {firstName}</h1>
         <p className="text-muted-foreground">
-          {student.grade} · {student.group}
+          {profile.grade ?? "Sin curso activo"}
+          {profile.group ? ` · ${profile.group}` : ""}
         </p>
       </div>
 
@@ -40,7 +40,7 @@ export default function EstudiantePage() {
           {MEN_SUBJECTS.map((subject) => {
             const Icon = subject.icon;
             const plan = mockLessonPlans.find(
-              (item) => item.subject === subject.id && item.grade === student.grade
+              (item) => item.subject === subject.id && item.grade === profile.grade
             );
 
             const cardContent = (
@@ -88,40 +88,41 @@ export default function EstudiantePage() {
       <div className="flex flex-col gap-3">
         <h2 className="text-lg font-semibold">Mis apoyos</h2>
 
-        {student.hasPiar && student.piarProfile ? (
+        {pedagogical ? (
           <Card>
             <CardHeader>
               <CardTitle>Así te acompañamos en clase</CardTitle>
               <CardDescription>
-                Estos son los ajustes que tu colegio tiene preparados para ti,
+                Estos son los apoyos que tu colegio tiene preparados para ti,
                 de acuerdo con tu PIAR.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
-              <ul className="flex flex-col gap-2.5">
-                {student.piarProfile.adjustmentTypes.map((adjustment) => (
-                  <li key={adjustment} className="flex items-start gap-2.5 text-sm">
-                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
-                    <span>{STUDENT_FRIENDLY_ADJUSTMENTS[adjustment]}</span>
-                  </li>
-                ))}
-              </ul>
+              {pedagogical.effectiveSupports.some((support) => support.studentFriendlyText) && (
+                <ul className="flex flex-col gap-2.5">
+                  {pedagogical.effectiveSupports
+                    .filter((support) => support.studentFriendlyText)
+                    .map((support, index) => (
+                      <li key={index} className="flex items-start gap-2.5 text-sm">
+                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
+                        <span>{support.studentFriendlyText}</span>
+                      </li>
+                    ))}
+                </ul>
+              )}
 
-              <div>
-                <p className="text-sm font-medium">Recursos que puedes usar</p>
-                <div className="mt-1.5 flex flex-wrap gap-1.5">
-                  {student.piarProfile.recommendedResources.map((resource) => (
-                    <Badge key={resource} variant="secondary">
-                      {resource}
-                    </Badge>
-                  ))}
+              {pedagogical.effectiveSupports.length > 0 && (
+                <div>
+                  <p className="text-sm font-medium">Apoyos que puedes usar</p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {pedagogical.effectiveSupports.map((support, index) => (
+                      <Badge key={index} variant="secondary">
+                        {support.categoryName ?? support.description}
+                      </Badge>
+                    ))}
+                  </div>
                 </div>
-              </div>
-
-              <p className="text-sm text-muted-foreground">
-                Si tienes dudas sobre tus apoyos, puedes hablar con{" "}
-                {student.piarProfile.responsibleProfessional}.
-              </p>
+              )}
             </CardContent>
           </Card>
         ) : (
@@ -134,6 +135,19 @@ export default function EstudiantePage() {
           </Card>
         )}
       </div>
+
+      {profile.learningPreferences.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h2 className="text-lg font-semibold">Tu forma de aprender</h2>
+          <div className="flex flex-wrap gap-1.5">
+            {profile.learningPreferences.map((option) => (
+              <Badge key={option} variant="outline">
+                {LEARNING_PREFERENCE_LABEL[option] ?? option}
+              </Badge>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

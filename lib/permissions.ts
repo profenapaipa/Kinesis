@@ -1,6 +1,6 @@
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
-import { courseTeachers, enrollments } from "@/db/schema";
+import { courseTeachers, enrollments, guardianStudents } from "@/db/schema";
 import type { Session } from "@/lib/auth/session";
 import type { Role } from "@/types";
 
@@ -106,4 +106,24 @@ export async function canViewPiarCompleto(
   studentUserId: string
 ): Promise<boolean> {
   return canViewDiagnosis(session, studentUserId);
+}
+
+// Relación acudiente-estudiante — usada por lib/data/students.ts para que un
+// padre/acudiente solo pueda consultar datos de sus propios hijos vinculados
+// en guardian_students, nunca de un studentUserId arbitrario.
+export async function isGuardianOfStudent(
+  guardianUserId: string,
+  studentUserId: string
+): Promise<boolean> {
+  const row = await db
+    .select({ id: guardianStudents.id })
+    .from(guardianStudents)
+    .where(
+      and(
+        eq(guardianStudents.guardianUserId, guardianUserId),
+        eq(guardianStudents.studentUserId, studentUserId)
+      )
+    )
+    .get();
+  return Boolean(row);
 }

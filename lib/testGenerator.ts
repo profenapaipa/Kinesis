@@ -1,10 +1,13 @@
-import type {
-  AdaptedTest,
-  AdaptedTestQuestion,
-  LessonPlan,
-  Student,
-  TestQuestionFormat,
-} from "@/types";
+import type { AdaptedTest, AdaptedTestQuestion, LessonPlan, TestQuestionFormat } from "@/types";
+
+// Entrada mínima requerida para generar la prueba adaptada — desacoplada del
+// tipo `Student` del modelo mock, ya que las categorías de apoyo reales son
+// dinámicas (lib/data/students.ts las resuelve a partir de effective_supports).
+export interface AdaptedTestStudentInput {
+  id: string;
+  hasPiar: boolean;
+  adjustmentTypes: string[];
+}
 
 function baseQuestionForActivity(activityTitle: string, simplified: boolean): string {
   return simplified
@@ -14,8 +17,11 @@ function baseQuestionForActivity(activityTitle: string, simplified: boolean): st
 
 // Genera una prueba corta a partir de una planeación, adaptando formato,
 // cantidad de preguntas e instrucciones según el PIAR del estudiante.
-export function generateAdaptedTest(plan: LessonPlan, student: Student): AdaptedTest {
-  const adjustments = student.hasPiar ? student.piarProfile?.adjustmentTypes ?? [] : [];
+export function generateAdaptedTest(
+  plan: LessonPlan,
+  student: AdaptedTestStudentInput
+): AdaptedTest {
+  const adjustments = student.adjustmentTypes;
   const simplified = adjustments.includes("Instrucciones simplificadas");
   const oral = adjustments.includes("Evaluación oral");
   const visual = adjustments.includes("Apoyo visual");

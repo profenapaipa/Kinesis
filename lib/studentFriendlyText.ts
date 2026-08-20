@@ -26,3 +26,15 @@ export const STUDENT_FRIENDLY_ADJUSTMENTS: Record<AdjustmentType, string> = {
   "Ubicación preferencial en el aula":
     "Tu puesto estará ubicado en un lugar que te ayude a concentrarte mejor.",
 };
+
+// Etiquetas de las opciones de student_learning_preferences (db/schema.ts) —
+// "Mi forma de aprender", autoreportada por el estudiante.
+export const LEARNING_PREFERENCE_LABEL: Record<string, string> = {
+  imagenes: "Imágenes",
+  ejemplos: "Ejemplos",
+  explicaciones_profesor: "Explicaciones del profesor",
+  trabajar_con_companero: "Trabajar con un compañero",
+  instrucciones_paso_a_paso: "Instrucciones paso a paso",
+  videos: "Videos",
+  practicar_directamente: "Practicar directamente",
+};

@@ -1,9 +1,5 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
 import { ArrowLeft, Clock, MessageCircle, Puzzle } from "lucide-react";
-import { useSession } from "@/components/SessionProvider";
 import { MemoryPuzzle } from "@/components/MemoryPuzzle";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -14,11 +10,12 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { findMockStudentBySessionName } from "@/lib/legacyStudentBridge";
+import { requireRole } from "@/lib/auth/session";
+import { getMyPedagogicalSummary, getMyStudentProfile } from "@/lib/data/students";
 import { mockLessonPlans } from "@/lib/mockData";
 import { MEN_SUBJECTS, getSubject } from "@/lib/subjects";
-import { generateAdaptedTest } from "@/lib/testGenerator";
-import type { LessonPlan, SubjectId, Student, TestQuestionFormat } from "@/types";
+import { generateAdaptedTest, type AdaptedTestStudentInput } from "@/lib/testGenerator";
+import type { LessonPlan, SubjectId, TestQuestionFormat } from "@/types";
 
 function isSubjectId(value: string): value is SubjectId {
   return MEN_SUBJECTS.some((subject) => subject.id === value);
@@ -31,7 +28,13 @@ const FORMAT_LABEL: Record<TestQuestionFormat, string> = {
   visual: "Apoyo visual",
 };
 
-function AdaptedTestCard({ plan, student }: { plan: LessonPlan; student: Student }) {
+function AdaptedTestCard({
+  plan,
+  student,
+}: {
+  plan: LessonPlan;
+  student: AdaptedTestStudentInput;
+}) {
   const test = generateAdaptedTest(plan, student);
 
   return (
@@ -73,12 +76,15 @@ function AdaptedTestCard({ plan, student }: { plan: LessonPlan; student: Student
   );
 }
 
-export default function EstudianteSubjectPage() {
-  const params = useParams<{ subjectId: string }>();
-  const { session } = useSession();
-  const student = findMockStudentBySessionName(session.fullName);
-
-  const subjectId = params.subjectId;
+export default async function EstudianteSubjectPage({
+  params,
+}: {
+  params: Promise<{ subjectId: string }>;
+}) {
+  const { subjectId } = await params;
+  const session = await requireRole("estudiante");
+  const profile = await getMyStudentProfile(session);
+  const pedagogical = await getMyPedagogicalSummary(session);
 
   if (!isSubjectId(subjectId)) {
     return (
@@ -93,8 +99,17 @@ export default function EstudianteSubjectPage() {
   const subject = getSubject(subjectId);
   const Icon = subject.icon;
   const plan = mockLessonPlans.find(
-    (item) => item.subject === subjectId && item.grade === student.grade
+    (item) => item.subject === subjectId && item.grade === profile.grade
   );
+
+  const adaptedTestStudent: AdaptedTestStudentInput = {
+    id: session.userId,
+    hasPiar: pedagogical !== null,
+    adjustmentTypes:
+      pedagogical?.effectiveSupports
+        .map((support) => support.categoryName)
+        .filter((name): name is string => Boolean(name)) ?? [],
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -159,9 +174,9 @@ export default function EstudianteSubjectPage() {
             </CardContent>
           </Card>
 
-          <AdaptedTestCard plan={plan} student={student} />
+          <AdaptedTestCard plan={plan} student={adaptedTestStudent} />
 
-          {student.hasPiar && (
+          {pedagogical !== null && (
             <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -174,7 +189,7 @@ export default function EstudianteSubjectPage() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <MemoryPuzzle seed={`${student.id}-${subjectId}`} />
+                <MemoryPuzzle seed={`${session.userId}-${subjectId}`} />
               </CardContent>
             </Card>
           )}
