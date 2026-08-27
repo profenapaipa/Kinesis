@@ -68,7 +68,11 @@ export function requireAdmin(session: Session): void {
   }
 }
 
-async function isTeacherAssignedToStudentCourse(
+// Exportada (además de usarse internamente en canViewDiagnosis) para que
+// lib/data/students.ts la use como guard de "es mi estudiante" en las
+// consultas de perfil/resumen pedagógico del docente — no solo para el
+// gate de diagnóstico.
+export async function isTeacherAssignedToStudentCourse(
   teacherUserId: string,
   studentUserId: string
 ): Promise<boolean> {

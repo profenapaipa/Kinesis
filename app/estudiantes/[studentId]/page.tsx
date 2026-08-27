@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarClock, Mail, UserRound } from "lucide-react";
-import { ProgressChart } from "@/components/ProgressChart";
+import { ArrowLeft, CalendarClock, ShieldAlert, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { LEARNING_STYLE_LABEL } from "@/lib/adaptationEngine";
 import {
@@ -13,28 +12,32 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { mockStudents } from "@/lib/mockData";
+import { requireRole } from "@/lib/auth/session";
+import { getClinicalDiagnosis } from "@/lib/data/clinicalInfo";
+import { getPedagogicalSummaryForTeacher, getStudentProfileForTeacher } from "@/lib/data/students";
+import { canViewDiagnosis, PermissionError } from "@/lib/permissions";
+
+export const metadata: Metadata = { title: "Estudiante · Planeación Inclusiva" };
 
 interface PageProps {
   params: Promise<{ studentId: string }>;
 }
 
-export function generateStaticParams() {
-  return mockStudents.map((student) => ({ studentId: student.id }));
-}
-
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { studentId } = await params;
-  const student = mockStudents.find((item) => item.id === studentId);
-  return { title: student ? `${student.fullName} · Planeación Inclusiva` : "Estudiante" };
-}
-
 export default async function StudentDetailPage({ params }: PageProps) {
   const { studentId } = await params;
-  const student = mockStudents.find((item) => item.id === studentId);
-  if (!student) notFound();
+  const session = await requireRole("docente");
 
-  const { piarProfile } = student;
+  let profile;
+  try {
+    profile = await getStudentProfileForTeacher(session, studentId);
+  } catch (error) {
+    if (error instanceof PermissionError) notFound();
+    throw error;
+  }
+
+  const pedagogical = await getPedagogicalSummaryForTeacher(session, studentId);
+  const canSeeDiagnosis = await canViewDiagnosis(session, studentId);
+  const diagnosis = canSeeDiagnosis ? await getClinicalDiagnosis(session, studentId) : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -48,98 +51,108 @@ export default async function StudentDetailPage({ params }: PageProps) {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">{student.fullName}</h2>
+          <h2 className="text-xl font-semibold">{profile.fullName}</h2>
           <p className="text-sm text-muted-foreground">
-            {student.grade} · {student.group}
+            {profile.grade ?? "Sin curso activo"}
+            {profile.group ? ` · ${profile.group}` : ""}
           </p>
         </div>
-        {student.hasPiar && (
+        {pedagogical && (
           <Badge className="bg-amber-500 text-white dark:bg-amber-600">PIAR activo</Badge>
         )}
       </div>
 
-      {student.hasPiar && piarProfile ? (
+      {pedagogical ? (
         <Card>
           <CardHeader>
-            <CardTitle>{piarProfile.diagnosis}</CardTitle>
+            <CardTitle>
+              {pedagogical.learningStyle
+                ? `Aprende mejor: ${LEARNING_STYLE_LABEL[pedagogical.learningStyle]}`
+                : "PIAR activo"}
+            </CardTitle>
             <CardDescription>
-              Plan Individual de Ajustes Razonables — diagnóstico y recomendaciones
+              Plan Individual de Ajustes Razonables — resumen pedagógico
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
-            <div>
-              <p className="text-sm font-medium">Ajustes aplicados en clase</p>
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {piarProfile.adjustmentTypes.map((adjustment) => (
-                  <Badge key={adjustment} variant="secondary">
-                    {adjustment}
-                  </Badge>
-                ))}
+            {pedagogical.effectiveSupports.length > 0 && (
+              <div>
+                <p className="text-sm font-medium">Ajustes aplicados en clase</p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {pedagogical.effectiveSupports.map((support, index) => (
+                    <Badge key={index} variant="secondary">
+                      {support.categoryName ?? support.description}
+                    </Badge>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div>
-              <p className="text-sm font-medium">Estilo de aprendizaje predominante</p>
-              <Badge variant="outline" className="mt-1.5 border-primary/40 text-primary">
-                {LEARNING_STYLE_LABEL[piarProfile.learningStyle]}
-              </Badge>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium">Recomendaciones pedagógicas</p>
-              <ul className="mt-1.5 list-inside list-disc text-sm text-muted-foreground">
-                {piarProfile.supportNeeds.map((need) => (
-                  <li key={need}>{need}</li>
-                ))}
-              </ul>
-            </div>
-
-            <div>
-              <p className="text-sm font-medium">Recursos recomendados</p>
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {piarProfile.recommendedResources.map((resource) => (
-                  <Badge key={resource} variant="outline">
-                    {resource}
-                  </Badge>
-                ))}
+            {pedagogical.effectiveSupports.length > 0 && (
+              <div>
+                <p className="text-sm font-medium">Apoyos que han funcionado</p>
+                <ul className="mt-1.5 list-inside list-disc text-sm text-muted-foreground">
+                  {pedagogical.effectiveSupports.map((support, index) => (
+                    <li key={index}>{support.description}</li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )}
 
-            <div>
-              <p className="text-sm font-medium">Fortalezas</p>
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {piarProfile.strengths.map((strength) => (
-                  <Badge key={strength} variant="outline">
-                    {strength}
-                  </Badge>
-                ))}
+            {pedagogical.barriers.length > 0 && (
+              <div>
+                <p className="text-sm font-medium">Barreras a tener en cuenta</p>
+                <ul className="mt-1.5 list-inside list-disc text-sm text-muted-foreground">
+                  {pedagogical.barriers.map((barrier, index) => (
+                    <li key={index}>{barrier}</li>
+                  ))}
+                </ul>
               </div>
-            </div>
+            )}
+
+            {pedagogical.strengths.length > 0 && (
+              <div>
+                <p className="text-sm font-medium">Fortalezas</p>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {pedagogical.strengths.map((strength, index) => (
+                    <Badge key={index} variant="outline">
+                      {strength}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <Separator />
 
-            <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-5">
-              <span className="flex items-center gap-1.5">
-                <UserRound className="size-4" />
-                {piarProfile.responsibleProfessional}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <CalendarClock className="size-4" />
-                Última revisión: {piarProfile.lastReview}
-              </span>
-              {student.guardianContact && (
-                <span className="flex items-center gap-1.5">
-                  <Mail className="size-4" />
-                  {student.guardianContact}
-                </span>
-              )}
-            </div>
+            {diagnosis ? (
+              <div className="flex flex-col gap-2">
+                <p className="text-sm font-medium">Información clínica</p>
+                <p className="text-sm text-muted-foreground">{diagnosis.diagnosis}</p>
+                <div className="flex flex-col gap-2 text-sm text-muted-foreground sm:flex-row sm:flex-wrap sm:gap-5">
+                  <span className="flex items-center gap-1.5">
+                    <UserRound className="size-4" />
+                    {diagnosis.responsibleProfessional}
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <CalendarClock className="size-4" />
+                    Última revisión: {diagnosis.lastReviewDate}
+                  </span>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-start gap-2 rounded-lg bg-muted/50 p-3 text-sm text-muted-foreground">
+                <ShieldAlert className="mt-0.5 size-4 shrink-0" />
+                Información clínica no disponible para tu perfil en este
+                estudiante.
+              </div>
+            )}
           </CardContent>
         </Card>
       ) : (
         <Card>
           <CardContent className="py-6 text-sm text-muted-foreground">
-            {student.fullName.split(" ")[0]} no tiene un PIAR activo actualmente.
+            {profile.fullName.split(" ")[0]} no tiene un PIAR activo actualmente.
           </CardContent>
         </Card>
       )}
@@ -147,12 +160,10 @@ export default async function StudentDetailPage({ params }: PageProps) {
       <Card>
         <CardHeader>
           <CardTitle>Avance del estudiante</CardTitle>
-          <CardDescription>
-            Avance simulado por asignatura frente al período anterior.
-          </CardDescription>
+          <CardDescription>Seguimiento por asignatura frente al período anterior.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <ProgressChart studentId={student.id} />
+        <CardContent className="py-6 text-sm text-muted-foreground">
+          El seguimiento de avance estará disponible próximamente.
         </CardContent>
       </Card>
     </div>

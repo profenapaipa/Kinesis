@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -12,26 +11,28 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LEARNING_STYLE_LABEL } from "@/lib/adaptationEngine";
-import { mockStudents } from "@/lib/mockData";
-import type { Grade, Student } from "@/types";
+import type { RosterStudent } from "@/lib/data/students";
 
-const GRADE_ORDER: Grade[] = ["8°", "9°", "10°", "11°"];
-const availableGrades = GRADE_ORDER.filter((grade) =>
-  mockStudents.some((student) => student.grade === grade)
-);
+// Orden pedagógico preferido cuando el grado coincide con uno conocido;
+// cualquier otro valor real (futuros grupos con otro formato, ej. "8A")
+// igual obtiene su propia pestaña, ordenado alfabéticamente al final —
+// nunca se pierde un grado por no calzar con esta lista.
+const KNOWN_GRADE_ORDER = ["8°", "9°", "10°", "11°"];
 
-const GRADE_FILTERS: Array<{ label: string; value: Grade | "todos" }> = [
-  { label: "Todos", value: "todos" },
-  ...availableGrades.map((grade) => ({ label: grade, value: grade })),
-];
+function sortGrades(grades: string[]): string[] {
+  return [...grades].sort((a, b) => {
+    const indexA = KNOWN_GRADE_ORDER.indexOf(a);
+    const indexB = KNOWN_GRADE_ORDER.indexOf(b);
+    if (indexA !== -1 && indexB !== -1) return indexA - indexB;
+    if (indexA !== -1) return -1;
+    if (indexB !== -1) return 1;
+    return a.localeCompare(b);
+  });
+}
 
-function StudentCard({ student }: { student: Student }) {
-  const [expanded, setExpanded] = useState(false);
-  const { piarProfile } = student;
-
+function StudentCard({ student }: { student: RosterStudent }) {
   return (
-    <Card className={student.hasPiar ? "ring-1 ring-amber-500/40" : undefined}>
+    <Card className={student.hasPedagogicalProfile ? "ring-1 ring-amber-500/40" : undefined}>
       <CardHeader className="flex-row items-start justify-between gap-2">
         <div>
           <CardTitle>{student.fullName}</CardTitle>
@@ -39,7 +40,7 @@ function StudentCard({ student }: { student: Student }) {
         </div>
         <div className="flex flex-col items-end gap-1">
           <Badge variant="outline">{student.grade}</Badge>
-          {student.hasPiar && (
+          {student.hasPedagogicalProfile && (
             <Badge className="bg-amber-500 text-white dark:bg-amber-600">
               PIAR
             </Badge>
@@ -47,52 +48,9 @@ function StudentCard({ student }: { student: Student }) {
         </div>
       </CardHeader>
 
-      <CardContent className="flex flex-col gap-3">
-        {student.hasPiar && piarProfile && (
-          <>
-            <button
-              type="button"
-              onClick={() => setExpanded((value) => !value)}
-              className="w-fit text-sm font-medium text-primary underline-offset-4 hover:underline"
-            >
-              {expanded ? "Ocultar diagnóstico y recomendaciones" : "Ver diagnóstico y recomendaciones"}
-            </button>
-
-            {expanded && (
-              <div className="flex flex-col gap-3 rounded-lg bg-muted/50 p-3 text-sm">
-                <p>
-                  <span className="font-medium">Diagnóstico: </span>
-                  {piarProfile.diagnosis}
-                </p>
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {piarProfile.adjustmentTypes.map((adjustment) => (
-                    <Badge key={adjustment} variant="secondary">
-                      {adjustment}
-                    </Badge>
-                  ))}
-                  <Badge variant="outline" className="border-primary/40 text-primary">
-                    Aprende mejor: {LEARNING_STYLE_LABEL[piarProfile.learningStyle]}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="font-medium">Recomendaciones pedagógicas</p>
-                  <ul className="mt-1 list-inside list-disc text-muted-foreground">
-                    {piarProfile.supportNeeds.map((need) => (
-                      <li key={need}>{need}</li>
-                    ))}
-                  </ul>
-                </div>
-                <p className="text-muted-foreground">
-                  Última revisión: {piarProfile.lastReview} ·{" "}
-                  {piarProfile.responsibleProfessional}
-                </p>
-              </div>
-            )}
-          </>
-        )}
-
+      <CardContent>
         <Link
-          href={`/estudiantes/${student.id}`}
+          href={`/estudiantes/${student.studentUserId}`}
           className="flex w-fit items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
         >
           Ver perfil completo y avance
@@ -103,45 +61,58 @@ function StudentCard({ student }: { student: Student }) {
   );
 }
 
-export function StudentRoster() {
-  const piarCount = mockStudents.filter((student) => student.hasPiar).length;
+export function StudentRoster({ students }: { students: RosterStudent[] }) {
+  const piarCount = students.filter((student) => student.hasPedagogicalProfile).length;
+  const availableGrades = sortGrades([...new Set(students.map((student) => student.grade))]);
+  const gradeFilters: Array<{ label: string; value: string }> = [
+    { label: "Todos", value: "todos" },
+    ...availableGrades.map((grade) => ({ label: grade, value: grade })),
+  ];
 
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <h2 className="text-xl font-semibold">Lista de estudiantes</h2>
         <p className="text-sm text-muted-foreground">
-          {mockStudents.length} estudiantes registrados · {piarCount} con PIAR
+          {students.length} estudiantes registrados · {piarCount} con PIAR
           activo
         </p>
       </div>
 
-      <Tabs defaultValue="todos">
-        <TabsList>
-          {GRADE_FILTERS.map((filter) => (
-            <TabsTrigger key={filter.value} value={filter.value}>
-              {filter.label}
-            </TabsTrigger>
-          ))}
-        </TabsList>
+      {students.length === 0 ? (
+        <Card>
+          <CardContent className="py-8 text-center text-sm text-muted-foreground">
+            No tienes estudiantes matriculados en tus cursos todavía.
+          </CardContent>
+        </Card>
+      ) : (
+        <Tabs defaultValue="todos">
+          <TabsList>
+            {gradeFilters.map((filter) => (
+              <TabsTrigger key={filter.value} value={filter.value}>
+                {filter.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
 
-        {GRADE_FILTERS.map((filter) => {
-          const students =
-            filter.value === "todos"
-              ? mockStudents
-              : mockStudents.filter((student) => student.grade === filter.value);
+          {gradeFilters.map((filter) => {
+            const filtered =
+              filter.value === "todos"
+                ? students
+                : students.filter((student) => student.grade === filter.value);
 
-          return (
-            <TabsContent key={filter.value} value={filter.value}>
-              <div className="grid grid-cols-1 gap-3 pt-4 md:grid-cols-2 xl:grid-cols-3">
-                {students.map((student) => (
-                  <StudentCard key={student.id} student={student} />
-                ))}
-              </div>
-            </TabsContent>
-          );
-        })}
-      </Tabs>
+            return (
+              <TabsContent key={filter.value} value={filter.value}>
+                <div className="grid grid-cols-1 gap-3 pt-4 md:grid-cols-2 xl:grid-cols-3">
+                  {filtered.map((student) => (
+                    <StudentCard key={student.studentUserId} student={student} />
+                  ))}
+                </div>
+              </TabsContent>
+            );
+          })}
+        </Tabs>
+      )}
     </div>
   );
 }

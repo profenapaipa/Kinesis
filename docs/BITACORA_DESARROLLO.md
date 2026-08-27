@@ -23,6 +23,70 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-08-20] — Fase 2: Roster real del docente y cierre de fuga de diagnóstico
+
+**Fase activa:** Fase 2 — Roster real del docente y aislamiento clínico
+
+### Cambios implementados
+- Nuevo `lib/data/clinicalInfo.ts`: único punto de acceso a `clinical_info`
+  en todo el proyecto (fuera de `db/schema.ts`/`db/seed.ts`). `getClinicalDiagnosis()`
+  llama `canViewDiagnosis()` internamente y lanza `PermissionError` si no
+  está permitido — fail closed, incluso si el llamador se olvidara de
+  verificar antes.
+- `lib/permissions.ts`: `isTeacherAssignedToStudentCourse()` pasa de función
+  privada a exportada, para reutilizarla como guard de "es mi estudiante" en
+  `lib/data/students.ts`.
+- `lib/data/students.ts` ampliado: `listMyStudents()` (roster del docente,
+  vía `course_teachers` → `enrollments` → `courses`/`users`, con
+  `hasPedagogicalProfile` como booleano — sin exponer resumen pedagógico ni
+  nada clínico en el listado), `getStudentProfileForTeacher()` y
+  `getPedagogicalSummaryForTeacher()` (ambas verifican asignación de curso
+  antes de devolver cualquier dato).
+- `app/estudiantes/page.tsx` y `components/StudentRoster.tsx` migradas a
+  datos reales; se eliminó el bloque de diagnóstico expandible en el roster
+  (se consolida en la vista de detalle, ya protegida).
+- `app/estudiantes/[studentId]/page.tsx` reescrita: si el estudiante no
+  pertenece a un curso del docente, `notFound()`; si `canViewDiagnosis()` es
+  falso, la sección clínica se reemplaza por un aviso explícito de acceso
+  restringido en vez de ocultarse en silencio. Se agregó una sección nueva
+  "Barreras a tener en cuenta" (`pedagogical_barriers`), pertinente para el
+  docente y no clínica.
+- `components/StudentRoster.tsx`: las pestañas de filtro por grado ya no
+  dependen de una lista fija `["8°","9°","10°","11°"]` — se derivan de los
+  grados realmente presentes en el roster (`sortGrades()`), así que un curso
+  futuro con un grado en otro formato (ej. `"8A"`) obtiene su propia pestaña
+  sin tocar código.
+- Tarjeta de avance reemplazada por "disponible próximamente" (mismo
+  tratamiento que Fase 1 le dio a `/padre` — `progress_entries` sin datos
+  reales todavía; se resuelve en Fase 6 de la hoja de ruta).
+
+### Decisiones de arquitectura
+- **Hallazgo de seguridad cerrado**: `app/estudiantes/[studentId]/page.tsx`
+  mostraba diagnóstico, profesional responsable y última revisión de
+  cualquier estudiante a cualquier docente que entrara a la URL, sin pasar
+  por `canViewDiagnosis()`. Detectado en la auditoría previa a esta fase.
+- El acceso clínico se aisló en un archivo dedicado (`lib/data/clinicalInfo.ts`)
+  en vez de agregarlo a `lib/data/students.ts`, para preservar la garantía
+  explícita de ese archivo ("nunca importa `clinicalInfo`") establecida en
+  Fase 1 — un `grep clinicalInfo lib/` sigue señalando un único archivo.
+- `getStudentProfileForTeacher()`/`getPedagogicalSummaryForTeacher()`
+  verifican la asignación de curso internamente (no solo en la página),
+  siguiendo el mismo patrón que las variantes de padre (`getChildProfile`)
+  de Fase 1 — ningún componente decide permisos por su cuenta.
+- Se retiró la sección de diagnóstico expandible del roster (`StudentRoster.tsx`):
+  la funcionalidad no se pierde, se consolida en la vista de detalle, que
+  es la única que ahora aplica el gate correctamente.
+
+### Pendiente conocido
+- Retroactivamente se documentó Fase 1 en `CHANGELOG.md` (no se había hecho
+  en su momento, solo se actualizó la bitácora).
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-08-18] — Fase 1: Migración de mock data a BD real (Estudiante y Padre)
 
 **Fase activa:** Fase 1 — Migración de Mock Data a BD Real para Estudiante y Padre

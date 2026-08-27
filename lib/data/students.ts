@@ -1,8 +1,9 @@
-import { and, eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import {
   academicPeriods,
   courses,
+  courseTeachers,
   effectiveSupports,
   enrollments,
   guardianStudents,
@@ -14,7 +15,7 @@ import {
   users,
 } from "@/db/schema";
 import type { Session } from "@/lib/auth/session";
-import { isGuardianOfStudent, PermissionError } from "@/lib/permissions";
+import { isGuardianOfStudent, isTeacherAssignedToStudentCourse, PermissionError } from "@/lib/permissions";
 import type { LearningStyle } from "@/types";
 
 // Consultas de datos para las vistas de estudiante y padre. Este archivo
@@ -47,6 +48,14 @@ export interface GuardianChild {
   studentUserId: string;
   fullName: string;
   relationship: string;
+}
+
+export interface RosterStudent {
+  studentUserId: string;
+  fullName: string;
+  grade: string;
+  group: string;
+  hasPedagogicalProfile: boolean;
 }
 
 async function fetchStudentBasicProfile(
@@ -186,6 +195,71 @@ export async function getChildPedagogicalSummary(
 ): Promise<PedagogicalSummary | null> {
   if (session.role !== "padre") throw new PermissionError("adaptaciones");
   if (!(await isGuardianOfStudent(session.userId, studentUserId))) {
+    throw new PermissionError("adaptaciones");
+  }
+  return fetchPedagogicalSummary(studentUserId);
+}
+
+// Roster del docente: estudiantes matriculados (activa) en cursos donde
+// tiene alguna asignación en course_teachers. Deliberadamente NO incluye
+// resumen pedagógico completo ni nada clínico — solo lo necesario para la
+// lista (nombre, curso, si tiene o no perfil pedagógico registrado).
+export async function listMyStudents(session: Session): Promise<RosterStudent[]> {
+  if (session.role !== "docente") throw new PermissionError("datos_basicos");
+
+  const myCourseRows = await db
+    .select({ courseId: courseTeachers.courseId })
+    .from(courseTeachers)
+    .where(eq(courseTeachers.teacherUserId, session.userId));
+  const myCourseIds = [...new Set(myCourseRows.map((row) => row.courseId))];
+  if (myCourseIds.length === 0) return [];
+
+  const rows = await db
+    .select({
+      studentUserId: enrollments.studentUserId,
+      fullName: users.fullName,
+      grade: courses.grade,
+      group: courses.group,
+      hasPedagogicalProfile: pedagogicalProfiles.id,
+    })
+    .from(enrollments)
+    .innerJoin(courses, eq(courses.id, enrollments.courseId))
+    .innerJoin(users, eq(users.id, enrollments.studentUserId))
+    .leftJoin(pedagogicalProfiles, eq(pedagogicalProfiles.studentUserId, enrollments.studentUserId))
+    .where(and(inArray(enrollments.courseId, myCourseIds), eq(enrollments.status, "activa")));
+
+  const byStudent = new Map<string, RosterStudent>();
+  for (const row of rows) {
+    byStudent.set(row.studentUserId, {
+      studentUserId: row.studentUserId,
+      fullName: row.fullName,
+      grade: row.grade,
+      group: row.group,
+      hasPedagogicalProfile: Boolean(row.hasPedagogicalProfile),
+    });
+  }
+  return [...byStudent.values()];
+}
+
+export async function getStudentProfileForTeacher(
+  session: Session,
+  studentUserId: string
+): Promise<StudentBasicProfile> {
+  if (session.role !== "docente") throw new PermissionError("datos_basicos");
+  if (!(await isTeacherAssignedToStudentCourse(session.userId, studentUserId))) {
+    throw new PermissionError("datos_basicos");
+  }
+  const profile = await fetchStudentBasicProfile(studentUserId);
+  if (!profile) throw new Error("Perfil de estudiante no encontrado.");
+  return profile;
+}
+
+export async function getPedagogicalSummaryForTeacher(
+  session: Session,
+  studentUserId: string
+): Promise<PedagogicalSummary | null> {
+  if (session.role !== "docente") throw new PermissionError("adaptaciones");
+  if (!(await isTeacherAssignedToStudentCourse(session.userId, studentUserId))) {
     throw new PermissionError("adaptaciones");
   }
   return fetchPedagogicalSummary(studentUserId);
