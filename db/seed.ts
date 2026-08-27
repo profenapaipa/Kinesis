@@ -5,7 +5,7 @@
 // PIAR) a usuarios/matrículas/perfil-pedagógico/información-clínica reales,
 // y siembra un administrador y un docente de demostración.
 
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { db } from "./index";
 import {
   academicPeriods,
@@ -14,6 +14,7 @@ import {
   courseTeachers,
   effectiveSupports,
   enrollments,
+  guardianStudents,
   pedagogicalBarriers,
   pedagogicalProfiles,
   pedagogicalStrengths,
@@ -233,6 +234,7 @@ async function main() {
   }
 
   console.log(`Sembrando ${mockStudents.length} estudiantes de lib/mockData.ts...`);
+  let demoGuardianChildId: string | undefined;
   for (const student of mockStudents) {
     const username = slugifyUsername(student.fullName);
     const studentUser = await upsertUser({
@@ -241,6 +243,10 @@ async function main() {
       fullName: student.fullName,
       role: "estudiante",
     });
+
+    if (student.id === "std-001") {
+      demoGuardianChildId = studentUser.id;
+    }
 
     const existingEnrollment = await db
       .select()
@@ -307,10 +313,40 @@ async function main() {
     });
   }
 
+  console.log("Sembrando acudiente de demostración...");
+  const guardian = await upsertUser({
+    username: "padre.demo",
+    password: "padre123",
+    fullName: "Acudiente de Demostración",
+    role: "padre",
+    mustChangePassword: false,
+  });
+  if (demoGuardianChildId) {
+    const existingLink = await db
+      .select()
+      .from(guardianStudents)
+      .where(
+        and(
+          eq(guardianStudents.guardianUserId, guardian.id),
+          eq(guardianStudents.studentUserId, demoGuardianChildId)
+        )
+      )
+      .get();
+    if (!existingLink) {
+      await db.insert(guardianStudents).values({
+        guardianUserId: guardian.id,
+        studentUserId: demoGuardianChildId,
+        relationship: "Madre",
+        authorizedForDiagnosis: false,
+      });
+    }
+  }
+
   console.log("\nListo. Credenciales de demostración:");
   console.log("  Administrador -> usuario: admin      contraseña: admin123");
   console.log("  Docente       -> usuario: docente    contraseña: docente123");
   console.log("  Estudiantes   -> usuario: <nombre.apellido>  contraseña: estudiante123");
+  console.log("  Acudiente     -> usuario: padre.demo contraseña: padre123 (vinculado a Valentina Rodríguez Gómez)");
 }
 
 main()

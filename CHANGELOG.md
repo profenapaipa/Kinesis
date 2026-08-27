@@ -26,12 +26,22 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
     grados reales presentes (ya no una lista fija), compatibles con
     futuros cursos/grupos en cualquier formato.
 
+- Fase 3 — Vínculo acudiente-estudiante:
+  - `lib/data/guardianStudents.ts` (crear/listar/eliminar vínculos) +
+    `app/api/admin/guardian-students/**` + UI de administración
+    (`app/admin/acudientes/page.tsx`).
+  - Acudiente de demostración sembrado en `db/seed.ts`, vinculado a un
+    estudiante real — `/padre` ya se puede probar con datos reales.
+
 ### Security
 - Fase 1: se retiraron `diagnosis`, `responsibleProfessional` y `lastReview`
   de las vistas de estudiante y padre (información clínica restringida).
 - Fase 2: `app/estudiantes/[studentId]` mostraba diagnóstico de cualquier
   estudiante a cualquier docente, sin verificar asignación de curso. Ahora
   pasa por `canViewDiagnosis()`/`isTeacherAssignedToStudentCourse()`.
+- Fase 3: `authorizedForDiagnosis` (nuevo en la UI) se captura pero no se
+  conecta a ningún chequeo de acceso todavía — `canViewDiagnosis()` sigue
+  restringiendo el diagnóstico exclusivamente al docente asignado.
 
 ## [0.1.0] - 2026-08-18
 

@@ -8,6 +8,7 @@ import {
   ClipboardList,
   GraduationCap,
   LayoutDashboard,
+  Link2,
   LogOut,
   Shapes,
   Sparkles,
@@ -37,6 +38,7 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/usuarios", label: "Usuarios", icon: Users },
   { href: "/admin/cursos", label: "Cursos", icon: Shapes },
+  { href: "/admin/acudientes", label: "Acudientes", icon: Link2 },
   { href: "/admin/categorias-apoyo", label: "Categorías de apoyo", icon: Sparkles },
   { href: "/admin/periodos", label: "Periodos académicos", icon: CalendarRange },
 ];

@@ -23,6 +23,42 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-08-21] — Fase 3: Vínculo acudiente-estudiante
+
+**Fase activa:** Fase 3 — Vínculo acudiente-estudiante
+
+### Cambios implementados
+- Nuevo `lib/data/guardianStudents.ts`: `listGuardianLinks()` (primer
+  self-join del proyecto, alias de `users` para acudiente y estudiante),
+  `createGuardianLink()` (valida que el par acudiente-estudiante no exista
+  ya) y `deleteGuardianLink()` (primer borrado físico del proyecto — hasta
+  ahora todo era activar/desactivar; tiene sentido aquí por ser una fila de
+  relación, no una entidad con ciclo de vida propio).
+- `app/api/admin/guardian-students/route.ts` (GET/POST) y
+  `[id]/route.ts` (DELETE), mismo patrón que el resto de `/api/admin/*`.
+- `components/admin/CreateGuardianLinkForm.tsx` y
+  `RemoveGuardianLinkButton.tsx` + `app/admin/acudientes/page.tsx`, nueva
+  sección en el nav de admin (`components/AppShell.tsx`).
+- `db/seed.ts`: acudiente de demostración (`padre.demo`/`padre123`)
+  vinculado a Valentina Rodríguez Gómez — antes era imposible probar
+  `/padre` con datos reales (Fase 1 solo pudo verificar el estado vacío).
+
+### Decisiones de arquitectura
+- `authorizedForDiagnosis` se captura en el formulario y se guarda, pero
+  **no se conecta a `canViewDiagnosis()`** — esa función sigue devolviendo
+  `false` para cualquier rol distinto de docente. Marcarlo hoy no otorga
+  ningún acceso clínico; conectarlo es una decisión de política aparte,
+  fuera de esta fase.
+- Duplicados de un mismo par acudiente-estudiante se rechazan a nivel de
+  aplicación (chequeo antes del insert, mismo patrón que `createUser` con
+  el username), no con una restricción única en el esquema.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-08-20] — Fase 2: Roster real del docente y cierre de fuga de diagnóstico
 
 **Fase activa:** Fase 2 — Roster real del docente y aislamiento clínico
