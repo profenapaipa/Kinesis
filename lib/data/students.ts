@@ -25,6 +25,7 @@ import type { LearningStyle } from "@/types";
 
 export interface StudentBasicProfile {
   fullName: string;
+  courseId: string | null;
   grade: string | null;
   group: string | null;
   courseName: string | null;
@@ -70,6 +71,7 @@ async function fetchStudentBasicProfile(
 
   const activeEnrollment = await db
     .select({
+      courseId: courses.id,
       grade: courses.grade,
       group: courses.group,
       courseName: courses.name,
@@ -98,6 +100,7 @@ async function fetchStudentBasicProfile(
 
   return {
     fullName: user.fullName,
+    courseId: activeEnrollment?.courseId ?? null,
     grade: activeEnrollment?.grade ?? null,
     group: activeEnrollment?.group ?? null,
     courseName: activeEnrollment?.courseName ?? null,

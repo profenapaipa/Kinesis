@@ -9,6 +9,7 @@ import { and, eq } from "drizzle-orm";
 import { db } from "./index";
 import {
   academicPeriods,
+  activities,
   clinicalInfo,
   courses,
   courseTeachers,
@@ -229,6 +230,66 @@ async function main() {
         teacherUserId: teacher.id,
         courseId: course.id,
         subjectId: subject.id,
+      });
+    }
+  }
+
+  console.log("Sembrando actividades de demostración...");
+  const DEMO_ACTIVITIES: Array<{
+    subjectId: (typeof MEN_SUBJECTS)[number]["id"];
+    topic: string;
+    objective: string;
+    instructions: string;
+    resources: string[];
+    evidenceRequested: string;
+    scheduledDate: string;
+  }> = [
+    {
+      subjectId: "matematicas",
+      topic: "Sistemas de ecuaciones lineales 2x2",
+      objective:
+        "Resolver sistemas de ecuaciones lineales con dos incógnitas mediante los métodos de sustitución y reducción, aplicándolos a problemas cotidianos.",
+      instructions:
+        "Repaso de ecuaciones de primer grado con una incógnita\nResolver sistemas 2x2 por el método de sustitución\nResolver sistemas 2x2 por el método de reducción\nAplicar lo aprendido a dos problemas de la vida real",
+      resources: ["Guía de ejercicios", "Calculadora científica", "Tablero cuadriculado"],
+      evidenceRequested: "Taller resuelto en parejas + 3 problemas individuales",
+      scheduledDate: "2026-08-10",
+    },
+    {
+      subjectId: "ciencias-naturales",
+      topic: "Genética y herencia mendeliana",
+      objective:
+        "Comprender los principios básicos de la herencia genética mediante el análisis de cruces monohíbridos y la interpretación de cuadros de Punnett.",
+      instructions:
+        "Exposición sobre genotipo, fenotipo, alelos dominantes y recesivos\nTaller de cuadros de Punnett en parejas\nLectura de un artículo corto sobre enfermedades hereditarias\nSocialización de resultados y retroalimentación grupal",
+      resources: ["Presentación en diapositivas", "Guía impresa de cuadros de Punnett", "Artículo de lectura"],
+      evidenceRequested: "Quiz corto individual + guía de trabajo en parejas",
+      scheduledDate: "2026-08-11",
+    },
+  ];
+  for (const demo of DEMO_ACTIVITIES) {
+    const existingActivity = await db
+      .select()
+      .from(activities)
+      .where(
+        and(
+          eq(activities.teacherUserId, teacher.id),
+          eq(activities.courseId, course.id),
+          eq(activities.subjectId, demo.subjectId)
+        )
+      )
+      .get();
+    if (!existingActivity) {
+      await db.insert(activities).values({
+        teacherUserId: teacher.id,
+        courseId: course.id,
+        subjectId: demo.subjectId,
+        topic: demo.topic,
+        objective: demo.objective,
+        instructions: demo.instructions,
+        resources: demo.resources,
+        evidenceRequested: demo.evidenceRequested,
+        scheduledDate: demo.scheduledDate,
       });
     }
   }

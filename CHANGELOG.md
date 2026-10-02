@@ -32,6 +32,17 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
     (`app/admin/acudientes/page.tsx`).
   - Acudiente de demostración sembrado en `db/seed.ts`, vinculado a un
     estudiante real — `/padre` ya se puede probar con datos reales.
+- Fase 4 — Planeación de clase real:
+  - `lib/data/activities.ts`: consultas y creación de actividades reales
+    sobre la tabla `activities`, con guard nuevo
+    `isTeacherAssignedToCourseSubject()` en `lib/permissions.ts`.
+  - `components/CreateActivityForm.tsx` + `app/api/docente/activities/route.ts`
+    (primera ruta API docente, fuera de `/api/admin/*`).
+  - `app/planeacion/**`, `app/estudiante/**` y `app/padre/page.tsx` migradas
+    de `mockLessonPlans` a `activities` real — cierra el pendiente de Fase 1.
+  - `lib/testGenerator.ts` adaptado al modelo real (instrucciones en texto
+    libre en vez de sub-actividades estructuradas).
+  - Eliminado `components/FileUploadDropzone.tsx` (sin persistencia real).
 
 ### Security
 - Fase 1: se retiraron `diagnosis`, `responsibleProfessional` y `lastReview`

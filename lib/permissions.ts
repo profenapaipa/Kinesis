@@ -112,6 +112,29 @@ export async function canViewPiarCompleto(
   return canViewDiagnosis(session, studentUserId);
 }
 
+// Usada por lib/data/activities.ts: un docente solo puede crear/ver sus
+// propias actividades para un curso+asignatura donde tiene una asignación
+// real en course_teachers — no basta con ser docente en general, ni con
+// estar asignado a ese curso en OTRA asignatura.
+export async function isTeacherAssignedToCourseSubject(
+  teacherUserId: string,
+  courseId: string,
+  subjectId: string
+): Promise<boolean> {
+  const row = await db
+    .select({ id: courseTeachers.id })
+    .from(courseTeachers)
+    .where(
+      and(
+        eq(courseTeachers.teacherUserId, teacherUserId),
+        eq(courseTeachers.courseId, courseId),
+        eq(courseTeachers.subjectId, subjectId)
+      )
+    )
+    .get();
+  return Boolean(row);
+}
+
 // Relación acudiente-estudiante — usada por lib/data/students.ts para que un
 // padre/acudiente solo pueda consultar datos de sus propios hijos vinculados
 // en guardian_students, nunca de un studentUserId arbitrario.

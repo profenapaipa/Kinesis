@@ -8,12 +8,12 @@ import {
 } from "@/components/ui/card";
 import { LEARNING_STYLE_LABEL } from "@/lib/adaptationEngine";
 import { requireRole } from "@/lib/auth/session";
+import { listLatestActivityPerSubject } from "@/lib/data/activities";
 import {
   getChildPedagogicalSummary,
   getChildProfile,
   getGuardianChildren,
 } from "@/lib/data/students";
-import { mockLessonPlans } from "@/lib/mockData";
 import { MEN_SUBJECTS } from "@/lib/subjects";
 
 export default async function PadrePage() {
@@ -34,6 +34,9 @@ export default async function PadrePage() {
 
   const profile = await getChildProfile(session, child.studentUserId);
   const pedagogical = await getChildPedagogicalSummary(session, child.studentUserId);
+  const latestActivityBySubject = profile.courseId
+    ? await listLatestActivityPerSubject(profile.courseId)
+    : new Map();
 
   return (
     <div className="flex flex-col gap-8">
@@ -66,9 +69,7 @@ export default async function PadrePage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {MEN_SUBJECTS.map((subject) => {
             const Icon = subject.icon;
-            const plan = mockLessonPlans.find(
-              (item) => item.subject === subject.id && item.grade === profile.grade
-            );
+            const plan = latestActivityBySubject.get(subject.id);
 
             return (
               <Card key={subject.id} className="h-full">

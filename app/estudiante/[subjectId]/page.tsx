@@ -11,11 +11,15 @@ import {
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { requireRole } from "@/lib/auth/session";
+import { listActivitiesForCourseSubject } from "@/lib/data/activities";
 import { getMyPedagogicalSummary, getMyStudentProfile } from "@/lib/data/students";
-import { mockLessonPlans } from "@/lib/mockData";
 import { MEN_SUBJECTS, getSubject } from "@/lib/subjects";
-import { generateAdaptedTest, type AdaptedTestStudentInput } from "@/lib/testGenerator";
-import type { LessonPlan, SubjectId, TestQuestionFormat } from "@/types";
+import {
+  generateAdaptedTest,
+  type ActivityContent,
+  type AdaptedTestStudentInput,
+} from "@/lib/testGenerator";
+import type { SubjectId, TestQuestionFormat } from "@/types";
 
 function isSubjectId(value: string): value is SubjectId {
   return MEN_SUBJECTS.some((subject) => subject.id === value);
@@ -32,7 +36,7 @@ function AdaptedTestCard({
   plan,
   student,
 }: {
-  plan: LessonPlan;
+  plan: ActivityContent;
   student: AdaptedTestStudentInput;
 }) {
   const test = generateAdaptedTest(plan, student);
@@ -98,9 +102,10 @@ export default async function EstudianteSubjectPage({
 
   const subject = getSubject(subjectId);
   const Icon = subject.icon;
-  const plan = mockLessonPlans.find(
-    (item) => item.subject === subjectId && item.grade === profile.grade
-  );
+  const activitiesForSubject = profile.courseId
+    ? await listActivitiesForCourseSubject(profile.courseId, subjectId)
+    : [];
+  const plan = activitiesForSubject[0];
 
   const adaptedTestStudent: AdaptedTestStudentInput = {
     id: session.userId,
@@ -145,18 +150,11 @@ export default async function EstudianteSubjectPage({
               <CardDescription>Lo que vamos a trabajar en clase</CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
-              <div className="flex flex-col gap-2">
-                {plan.activities.map((activity, index) => (
-                  <div key={activity.id} className="flex flex-col gap-0.5">
-                    <p className="text-sm font-medium">
-                      {index + 1}. {activity.title}{" "}
-                      <span className="font-normal text-muted-foreground">
-                        ({activity.durationMinutes} min)
-                      </span>
-                    </p>
-                    <p className="text-sm text-muted-foreground">{activity.description}</p>
-                  </div>
-                ))}
+              <div>
+                <p className="text-sm font-medium">Qué vamos a hacer</p>
+                <p className="whitespace-pre-line text-sm text-muted-foreground">
+                  {plan.instructions}
+                </p>
               </div>
 
               <Separator />

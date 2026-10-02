@@ -9,8 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/session";
+import { listLatestActivityPerSubject } from "@/lib/data/activities";
 import { getMyPedagogicalSummary, getMyStudentProfile } from "@/lib/data/students";
-import { mockLessonPlans } from "@/lib/mockData";
 import { LEARNING_PREFERENCE_LABEL } from "@/lib/studentFriendlyText";
 import { MEN_SUBJECTS } from "@/lib/subjects";
 
@@ -18,6 +18,9 @@ export default async function EstudiantePage() {
   const session = await requireRole("estudiante");
   const profile = await getMyStudentProfile(session);
   const pedagogical = await getMyPedagogicalSummary(session);
+  const latestActivityBySubject = profile.courseId
+    ? await listLatestActivityPerSubject(profile.courseId)
+    : new Map();
   const firstName = profile.fullName.split(" ")[0];
 
   return (
@@ -39,9 +42,7 @@ export default async function EstudiantePage() {
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {MEN_SUBJECTS.map((subject) => {
             const Icon = subject.icon;
-            const plan = mockLessonPlans.find(
-              (item) => item.subject === subject.id && item.grade === profile.grade
-            );
+            const plan = latestActivityBySubject.get(subject.id);
 
             const cardContent = (
               <Card className="h-full transition-shadow group-hover:shadow-md group-focus-visible:ring-2 group-focus-visible:ring-ring">

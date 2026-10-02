@@ -59,6 +59,73 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-10-02] — Fase 4: Planeación de clase real sobre `activities`
+
+**Fase activa:** Fase 4 — Planeación de clase real
+
+### Cambios implementados
+- Nuevo `lib/data/activities.ts`: `listMySubjectsSummary()` y
+  `listMyCoursesForSubject()` (para el selector del formulario),
+  `listActivitiesForSubject()`/`createActivity()` (vista del docente,
+  verificadas con `isTeacherAssignedToCourseSubject()`), y
+  `listActivitiesForCourseSubject()`/`listLatestActivityPerSubject()` (lectura
+  para estudiante/padre, sin chequeo propio — el `courseId` ya llega resuelto
+  desde un perfil validado en `lib/data/students.ts`).
+- `lib/permissions.ts`: nuevo `isTeacherAssignedToCourseSubject()` — a
+  diferencia de `isTeacherAssignedToStudentCourse()`, exige curso **y**
+  asignatura exactos, no solo el curso.
+- `lib/data/students.ts`: `StudentBasicProfile` ahora incluye `courseId`
+  (necesario para unir con `activities` por curso real, no por coincidencia
+  de texto de grado como hacía el mock).
+- `lib/testGenerator.ts`: `generateAdaptedTest()` recibe `ActivityContent`
+  (`{id, topic, objective, instructions}`) en vez de `LessonPlan`. El modelo
+  real no tiene una lista estructurada de sub-actividades — `instructions`
+  es texto libre del docente — así que se parte en líneas no vacías para
+  generar una pregunta por paso, igual que antes.
+- Nuevo `components/CreateActivityForm.tsx` + `app/api/docente/activities/route.ts`
+  (primera ruta API fuera de `/api/admin/*`).
+- `app/planeacion/page.tsx` y `[subjectId]/page.tsx`, `app/estudiante/page.tsx`,
+  `app/estudiante/[subjectId]/page.tsx` y `app/padre/page.tsx` migradas de
+  `mockLessonPlans` a datos reales — cierra el pendiente dejado explícitamente
+  en Fase 1.
+- Eliminado `components/FileUploadDropzone.tsx` (solo guardaba metadata en
+  `localStorage`, sin persistencia real; reemplazado por el campo de
+  recursos real del formulario).
+- `db/seed.ts`: 2 actividades de demostración (Matemáticas, Ciencias
+  Naturales) para que las vistas reales tengan contenido de inmediato.
+
+### Decisiones de arquitectura
+- El formulario de actividad no replica la estructura antigua de
+  sub-actividades con duración individual — el esquema real modela una
+  actividad como un único bloque de instrucciones. Se mantiene así
+  deliberadamente en vez de forzar una estructura que la tabla no tiene.
+- `status` (`preparada`/`pendiente_adaptacion`/.../`pendiente_seguimiento`)
+  se guarda con su valor por defecto (`preparada`) pero **no** se construyó
+  UI de transición de estado en esta fase — eso pertenece a Fase 5/6
+  (generador de adaptaciones y seguimiento), donde el estado tiene sentido
+  real dentro del flujo.
+- `listActivitiesForCourseSubject()`/`listLatestActivityPerSubject()` no
+  repiten el chequeo de permisos porque el `courseId` que reciben ya fue
+  resuelto por una función gateada (`getMyStudentProfile`/`getChildProfile`);
+  el contenido que exponen (tema, objetivo, instrucciones, recursos) no es
+  clínico ni restringido.
+
+### Hallazgo durante la verificación (no es un bug de esta fase)
+- La base de datos real tenía activo el período académico "2027" (sin
+  cursos ni matrículas) en vez de "2026" (donde vive todo el curso 8°-A
+  sembrado) — probablemente activado manualmente desde `/admin/periodos`
+  en algún momento. Esto hacía que `getMyStudentProfile()` devolviera
+  `grade: null` para cualquier estudiante, afectando a todas las fases
+  anteriores también, no solo a esta. Se reactivó "2026" usando la función
+  de administración ya existente para poder verificar esta fase con datos
+  reales — queda como decisión del usuario cuál período mantener activo.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-08-20] — Fase 2: Roster real del docente y cierre de fuga de diagnóstico
 
 **Fase activa:** Fase 2 — Roster real del docente y aislamiento clínico
