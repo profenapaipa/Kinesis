@@ -103,11 +103,7 @@ export default async function PadrePage() {
           <Card>
             <CardHeader className="flex-row items-start justify-between gap-2">
               <div>
-                <CardTitle>
-                  {pedagogical.learningStyle
-                    ? LEARNING_STYLE_LABEL[pedagogical.learningStyle]
-                    : "PIAR activo"}
-                </CardTitle>
+                <CardTitle>PIAR activo</CardTitle>
                 <CardDescription>PIAR activo y en seguimiento</CardDescription>
               </div>
               <Badge className="bg-amber-500 text-white dark:bg-amber-600">
@@ -115,6 +111,17 @@ export default async function PadrePage() {
               </Badge>
             </CardHeader>
             <CardContent className="flex flex-col gap-5">
+              {pedagogical.learningStyle && (
+                <p className="text-sm text-muted-foreground">
+                  Prefiere aprender:{" "}
+                  <span className="font-medium text-foreground">
+                    {LEARNING_STYLE_LABEL[pedagogical.learningStyle]}
+                  </span>{" "}
+                  — es una preferencia, no un límite: en clase igual recibe los
+                  contenidos de varias formas.
+                </p>
+              )}
+
               {pedagogical.effectiveSupports.length > 0 && (
                 <div>
                   <p className="text-sm font-medium">Ajustes aplicados en clase</p>

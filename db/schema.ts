@@ -253,6 +253,14 @@ export const activities = sqliteTable("activities", {
   objective: text("objective").notNull(),
   instructions: text("instructions").notNull(),
   resources: text("resources", { mode: "json" }).$type<string[]>().notNull().default([]),
+  // Diseño Universal de Aprendizaje aplicado a TODA la actividad (no a un
+  // estudiante puntual) — los mismos 3 principios de activity_adaptations
+  // (representación / acción-expresión / participación), pero pensados
+  // desde el diseño de la clase, no como parche posterior para PIAR.
+  // Opcionales: no deben bloquear al docente que solo quiere guardar rápido.
+  representationNotes: text("representation_notes"),
+  expressionNotes: text("expression_notes"),
+  engagementNotes: text("engagement_notes"),
   evidenceRequested: text("evidence_requested"),
   status: text("status", {
     enum: ["preparada", "pendiente_adaptacion", "en_curso", "finalizada", "pendiente_seguimiento"],

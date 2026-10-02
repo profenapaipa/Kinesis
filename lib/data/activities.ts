@@ -76,6 +76,9 @@ export interface TeacherActivity {
   objective: string;
   instructions: string;
   resources: string[];
+  representationNotes: string | null;
+  expressionNotes: string | null;
+  engagementNotes: string | null;
   evidenceRequested: string | null;
   status: string;
   scheduledDate: string | null;
@@ -98,6 +101,9 @@ export async function listActivitiesForSubject(
       objective: activities.objective,
       instructions: activities.instructions,
       resources: activities.resources,
+      representationNotes: activities.representationNotes,
+      expressionNotes: activities.expressionNotes,
+      engagementNotes: activities.engagementNotes,
       evidenceRequested: activities.evidenceRequested,
       status: activities.status,
       scheduledDate: activities.scheduledDate,
@@ -117,6 +123,9 @@ export interface CreateActivityInput {
   objective: string;
   instructions: string;
   resources: string[];
+  representationNotes?: string;
+  expressionNotes?: string;
+  engagementNotes?: string;
   evidenceRequested?: string;
   scheduledDate?: string;
 }
@@ -140,6 +149,9 @@ export async function createActivity(session: Session, input: CreateActivityInpu
       objective: input.objective,
       instructions: input.instructions,
       resources: input.resources,
+      representationNotes: input.representationNotes || null,
+      expressionNotes: input.expressionNotes || null,
+      engagementNotes: input.engagementNotes || null,
       evidenceRequested: input.evidenceRequested || null,
       scheduledDate: input.scheduledDate || null,
     })

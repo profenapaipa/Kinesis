@@ -122,6 +122,39 @@ export default async function SubjectPlanningPage({ params }: PageProps) {
                   </p>
                 </div>
 
+                {(plan.representationNotes || plan.expressionNotes || plan.engagementNotes) && (
+                  <>
+                    <Separator />
+                    <div className="flex flex-col gap-3 rounded-lg bg-muted/50 p-3">
+                      <p className="text-sm font-medium">Diseño universal para todo el curso</p>
+                      {plan.representationNotes && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Más de una forma de presentar
+                          </p>
+                          <p className="text-sm">{plan.representationNotes}</p>
+                        </div>
+                      )}
+                      {plan.expressionNotes && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Más de una forma de expresar lo aprendido
+                          </p>
+                          <p className="text-sm">{plan.expressionNotes}</p>
+                        </div>
+                      )}
+                      {plan.engagementNotes && (
+                        <div>
+                          <p className="text-xs font-medium text-muted-foreground">
+                            Cómo se sostiene el interés
+                          </p>
+                          <p className="text-sm">{plan.engagementNotes}</p>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                )}
+
                 {plan.resources.length > 0 && (
                   <>
                     <Separator />

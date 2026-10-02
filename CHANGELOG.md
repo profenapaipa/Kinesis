@@ -43,6 +43,15 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - `lib/testGenerator.ts` adaptado al modelo real (instrucciones en texto
     libre en vez de sub-actividades estructuradas).
   - Eliminado `components/FileUploadDropzone.tsx` (sin persistencia real).
+- Fase 4.1 — Diseño Universal de Aprendizaje (DUA) y reencuadre del modelo VAK:
+  - `activities` gana 3 campos opcionales (representación/expresión/
+    participación) capturados al crear la actividad, no generados después.
+  - Nuevo `docs/HOJA_DE_RUTA.md` como documento vivo de fases.
+
+### Changed
+- `app/padre/page.tsx` y `app/estudiantes/[studentId]/page.tsx` ya no usan
+  el estilo de aprendizaje (VAK) como encabezado prescriptivo — se presenta
+  como preferencia, no como regla de capacidad.
 
 ### Security
 - Fase 1: se retiraron `diagnosis`, `responsibleProfessional` y `lastReview`

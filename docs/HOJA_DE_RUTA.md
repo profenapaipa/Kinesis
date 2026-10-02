@@ -1,0 +1,55 @@
+# Hoja de ruta — Planeación Inclusiva PIAR
+
+Documento vivo. Se actualiza cada vez que se completa o se replantea una fase — ver `docs/BITACORA_DESARROLLO.md` para el detalle técnico de cada una y `CHANGELOG.md` para el registro formal de cambios.
+
+## Estado por fase
+
+| Fase | Nombre | Estado |
+|---|---|---|
+| 0 | Gobernanza, configuración de repositorio y bitácoras | ✅ Completa |
+| 1 | Migración de mock data a BD real (estudiante y padre) | ✅ Completa |
+| 2 | Roster real del docente y cierre de fuga de diagnóstico | ✅ Completa |
+| 3 | Vínculo acudiente-estudiante | ✅ Completa |
+| 4 | Planeación de clase real sobre `activities` | ✅ Completa |
+| 4.1 | Diseño Universal de Aprendizaje (DUA) en la creación de actividad + reencuadre del modelo VAK | ✅ Completa |
+| 5 | Generador de ajustes individuales focalizados (reenfocada — ver más abajo) | ⏳ Pendiente |
+| 6 | Seguimiento pedagógico y avance | ⏳ Pendiente |
+| 7 | Equipo de apoyo / orientador (nueva) | 📝 Planeada, pendiente de confirmar alcance de acceso clínico |
+| 8 | Pulido administrativo | ⏳ Pendiente |
+| 9 | Calidad, retiro de mock data y despliegue | ⏳ Pendiente |
+| — | Diseño UX/UI (pista paralela, no bloquea las anteriores) | 🎨 En curso |
+
+## Replanteamiento pedagógico (2026-10-02)
+
+Se hizo una auditoría de la arquitectura contra el marco DUA (CAST), el Decreto 1421 de 2017 (MEN, regula el PIAR en Colombia) y evidencia de ciencia cognitiva. Resultado: 3 decisiones estratégicas confirmadas por el usuario que cambian el resto de la hoja de ruta.
+
+### 1. Fase 5 pasa de "generador reactivo" a "ajustes focalizados" (ya ejecutado en Fase 4.1)
+
+El diseño original generaba adaptaciones *después* de crear la actividad, solo para estudiantes con PIAR — el patrón que DUA busca evitar (diseñar para un "estudiante promedio" y parchar después). `activity_adaptations` ya modelaba correctamente los 3 principios DUA (`representationText`/`actionExpressionText`/`participationText` = Representación / Acción y Expresión / Participación), pero a nivel individual.
+
+**Cambio ejecutado:** se agregaron los mismos 3 principios a nivel de *toda la actividad* (`activities.representation_notes`/`expression_notes`/`engagement_notes`, opcionales) directamente en el formulario de creación (Fase 4, ya construido). Esto reduce lo que falta por construir en la Fase 5 real: ya no hace falta generar adaptaciones para cada estudiante con PIAR desde cero — la mayoría del diseño universal ya ocurrió una sola vez, al crear la actividad. La Fase 5 que queda pendiente es más angosta: ajustes verdaderamente individuales que el diseño universal no alcanza a cubrir.
+
+### 2. El modelo VAK (estilo de aprendizaje visual/auditivo/kinestésico) se reencuadra como preferencia, no como prescripción
+
+La evidencia en ciencia cognitiva no respalda que enseñar según el "estilo preferido" de cada estudiante mejore el aprendizaje — es uno de los mitos educativos más estudiados y refutados. DUA nació en parte como alternativa a esto: ofrecer múltiples canales a todos en vez de clasificar y limitar.
+
+**Cambio ejecutado:** se quitó el uso de `learningStyle` como título/encabezado prescriptivo ("Aprende mejor: Visual") en `app/padre/page.tsx` y `app/estudiantes/[studentId]/page.tsx`. Ahora aparece como una nota secundaria ("Prefiere aprender: Visual — es una preferencia, no un límite"), y a los docentes se les recuerda explícitamente que el diseño universal ya cubre varios formatos. El campo y la tabla `student_learning_preferences` (autoreportada) no se tocan — seguían bien diseñados desde Fase 1.
+
+### 3. Falta un rol que represente al equipo de apoyo (orientador/docente de apoyo pedagógico)
+
+El Decreto 1421 exige que el PIAR lo defina un equipo interdisciplinario (docente + apoyo pedagógico + familia), no el docente solo. Hoy el sistema tiene 4 roles y el profesional de apoyo solo existe como texto libre dentro de `clinical_info`.
+
+**Confirmado por el usuario, pendiente de ejecutar:** agregar un rol `orientador`. Antes de tocar código hace falta una decisión puntual sobre el alcance de acceso clínico de este rol (ver sección siguiente) — es la única categoría de datos con regla "no negociable" en `CLAUDE.md`, así que se decide explícitamente, no por omisión.
+
+## Pendiente de decisión: alcance del rol `orientador`
+
+- `isTeacherAssignedToCourseSubject`/`isTeacherAssignedToStudentCourse` ya acotan el acceso del docente a *sus* cursos. Para `orientador`, las opciones razonables son:
+  1. **Acceso a nivel de institución** (ve diagnóstico de cualquier estudiante) — coherente con su rol real en un colegio, pero es el acceso más amplio que existiría en todo el sistema.
+  2. **Acceso por asignación explícita** (un admin vincula qué estudiantes lleva cada orientador, similar a `guardian_students`) — más acotado, pero requiere una tabla y UI nuevas.
+- Mientras no se decida, `canViewDiagnosis()` NO debe modificarse — sigue devolviendo `false` para cualquier rol que no sea `docente` asignado.
+
+## Pista paralela: Diseño UX/UI
+
+Diagnóstico: la interfaz actual usa los patrones típicos de "generado sin dirección de diseño" (tarjetas con borde de acento, tipografía funcional sin carácter) — no transmite la calidez que busca una plataforma de educación inclusiva para niños y familias.
+
+Siguiente paso acordado: bocetar 2-3 direcciones visuales de bajo detalle (antes de comprometerse a una paleta) para que el usuario elija antes de construir el sistema de diseño completo.

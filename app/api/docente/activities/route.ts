@@ -20,6 +20,9 @@ export async function POST(request: Request) {
       objective: body.objective,
       instructions: body.instructions,
       resources: Array.isArray(body.resources) ? body.resources : [],
+      representationNotes: body.representationNotes || undefined,
+      expressionNotes: body.expressionNotes || undefined,
+      engagementNotes: body.engagementNotes || undefined,
       evidenceRequested: body.evidenceRequested || undefined,
       scheduledDate: body.scheduledDate || undefined,
     });

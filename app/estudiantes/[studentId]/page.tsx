@@ -65,16 +65,24 @@ export default async function StudentDetailPage({ params }: PageProps) {
       {pedagogical ? (
         <Card>
           <CardHeader>
-            <CardTitle>
-              {pedagogical.learningStyle
-                ? `Aprende mejor: ${LEARNING_STYLE_LABEL[pedagogical.learningStyle]}`
-                : "PIAR activo"}
-            </CardTitle>
+            <CardTitle>PIAR activo</CardTitle>
             <CardDescription>
               Plan Individual de Ajustes Razonables — resumen pedagógico
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-5">
+            {pedagogical.learningStyle && (
+              <p className="text-sm text-muted-foreground">
+                Prefiere aprender:{" "}
+                <span className="font-medium text-foreground">
+                  {LEARNING_STYLE_LABEL[pedagogical.learningStyle]}
+                </span>{" "}
+                — úsalo como una señal de motivación, no como regla para
+                limitar el formato de tus actividades: el diseño universal
+                (ver Planeación) ya ofrece varios formatos a todo el curso.
+              </p>
+            )}
+
             {pedagogical.effectiveSupports.length > 0 && (
               <div>
                 <p className="text-sm font-medium">Ajustes aplicados en clase</p>

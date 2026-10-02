@@ -32,6 +32,9 @@ export function CreateActivityForm({
   const [objective, setObjective] = useState("");
   const [instructions, setInstructions] = useState("");
   const [resources, setResources] = useState("");
+  const [representationNotes, setRepresentationNotes] = useState("");
+  const [expressionNotes, setExpressionNotes] = useState("");
+  const [engagementNotes, setEngagementNotes] = useState("");
   const [evidenceRequested, setEvidenceRequested] = useState("");
   const [scheduledDate, setScheduledDate] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -61,6 +64,9 @@ export function CreateActivityForm({
             .split("\n")
             .map((line) => line.trim())
             .filter(Boolean),
+          representationNotes: representationNotes.trim() || undefined,
+          expressionNotes: expressionNotes.trim() || undefined,
+          engagementNotes: engagementNotes.trim() || undefined,
           evidenceRequested: evidenceRequested.trim() || undefined,
           scheduledDate: scheduledDate || undefined,
         }),
@@ -74,6 +80,9 @@ export function CreateActivityForm({
       setObjective("");
       setInstructions("");
       setResources("");
+      setRepresentationNotes("");
+      setExpressionNotes("");
+      setEngagementNotes("");
       setEvidenceRequested("");
       setScheduledDate("");
       router.refresh();
@@ -161,6 +170,51 @@ export function CreateActivityForm({
               required
               className={TEXTAREA_CLASS}
             />
+          </div>
+
+          <div className="flex flex-col gap-3 rounded-lg border border-dashed border-border p-3">
+            <p className="text-sm font-medium">
+              Diseño para todo el curso{" "}
+              <span className="font-normal text-muted-foreground">
+                (opcional, pero vale la pena pensarlo antes de crear adaptaciones individuales)
+              </span>
+            </p>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm text-muted-foreground" htmlFor="representationNotes">
+                ¿Cómo vas a presentar el contenido de más de una forma? (texto, imagen, video, material concreto...)
+              </label>
+              <textarea
+                id="representationNotes"
+                value={representationNotes}
+                onChange={(event) => setRepresentationNotes(event.target.value)}
+                rows={2}
+                className={TEXTAREA_CLASS}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm text-muted-foreground" htmlFor="expressionNotes">
+                ¿De qué formas distintas podrán mostrar lo que aprendieron? (oral, escrito, dibujo, maqueta...)
+              </label>
+              <textarea
+                id="expressionNotes"
+                value={expressionNotes}
+                onChange={(event) => setExpressionNotes(event.target.value)}
+                rows={2}
+                className={TEXTAREA_CLASS}
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm text-muted-foreground" htmlFor="engagementNotes">
+                ¿Cómo vas a despertar o sostener el interés? (elección de tema, trabajo en equipo, relevancia real...)
+              </label>
+              <textarea
+                id="engagementNotes"
+                value={engagementNotes}
+                onChange={(event) => setEngagementNotes(event.target.value)}
+                rows={2}
+                className={TEXTAREA_CLASS}
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">

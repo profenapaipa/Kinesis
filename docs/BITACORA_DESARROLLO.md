@@ -59,6 +59,60 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-10-02] — Fase 4.1: Diseño Universal de Aprendizaje + reencuadre VAK
+
+**Fase activa:** Fase 4.1 — Replanteamiento pedagógico (DUA-primero) y ajuste del modelo VAK
+
+### Cambios implementados
+- `db/schema.ts` + migración `0001_bent_hannibal_king.sql`: nuevas columnas
+  opcionales en `activities` — `representation_notes`, `expression_notes`,
+  `engagement_notes` (los 3 principios DUA aplicados a toda la actividad,
+  no a un estudiante puntual).
+- `lib/data/activities.ts`, `app/api/docente/activities/route.ts`,
+  `components/CreateActivityForm.tsx`: los 3 campos se capturan (opcionales,
+  con preguntas guía) y se muestran en `app/planeacion/[subjectId]/page.tsx`.
+- `app/padre/page.tsx` y `app/estudiantes/[studentId]/page.tsx`: se retiró
+  el uso de `learningStyle` como título/encabezado prescriptivo ("Aprende
+  mejor: Visual"). Ahora es una nota secundaria enmarcada como preferencia,
+  no como regla de capacidad.
+- Nuevo `docs/HOJA_DE_RUTA.md`: documento vivo con el estado de fases y el
+  replanteamiento pedagógico (antes esto solo vivía en el archivo de plan
+  efímero de Claude y en el chat).
+
+### Decisiones de arquitectura
+- Se reenfocó la Fase 5 (generador de adaptaciones) de reactiva a
+  DUA-primero: el diseño universal ocurre una vez, al crear la actividad
+  (Fase 4, ampliada aquí); lo que falta en Fase 5 se reduce a ajustes
+  verdaderamente individuales. Detalle completo en `docs/HOJA_DE_RUTA.md`.
+- El modelo VAK (`learningStyle`) se reencuadra como señal de preferencia/
+  motivación, no como criterio para decidir formato — la ciencia cognitiva
+  no respalda usarlo de forma prescriptiva. No se tocó el esquema ni
+  `student_learning_preferences` (ya estaba bien diseñado como autoreporte).
+- `lib/adaptationEngine.ts` (el motor viejo basado en el `Student` mock,
+  usado solo por `app/generador/page.tsx`) deliberadamente NO se tocó en
+  esta fase — está destinado a reemplazarse completo en la Fase 5
+  reenfocada, no tenía sentido parcharlo dos veces.
+- Se confirmó agregar un rol `orientador` (equipo de apoyo pedagógico, por
+  Decreto 1421) pero se pospuso su implementación: el alcance de acceso a
+  `clinical_info` para ese rol es una decisión explícita pendiente, dado
+  que es la única regla "no negociable" del proyecto.
+
+### Hallazgo durante la verificación
+- Un `npm run dev` arrancado con caché de Turbopack (`.next/`) de una
+  sesión anterior sirvió una versión compilada vieja de
+  `lib/data/activities.ts` — los 3 campos DUA nuevos no se persistían pese
+  a que el código y la migración eran correctos (confirmado insertando
+  directo con Drizzle vía `tsx`, sin pasar por el servidor). Se resolvió
+  borrando `.next/` y reiniciando. Anotado por si se repite: ante un campo
+  nuevo que "no se guarda" pero el código se ve bien, limpiar `.next/`
+  antes de seguir depurando.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-10-02] — Fase 4: Planeación de clase real sobre `activities`
 
 **Fase activa:** Fase 4 — Planeación de clase real
