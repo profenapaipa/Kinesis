@@ -18,6 +18,7 @@ const ROLE_OPTIONS: Array<{ value: Role; label: string }> = [
   { value: "docente", label: "Profesor" },
   { value: "estudiante", label: "Estudiante" },
   { value: "padre", label: "Padre / Madre" },
+  { value: "orientador", label: "Orientador/a (equipo de apoyo)" },
 ];
 
 export function CreateUserForm() {

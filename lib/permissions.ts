@@ -21,24 +21,62 @@ export type ResourceCategory =
 export type AccessLevel = "no" | "ver" | "crear_editar" | "parcial" | "resumen";
 
 const MATRIX: Record<ResourceCategory, Record<Role, AccessLevel>> = {
-  datos_basicos: { administrador: "crear_editar", docente: "ver", estudiante: "ver", padre: "ver" },
-  curso: { administrador: "crear_editar", docente: "ver", estudiante: "ver", padre: "ver" },
-  actividades: { administrador: "ver", docente: "crear_editar", estudiante: "ver", padre: "ver" },
-  planeacion: { administrador: "ver", docente: "crear_editar", estudiante: "no", padre: "no" },
-  adaptaciones: { administrador: "ver", docente: "crear_editar", estudiante: "parcial", padre: "resumen" },
+  datos_basicos: {
+    administrador: "crear_editar",
+    docente: "ver",
+    estudiante: "ver",
+    padre: "ver",
+    orientador: "ver",
+  },
+  curso: {
+    administrador: "crear_editar",
+    docente: "ver",
+    estudiante: "ver",
+    padre: "ver",
+    orientador: "ver",
+  },
+  actividades: {
+    administrador: "ver",
+    docente: "crear_editar",
+    estudiante: "ver",
+    padre: "ver",
+    orientador: "ver",
+  },
+  planeacion: {
+    administrador: "ver",
+    docente: "crear_editar",
+    estudiante: "no",
+    padre: "no",
+    orientador: "ver",
+  },
+  adaptaciones: {
+    administrador: "ver",
+    docente: "crear_editar",
+    estudiante: "parcial",
+    padre: "resumen",
+    orientador: "crear_editar",
+  },
   seguimiento_pedagogico: {
     administrador: "ver",
     docente: "crear_editar",
     estudiante: "parcial",
     padre: "resumen",
+    orientador: "crear_editar",
   },
   observaciones_docentes: {
     administrador: "no", // "Restringido" para admin — ver nota de diagnóstico/PIAR abajo
     docente: "crear_editar",
     estudiante: "no",
     padre: "no",
+    orientador: "no", // son notas privadas del docente, no del equipo de apoyo
   },
-  configuracion: { administrador: "crear_editar", docente: "no", estudiante: "no", padre: "no" },
+  configuracion: {
+    administrador: "crear_editar",
+    docente: "no",
+    estudiante: "no",
+    padre: "no",
+    orientador: "no",
+  },
 };
 
 export function accessLevel(role: Role, category: ResourceCategory): AccessLevel {
@@ -95,10 +133,17 @@ export async function isTeacherAssignedToStudentCourse(
 // concreto. Principio de mínimo privilegio: el administrador NO tiene acceso
 // por defecto (sin atajo de "admin ve todo"); el docente solo si está
 // asignado al curso de ese estudiante.
+//
+// "orientador" es la única excepción deliberada a "sin atajos": el equipo de
+// apoyo pedagógico (Decreto 1421 de 2017) tiene acceso institucional
+// completo, sin importar el curso — es justamente su función en el colegio.
+// Esta es la ÚNICA función del proyecto que debe otorgar ese acceso amplio;
+// ningún otro lugar del código debe replicar esta lógica.
 export async function canViewDiagnosis(
   session: Session,
   studentUserId: string
 ): Promise<boolean> {
+  if (session.role === "orientador") return true;
   if (session.role === "docente") {
     return isTeacherAssignedToStudentCourse(session.userId, studentUserId);
   }

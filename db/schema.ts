@@ -24,7 +24,7 @@ export const users = sqliteTable("users", {
   passwordHash: text("password_hash").notNull(),
   fullName: text("full_name").notNull(),
   role: text("role", {
-    enum: ["administrador", "docente", "estudiante", "padre"],
+    enum: ["administrador", "docente", "estudiante", "padre", "orientador"],
   }).notNull(),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
   mustChangePassword: integer("must_change_password", { mode: "boolean" })

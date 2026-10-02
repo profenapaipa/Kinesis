@@ -14,7 +14,7 @@ Documento vivo. Se actualiza cada vez que se completa o se replantea una fase �
 | 4.1 | Diseño Universal de Aprendizaje (DUA) en la creación de actividad + reencuadre del modelo VAK | ✅ Completa |
 | 5 | Generador de ajustes individuales focalizados (reenfocada — ver más abajo) | ⏳ Pendiente |
 | 6 | Seguimiento pedagógico y avance | ⏳ Pendiente |
-| 7 | Equipo de apoyo / orientador (nueva) | 📝 Planeada, pendiente de confirmar alcance de acceso clínico |
+| 7 | Equipo de apoyo / orientador (nueva) | ✅ Completa (acceso institucional completo, confirmado) |
 | 8 | Pulido administrativo | ⏳ Pendiente |
 | 9 | Calidad, retiro de mock data y despliegue | ⏳ Pendiente |
 | — | Diseño UX/UI (pista paralela, no bloquea las anteriores) | 🎨 En curso |
@@ -39,14 +39,14 @@ La evidencia en ciencia cognitiva no respalda que enseñar según el "estilo pre
 
 El Decreto 1421 exige que el PIAR lo defina un equipo interdisciplinario (docente + apoyo pedagógico + familia), no el docente solo. Hoy el sistema tiene 4 roles y el profesional de apoyo solo existe como texto libre dentro de `clinical_info`.
 
-**Confirmado por el usuario, pendiente de ejecutar:** agregar un rol `orientador`. Antes de tocar código hace falta una decisión puntual sobre el alcance de acceso clínico de este rol (ver sección siguiente) — es la única categoría de datos con regla "no negociable" en `CLAUDE.md`, así que se decide explícitamente, no por omisión.
+**Ejecutado:** se agregó el rol `orientador` con acceso institucional completo (opción 1 de las dos evaluadas), confirmado explícitamente por el usuario dado que toca la única regla "no negociable" del proyecto.
 
-## Pendiente de decisión: alcance del rol `orientador`
-
-- `isTeacherAssignedToCourseSubject`/`isTeacherAssignedToStudentCourse` ya acotan el acceso del docente a *sus* cursos. Para `orientador`, las opciones razonables son:
-  1. **Acceso a nivel de institución** (ve diagnóstico de cualquier estudiante) — coherente con su rol real en un colegio, pero es el acceso más amplio que existiría en todo el sistema.
-  2. **Acceso por asignación explícita** (un admin vincula qué estudiantes lleva cada orientador, similar a `guardian_students`) — más acotado, pero requiere una tabla y UI nuevas.
-- Mientras no se decida, `canViewDiagnosis()` NO debe modificarse — sigue devolviendo `false` para cualquier rol que no sea `docente` asignado.
+- `types/index.ts` y `db/schema.ts`: `orientador` agregado a `Role`/`users.role` (sin migración — el enum es solo a nivel de TypeScript en SQLite).
+- `lib/permissions.ts`: fila `orientador` en la matriz; `canViewDiagnosis()` devuelve `true` para `orientador` sin condición de curso — única excepción documentada a "sin atajos", porque es justamente la función real de ese rol.
+- `lib/data/students.ts`: `listAllStudentsForSupport()`/`getStudentProfileForSupport()`/`getPedagogicalSummaryForSupport()` — mismo patrón que las variantes de docente/padre, pero sin el filtro por curso.
+- Reutiliza el roster y la vista de detalle ya construidos en Fase 2 (`app/estudiantes/**`) en vez de construir pantallas nuevas — `requireRole("docente", "orientador")` y una rama según el rol.
+- Usuario de demostración: `orientador.demo` / `orientador123` en `db/seed.ts`.
+- Verificado con servidor real: ve los 10 estudiantes del colegio (no solo los de un curso), ve diagnóstico completo (ej. TDAH de Valentina) sin restricción, un id inventado da 404, y los demás roles no ganaron acceso a `/estudiantes`.
 
 ## Pista paralela: Diseño UX/UI
 

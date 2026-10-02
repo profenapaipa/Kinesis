@@ -14,6 +14,7 @@ const ROLE_LABEL: Record<Role, string> = {
   docente: "Profesor",
   estudiante: "Estudiante",
   padre: "Padre / Madre",
+  orientador: "Orientador/a",
 };
 
 export default async function AdminUsersPage() {

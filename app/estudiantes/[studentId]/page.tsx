@@ -14,7 +14,12 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { requireRole } from "@/lib/auth/session";
 import { getClinicalDiagnosis } from "@/lib/data/clinicalInfo";
-import { getPedagogicalSummaryForTeacher, getStudentProfileForTeacher } from "@/lib/data/students";
+import {
+  getPedagogicalSummaryForSupport,
+  getPedagogicalSummaryForTeacher,
+  getStudentProfileForSupport,
+  getStudentProfileForTeacher,
+} from "@/lib/data/students";
 import { canViewDiagnosis, PermissionError } from "@/lib/permissions";
 
 export const metadata: Metadata = { title: "Estudiante · Planeación Inclusiva" };
@@ -25,17 +30,26 @@ interface PageProps {
 
 export default async function StudentDetailPage({ params }: PageProps) {
   const { studentId } = await params;
-  const session = await requireRole("docente");
+  const session = await requireRole("docente", "orientador");
+  const isSupport = session.role === "orientador";
 
   let profile;
   try {
-    profile = await getStudentProfileForTeacher(session, studentId);
+    profile = isSupport
+      ? await getStudentProfileForSupport(session, studentId)
+      : await getStudentProfileForTeacher(session, studentId);
   } catch (error) {
-    if (error instanceof PermissionError) notFound();
+    // PermissionError (docente no asignado) o "no encontrado" (id inválido,
+    // solo alcanzable por orientador ya que el docente nunca llega aquí sin
+    // antes fallar la verificación de asignación) — ambos son 404 para esta
+    // página, nunca un error sin manejar.
+    if (error instanceof PermissionError || error instanceof Error) notFound();
     throw error;
   }
 
-  const pedagogical = await getPedagogicalSummaryForTeacher(session, studentId);
+  const pedagogical = isSupport
+    ? await getPedagogicalSummaryForSupport(session, studentId)
+    : await getPedagogicalSummaryForTeacher(session, studentId);
   const canSeeDiagnosis = await canViewDiagnosis(session, studentId);
   const diagnosis = canSeeDiagnosis ? await getClinicalDiagnosis(session, studentId) : null;
 

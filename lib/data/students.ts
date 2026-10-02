@@ -267,3 +267,58 @@ export async function getPedagogicalSummaryForTeacher(
   }
   return fetchPedagogicalSummary(studentUserId);
 }
+
+// Acceso institucional del equipo de apoyo (orientador, Decreto 1421): ve
+// TODOS los estudiantes del colegio, no solo los de un curso o docente
+// concreto — mismo alcance amplio que canViewDiagnosis() le da para
+// clinical_info. Sin este nivel, el rol no podría cumplir su función real.
+export async function listAllStudentsForSupport(session: Session): Promise<RosterStudent[]> {
+  if (session.role !== "orientador") throw new PermissionError("datos_basicos");
+
+  const rows = await db
+    .select({
+      studentUserId: users.id,
+      fullName: users.fullName,
+      grade: courses.grade,
+      group: courses.group,
+      hasPedagogicalProfile: pedagogicalProfiles.id,
+    })
+    .from(users)
+    .leftJoin(
+      enrollments,
+      and(eq(enrollments.studentUserId, users.id), eq(enrollments.status, "activa"))
+    )
+    .leftJoin(courses, eq(courses.id, enrollments.courseId))
+    .leftJoin(pedagogicalProfiles, eq(pedagogicalProfiles.studentUserId, users.id))
+    .where(eq(users.role, "estudiante"));
+
+  const byStudent = new Map<string, RosterStudent>();
+  for (const row of rows) {
+    byStudent.set(row.studentUserId, {
+      studentUserId: row.studentUserId,
+      fullName: row.fullName,
+      grade: row.grade ?? "Sin curso",
+      group: row.group ?? "—",
+      hasPedagogicalProfile: Boolean(row.hasPedagogicalProfile),
+    });
+  }
+  return [...byStudent.values()];
+}
+
+export async function getStudentProfileForSupport(
+  session: Session,
+  studentUserId: string
+): Promise<StudentBasicProfile> {
+  if (session.role !== "orientador") throw new PermissionError("datos_basicos");
+  const profile = await fetchStudentBasicProfile(studentUserId);
+  if (!profile) throw new Error("Perfil de estudiante no encontrado.");
+  return profile;
+}
+
+export async function getPedagogicalSummaryForSupport(
+  session: Session,
+  studentUserId: string
+): Promise<PedagogicalSummary | null> {
+  if (session.role !== "orientador") throw new PermissionError("adaptaciones");
+  return fetchPedagogicalSummary(studentUserId);
+}

@@ -3,7 +3,9 @@
 export type Grade = "8°" | "9°" | "10°" | "11°";
 
 // Rol simulado (sin autenticación real): controla qué navegación y vistas se muestran.
-export type Role = "docente" | "estudiante" | "padre" | "administrador";
+// "orientador" = equipo de apoyo pedagógico (Decreto 1421 de 2017) — acceso
+// institucional completo a información clínica, ver canViewDiagnosis().
+export type Role = "docente" | "estudiante" | "padre" | "administrador" | "orientador";
 
 // Modelo VAK(+lectoescritura) de estilo de aprendizaje predominante.
 export type LearningStyle = "visual" | "auditivo" | "kinestesico" | "lectoescritura";

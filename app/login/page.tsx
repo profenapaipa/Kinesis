@@ -20,6 +20,7 @@ const ROLE_HOME: Record<Role, string> = {
   administrador: "/admin",
   estudiante: "/estudiante",
   padre: "/padre",
+  orientador: "/estudiantes",
 };
 
 const FLOATING_BADGES: Array<{ icon: LucideIcon; className: string; delay: string }> = [
@@ -147,7 +148,8 @@ export default function LoginPage() {
         </Card>
 
         <p className="text-center text-xs text-muted-foreground">
-          Demo: admin/admin123 · docente/docente123 · nombre.apellido/estudiante123
+          Demo: admin/admin123 · docente/docente123 · nombre.apellido/estudiante123 ·
+          orientador.demo/orientador123
         </p>
       </div>
     </div>

@@ -26,7 +26,7 @@ import {
 import { hashPassword } from "../lib/auth/password";
 import { mockStudents } from "../lib/mockData";
 import { MEN_SUBJECTS } from "../lib/subjects";
-import type { AdjustmentType } from "../types";
+import type { AdjustmentType, Role } from "../types";
 
 // Barreras observadas de demostración — el modelo anterior no separaba
 // "barrera" de "estrategia", así que para los 3 estudiantes con PIAR se
@@ -129,7 +129,7 @@ async function upsertUser(input: {
   username: string;
   password: string;
   fullName: string;
-  role: "administrador" | "docente" | "estudiante" | "padre";
+  role: Role;
   mustChangePassword?: boolean;
 }) {
   const existing = await db.select().from(users).where(eq(users.username, input.username)).get();
@@ -403,11 +403,21 @@ async function main() {
     }
   }
 
+  console.log("Sembrando orientador de demostración...");
+  await upsertUser({
+    username: "orientador.demo",
+    password: "orientador123",
+    fullName: "Equipo de Apoyo Pedagógico",
+    role: "orientador",
+    mustChangePassword: false,
+  });
+
   console.log("\nListo. Credenciales de demostración:");
-  console.log("  Administrador -> usuario: admin      contraseña: admin123");
-  console.log("  Docente       -> usuario: docente    contraseña: docente123");
+  console.log("  Administrador -> usuario: admin           contraseña: admin123");
+  console.log("  Docente       -> usuario: docente         contraseña: docente123");
   console.log("  Estudiantes   -> usuario: <nombre.apellido>  contraseña: estudiante123");
-  console.log("  Acudiente     -> usuario: padre.demo contraseña: padre123 (vinculado a Valentina Rodríguez Gómez)");
+  console.log("  Acudiente     -> usuario: padre.demo      contraseña: padre123 (vinculado a Valentina Rodríguez Gómez)");
+  console.log("  Orientador/a  -> usuario: orientador.demo contraseña: orientador123 (acceso institucional completo)");
 }
 
 main()

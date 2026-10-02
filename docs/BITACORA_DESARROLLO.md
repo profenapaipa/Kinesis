@@ -59,6 +59,47 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-10-02] — Fase 7: Rol de orientador (equipo de apoyo pedagógico)
+
+**Fase activa:** Fase 7 — Equipo de apoyo / orientador
+
+### Cambios implementados
+- `types/index.ts` + `db/schema.ts`: nuevo rol `orientador` (sin migración,
+  el enum es solo a nivel TypeScript para columnas `text` en SQLite).
+- `lib/permissions.ts`: fila `orientador` en la matriz de permisos;
+  `canViewDiagnosis()` devuelve `true` para `orientador` sin condición de
+  curso — única excepción documentada a "sin atajos" en todo el proyecto.
+- `lib/data/students.ts`: `listAllStudentsForSupport()`,
+  `getStudentProfileForSupport()`, `getPedagogicalSummaryForSupport()` —
+  mismo patrón que las variantes de docente (`...ForTeacher`) y padre
+  (`getChild...`), sin el filtro de curso asignado.
+- `app/estudiantes/page.tsx` y `app/estudiantes/[studentId]/page.tsx`:
+  `requireRole("docente", "orientador")`, con una rama según el rol —
+  se reutiliza el roster y la vista de detalle de Fase 2 en vez de construir
+  pantallas nuevas.
+- `components/AppShell.tsx`, `proxy.ts`, `app/login/page.tsx`,
+  `app/admin/usuarios/page.tsx`, `components/admin/CreateUserForm.tsx`:
+  nav, redirecciones post-login y selector de rol de administración
+  actualizados (varios de estos `Record<Role, ...>` — TypeScript obligó a
+  completarlos, atrapando 2 sitios que se habrían quedado desactualizados).
+- `db/seed.ts`: usuario de demostración `orientador.demo`/`orientador123`.
+
+### Decisiones de arquitectura
+- Se reutilizó el roster/detalle de Fase 2 en vez de construir un
+  `/orientador/**` nuevo: la única diferencia real es el alcance de la
+  consulta (una asignación de curso vs. todo el colegio), no la UI.
+- El `catch` en `app/estudiantes/[studentId]/page.tsx` se amplió de
+  `PermissionError` a cualquier `Error` → `notFound()`, porque la variante
+  de orientador no tiene chequeo de asignación (solo de rol), así que un id
+  inválido llega como "no encontrado" en vez de "sin permiso" — ambos deben
+  verse como 404, nunca como un error sin manejar.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-10-02] — Fase 4.1: Diseño Universal de Aprendizaje + reencuadre VAK
 
 **Fase activa:** Fase 4.1 — Replanteamiento pedagógico (DUA-primero) y ajuste del modelo VAK

@@ -23,6 +23,7 @@ const ROLE_HOME: Record<Role, string> = {
   administrador: "/admin",
   estudiante: "/estudiante",
   padre: "/padre",
+  orientador: "/estudiantes",
 };
 
 function hashToken(token: string): string {

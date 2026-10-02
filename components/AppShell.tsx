@@ -48,6 +48,7 @@ const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   administrador: ADMIN_NAV,
   estudiante: [{ href: "/estudiante", label: "Mi panel", icon: LayoutDashboard }],
   padre: [{ href: "/padre", label: "Mi panel", icon: LayoutDashboard }],
+  orientador: [{ href: "/estudiantes", label: "Estudiantes", icon: Users }],
 };
 
 const ROLE_HOME: Record<Role, string> = {
@@ -55,6 +56,7 @@ const ROLE_HOME: Record<Role, string> = {
   administrador: "/admin",
   estudiante: "/estudiante",
   padre: "/padre",
+  orientador: "/estudiantes",
 };
 
 const ROLE_LABEL: Record<Role, string> = {
@@ -62,6 +64,7 @@ const ROLE_LABEL: Record<Role, string> = {
   administrador: "Administrador",
   estudiante: "Estudiante",
   padre: "Padre / Madre",
+  orientador: "Orientador/a",
 };
 
 function getInitials(name: string): string {

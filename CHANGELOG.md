@@ -47,6 +47,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - `activities` gana 3 campos opcionales (representación/expresión/
     participación) capturados al crear la actividad, no generados después.
   - Nuevo `docs/HOJA_DE_RUTA.md` como documento vivo de fases.
+- Fase 7 — Rol de orientador (equipo de apoyo pedagógico, Decreto 1421):
+  - Nuevo rol `orientador` con acceso institucional completo a estudiantes
+    y diagnóstico clínico (`canViewDiagnosis()`).
+  - `lib/data/students.ts`: `listAllStudentsForSupport()` y variantes
+    `...ForSupport()`, reutilizando el roster/detalle de Fase 2.
+  - Usuario de demostración `orientador.demo`/`orientador123`.
 
 ### Changed
 - `app/padre/page.tsx` y `app/estudiantes/[studentId]/page.tsx` ya no usan
