@@ -55,3 +55,7 @@ data/*.db-journal
 # logs
 *.log
 logs/
+
+# demostración estática para GitHub Pages (scripts/build-demo.mjs)
+/.demo-build/
+/demo-out/

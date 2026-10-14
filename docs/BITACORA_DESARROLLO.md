@@ -23,6 +23,61 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-10-14] — Demostración estática en GitHub Pages + tipografía Nunito
+
+**Fase activa:** Pista de despliegue (demostración) + pista paralela de Diseño UX/UI
+
+### Cambios implementados
+- `scripts/build-demo.mjs`: construye la demostración estática que se publica
+  en GitHub Pages, un sub-sitio por rol (5 builds, cada uno con su `basePath`).
+  No duplica la app: copia el árbol real a `.demo-build/`, siembra una BD
+  ficticia con `db/seed.ts` y solo sustituye `lib/auth/session.ts`, borra
+  `app/api/**`, `app/login/` y `proxy.ts`, e inyecta `generateStaticParams()`.
+- `lib/demo/session.ts`: sesión fija en tiempo de compilación (`DEMO_ROLE`),
+  reemplazo de `lib/auth/session.ts` únicamente dentro del árbol de build.
+- `lib/demo/params.ts`: `generateStaticParams()` de las tres rutas dinámicas,
+  derivado de las mismas funciones de `lib/data/*` que pintan los enlaces.
+- `components/DemoBanner.tsx` + ajustes en `components/AppShell.tsx`: cinta de
+  "modo demostración" con selector de rol, detrás de `NEXT_PUBLIC_DEMO`.
+- `scripts/demo-landing.html` y `scripts/demo-404.html`: portada con un rol por
+  tarjeta y 404 del sitio.
+- `.github/workflows/deploy-demo.yml`: build y despliegue en cada push a `main`.
+- Tipografía y color: Nunito (opción 2 del comparador de `referencias
+  visuales/`) reemplaza a Geist, y `app/globals.css` pasa a dos direcciones de
+  color reales — "Dirección B" en claro y "Dirección C" (turquesa) en oscuro.
+
+### Decisiones de arquitectura
+- **GitHub Pages no puede servir la app real y no se intentó disimularlo.** La
+  app depende de `cookies()`, 21 handlers de API, `proxy.ts` y SQLite en disco;
+  el export estático de Next no admite nada de eso. Lo que se publica es una
+  demostración, rotulada como tal en la portada y en una cinta permanente.
+- **La demostración usa las páginas, `lib/data/*` y `lib/permissions.ts` reales.**
+  En un export estático los Server Components corren durante el build, en Node,
+  así que SQLite funciona mientras compila. Por eso no hay un árbol paralelo de
+  páginas "de demostración" que se desincronice del real.
+- **El aislamiento del diagnóstico se verificó contra el HTML publicado**, no
+  solo por lectura de código: `administrador`, `estudiante` y `padre` no
+  contienen el texto del diagnóstico en ningún archivo generado; `docente`
+  (asignado al curso) y `orientador` sí. `canViewDiagnosis()` siguió siendo la
+  única puerta.
+- **Un build por rol** en vez de un selector de rol en el cliente: sin servidor
+  el rol tiene que quedar fijo al compilar, y enviar los datos de los cinco
+  roles al navegador para filtrarlos ahí habría sido justamente la fuga que el
+  proyecto prohíbe.
+- **Modo oscuro por `prefers-color-scheme`**, no por clase `.dark`: la app no
+  tiene interruptor de tema, así que un `.dark` nunca se activaría. Las
+  utilidades `dark:` ya escritas en los componentes ahora sí funcionan.
+- `fs.cpSync(dir, dir, { recursive: true })` termina el proceso de golpe en Node
+  24 sobre Windows (sin excepción ni código de salida), así que la copia
+  recursiva del script va a mano. Igual con `renameSync`, que puede dar EPERM:
+  se reintenta y, si insiste, copia y borra.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-08-21] — Fase 3: Vínculo acudiente-estudiante
 
 **Fase activa:** Fase 3 — Vínculo acudiente-estudiante

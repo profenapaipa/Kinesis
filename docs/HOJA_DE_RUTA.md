@@ -17,6 +17,7 @@ Documento vivo. Se actualiza cada vez que se completa o se replantea una fase �
 | 7 | Equipo de apoyo / orientador (nueva) | ✅ Completa (acceso institucional completo, confirmado) |
 | 8 | Pulido administrativo | ⏳ Pendiente |
 | 9 | Calidad, retiro de mock data y despliegue | ⏳ Pendiente |
+| — | Demostración pública con datos ficticios (GitHub Pages) | ✅ Completa |
 | — | Diseño UX/UI (pista paralela, no bloquea las anteriores) | 🎨 En curso |
 
 ## Replanteamiento pedagógico (2026-10-02)
@@ -52,4 +53,22 @@ El Decreto 1421 exige que el PIAR lo defina un equipo interdisciplinario (docent
 
 Diagnóstico: la interfaz actual usa los patrones típicos de "generado sin dirección de diseño" (tarjetas con borde de acento, tipografía funcional sin carácter) — no transmite la calidez que busca una plataforma de educación inclusiva para niños y familias.
 
-Siguiente paso acordado: bocetar 2-3 direcciones visuales de bajo detalle (antes de comprometerse a una paleta) para que el usuario elija antes de construir el sistema de diseño completo.
+**Decidido el 2026-10-14** (sobre el comparador `referencias visuales/Opciones de tipografía PIAR.html`, que mostraba 6 opciones en modo claro y oscuro):
+
+- **Tipografía: Nunito** (opción 2), una sola familia para títulos y texto. Terminaciones redondeadas, la más amable y cercana de las comparadas — coherente con que la usen niños y familias, no solo docentes. Títulos en peso 900.
+- **Color: dos direcciones reales**, ya aplicadas en `app/globals.css`:
+  - *Dirección B* en modo claro: fondo hueso (`#fafaf8`), superficies blancas, bordes casi imperceptibles, azul pizarra desaturado (`#5b7088`) como color de acción.
+  - *Dirección C* en modo oscuro: azul noche (`#16222b`), tarjetas un paso más claras (`#1d2e39`) y turquesa (`#3fd9c4`) como único color de acción.
+- El modo oscuro se activa por `prefers-color-scheme`, no por una clase `.dark`: la app no tiene interruptor de tema y la clase nunca se activaba, así que las utilidades `dark:` ya escritas en los componentes estaban muertas.
+
+Siguiente paso: con la tipografía y la paleta fijadas, construir el sistema de diseño completo (densidad, jerarquía de tarjetas, estados vacíos, ilustración). Pendiente de revisar con el estilo nuevo: los pesos de `CardTitle` y los encabezados de sección (`text-lg`), que siguen en 600 y podrían subir.
+
+## Despliegue: demostración estática en GitHub Pages (2026-10-14)
+
+La app real **no puede correr en GitHub Pages**, que solo sirve archivos estáticos: depende de `cookies()`, 21 handlers de API, `proxy.ts` consultando la BD en cada navegación y SQLite en disco — todo en la lista de "no soportado" del export estático de Next.
+
+Lo que se publica es una **demostración navegable con datos ficticios** (`npm run demo:build`, `.github/workflows/deploy-demo.yml`), rotulada como tal en la portada y en una cinta permanente. Un sub-sitio por rol, porque sin servidor el rol tiene que quedar fijo al compilar.
+
+Decisión clave: la demostración usa las páginas, `lib/data/*` y `lib/permissions.ts` **reales**, no copias. En un export estático los Server Components corren durante el build, en Node, así que SQLite funciona mientras compila. Se verificó contra el HTML publicado que `administrador`, `estudiante` y `padre` no contienen el texto del diagnóstico en ningún archivo, y que `docente` (asignado al curso) y `orientador` sí: `canViewDiagnosis()` siguió siendo la única puerta.
+
+Esto **no reemplaza** el despliegue de la Fase 9: para que el colegio la use de verdad hace falta un host con Node y disco persistente (o mover SQLite a libSQL/Turso si se va a serverless).

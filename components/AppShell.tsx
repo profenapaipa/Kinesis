@@ -15,11 +15,18 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { DemoBanner } from "@/components/DemoBanner";
 import { useSession } from "@/components/SessionProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types";
+
+// Modo demostración estática (GitHub Pages, ver scripts/build-demo.mjs): no
+// hay sesión real que cerrar, así que la salida lleva al selector de rol. En
+// el build real `NEXT_PUBLIC_DEMO` no existe y todo esto se elimina del bundle.
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
+const DEMO_ROOT = process.env.NEXT_PUBLIC_DEMO_ROOT ?? "/";
 
 interface NavItem {
   href: string;
@@ -85,7 +92,13 @@ export function AppShell({ children }: { children: ReactNode }) {
   const displayName = session.fullName;
   const roleLabel = ROLE_LABEL[session.role];
 
+  const logoutLabel = IS_DEMO ? "Cambiar de rol" : "Cerrar sesión";
+
   async function handleLogout() {
+    if (IS_DEMO) {
+      window.location.href = DEMO_ROOT;
+      return;
+    }
     await fetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
     router.refresh();
@@ -140,13 +153,15 @@ export function AppShell({ children }: { children: ReactNode }) {
             </div>
             <Button variant="outline" size="sm" onClick={handleLogout} className="justify-start gap-2">
               <LogOut className="size-4" />
-              Cerrar sesión
+              {logoutLabel}
             </Button>
           </div>
         </aside>
 
         {/* Columna principal */}
         <div className="flex min-h-screen flex-1 flex-col md:min-h-0">
+          <DemoBanner />
+
           <header className="sticky top-0 z-40 flex flex-col gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center justify-between gap-3 md:hidden">
               <Link href={ROLE_HOME[session.role]} className="flex items-center gap-2">
@@ -155,7 +170,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </span>
                 <span className="text-sm font-semibold">Planeación Inclusiva</span>
               </Link>
-              <Button variant="ghost" size="icon-sm" onClick={handleLogout} aria-label="Cerrar sesión">
+              <Button variant="ghost" size="icon-sm" onClick={handleLogout} aria-label={logoutLabel}>
                 <LogOut className="size-4" />
               </Button>
             </div>

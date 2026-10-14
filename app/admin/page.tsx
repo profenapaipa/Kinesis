@@ -29,7 +29,7 @@ export default async function AdminDashboardPage() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Resumen institucional</h1>
+        <h1 className="text-2xl font-black tracking-tight">Resumen institucional</h1>
         <p className="text-muted-foreground">
           Vista general de la plataforma. No incluye información clínica ni PIAR
           detallado — eso está restringido según necesidad (ver Seguridad y permisos).
@@ -43,7 +43,7 @@ export default async function AdminDashboardPage() {
             <Card key={tile.label}>
               <CardContent className="flex flex-col gap-2 py-4">
                 <Icon className="size-4 text-primary" />
-                <span className="text-2xl font-semibold tabular-nums">{tile.value}</span>
+                <span className="text-2xl font-extrabold tabular-nums text-primary">{tile.value}</span>
                 <span className="text-xs text-muted-foreground">{tile.label}</span>
               </CardContent>
             </Card>

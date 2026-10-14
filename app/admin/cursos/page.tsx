@@ -26,7 +26,7 @@ export default async function AdminCoursesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Cursos</h1>
+        <h1 className="text-2xl font-black tracking-tight">Cursos</h1>
         <p className="text-muted-foreground">{courses.length} curso(s) creados.</p>
       </div>
 

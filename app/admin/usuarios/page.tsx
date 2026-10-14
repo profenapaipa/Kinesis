@@ -24,7 +24,7 @@ export default async function AdminUsersPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Usuarios</h1>
+        <h1 className="text-2xl font-black tracking-tight">Usuarios</h1>
         <p className="text-muted-foreground">{users.length} usuario(s) registrados.</p>
       </div>
 

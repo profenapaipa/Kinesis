@@ -49,7 +49,7 @@ export default function Home() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">
+        <h1 className="text-2xl font-black tracking-tight">
           Bienvenido/a, docente
         </h1>
         <p className="max-w-2xl text-muted-foreground">
@@ -63,7 +63,7 @@ export default function Home() {
         {stats.map((stat) => (
           <Card key={stat.label}>
             <CardContent className="flex flex-col gap-1 py-4">
-              <span className="text-2xl font-semibold tabular-nums">
+              <span className="text-2xl font-extrabold tabular-nums text-primary">
                 {stat.value}
               </span>
               <span className="text-xs text-muted-foreground">{stat.label}</span>

@@ -53,8 +53,31 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - `lib/data/students.ts`: `listAllStudentsForSupport()` y variantes
     `...ForSupport()`, reutilizando el roster/detalle de Fase 2.
   - Usuario de demostración `orientador.demo`/`orientador123`.
+- Demostración estática publicable en GitHub Pages:
+  - `scripts/build-demo.mjs` (`npm run demo:build`) compila un sub-sitio por
+    rol sobre una base de datos ficticia recién sembrada, reutilizando las
+    páginas, `lib/data/*` y `lib/permissions.ts` reales.
+  - `lib/demo/session.ts` (sesión fija por `DEMO_ROLE`, sin `cookies()`) y
+    `lib/demo/params.ts` (`generateStaticParams()` de las rutas dinámicas).
+  - `components/DemoBanner.tsx`: cinta permanente de "datos ficticios" con
+    selector de rol, activa solo con `NEXT_PUBLIC_DEMO=1`.
+  - `scripts/demo-landing.html` y `scripts/demo-404.html`: portada y 404.
+  - `.github/workflows/deploy-demo.yml`: publicación automática en cada push
+    a `main` (requiere Settings -> Pages -> Source: "GitHub Actions").
 
 ### Changed
+- Tipografía: Nunito (opción 2 del comparador en `referencias visuales/
+  Opciones de tipografía PIAR.html`) reemplaza a Geist como familia única de
+  títulos y texto. `--font-sans` estaba definida de forma circular en
+  `app/globals.css` y la app venía cayendo en la fuente por defecto del
+  navegador.
+- Color: `app/globals.css` pasa a dos direcciones reales — "Dirección B"
+  (clara y serena) en modo claro y "Dirección C" (azul noche con turquesa)
+  en modo oscuro. El modo oscuro ahora responde a `prefers-color-scheme` en
+  vez de a una clase `.dark` que nunca se activaba, así que las utilidades
+  `dark:` ya escritas en los componentes por fin funcionan.
+- Títulos de pantalla en peso 900 y cifras de los tableros con el color de
+  acción, como en la referencia visual elegida.
 - `app/padre/page.tsx` y `app/estudiantes/[studentId]/page.tsx` ya no usan
   el estilo de aprendizaje (VAK) como encabezado prescriptivo — se presenta
   como preferencia, no como regla de capacidad.

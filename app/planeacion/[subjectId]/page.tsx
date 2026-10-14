@@ -50,7 +50,7 @@ export default async function SubjectPlanningPage({ params }: PageProps) {
           >
             <Icon className="size-5" />
           </span>
-          <h2 className="text-xl font-semibold">{subject.name}</h2>
+          <h2 className="text-xl font-bold">{subject.name}</h2>
         </div>
         <Card>
           <CardContent className="py-8 text-center text-sm text-muted-foreground">
@@ -73,7 +73,7 @@ export default async function SubjectPlanningPage({ params }: PageProps) {
           <Icon className="size-5" />
         </span>
         <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-semibold">{subject.name}</h2>
+          <h2 className="text-xl font-bold">{subject.name}</h2>
           <p className="text-sm text-muted-foreground">
             {plans.length > 0
               ? `${plans.length} actividad${plans.length > 1 ? "es" : ""} cargada${

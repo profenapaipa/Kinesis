@@ -15,7 +15,7 @@ export default async function AdminAcademicPeriodsPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Periodos académicos</h1>
+        <h1 className="text-2xl font-black tracking-tight">Periodos académicos</h1>
         <p className="text-muted-foreground">Solo un periodo puede estar activo a la vez.</p>
       </div>
 

@@ -20,7 +20,7 @@ export default async function AdminGuardiansPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Acudientes</h1>
+        <h1 className="text-2xl font-black tracking-tight">Acudientes</h1>
         <p className="text-muted-foreground">
           {links.length} vínculo(s) entre acudiente y estudiante.
         </p>

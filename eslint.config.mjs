@@ -12,6 +12,10 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Salida de la demostración estática (scripts/build-demo.mjs): es código
+    // compilado, no fuente del proyecto.
+    "demo-out/**",
+    ".demo-build/**",
   ]),
 ]);
 

@@ -42,7 +42,7 @@ export function AdaptationGenerator({ plans, students }: AdaptationGeneratorProp
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">Generador de adaptaciones PIAR</h2>
+          <h2 className="text-xl font-bold">Generador de adaptaciones PIAR</h2>
           <p className="text-sm text-muted-foreground">
             Cruce automático entre la planeación seleccionada y los estudiantes
             con PIAR de tu curso.

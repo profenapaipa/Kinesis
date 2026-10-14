@@ -133,7 +133,7 @@ export default async function EstudianteSubjectPage({
         >
           <Icon className="size-5" />
         </span>
-        <h2 className="text-xl font-semibold">{subject.name}</h2>
+        <h2 className="text-xl font-bold">{subject.name}</h2>
       </div>
 
       {!plan ? (

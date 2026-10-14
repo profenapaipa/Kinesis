@@ -15,7 +15,7 @@ export default async function AdminSupportCategoriesPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Categorías de apoyo</h1>
+        <h1 className="text-2xl font-black tracking-tight">Categorías de apoyo</h1>
         <p className="text-muted-foreground">
           Reemplazan el listado fijo de ajustes anterior — el profesor las usa al registrar
           apoyos efectivos y seguimiento de cada estudiante.

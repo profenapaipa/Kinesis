@@ -65,7 +65,7 @@ export default async function StudentDetailPage({ params }: PageProps) {
 
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-semibold">{profile.fullName}</h2>
+          <h2 className="text-xl font-bold">{profile.fullName}</h2>
           <p className="text-sm text-muted-foreground">
             {profile.grade ?? "Sin curso activo"}
             {profile.group ? ` · ${profile.group}` : ""}

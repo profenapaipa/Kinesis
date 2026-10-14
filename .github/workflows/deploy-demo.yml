@@ -1,0 +1,70 @@
+# Publica la demostración estática en GitHub Pages.
+#
+# Requisito que solo se hace una vez, a mano: en el repositorio, Settings ->
+# Pages -> "Build and deployment" -> Source: "GitHub Actions". Sin eso el
+# despliegue falla aunque el build salga bien.
+#
+# Lo que se publica NO es la aplicación real: es una demostración navegable
+# con datos ficticios, porque GitHub Pages no ejecuta Node ni SQLite. Ver el
+# comentario de cabecera de scripts/build-demo.mjs.
+name: Publicar demostración en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Un despliegue a la vez, sin cancelar el que ya está en curso.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v4
+
+      - name: Preparar Node
+        uses: actions/setup-node@v4
+        with:
+          # Misma versión mayor que el entorno de desarrollo local.
+          node-version: 24
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      # Entrega base_path ("/nombre-del-repo" en un sitio de proyecto, "/" si
+      # algún día se sirve en la raíz del dominio). No se le pasa
+      # static_site_generator a propósito: no queremos que toque next.config.
+      - name: Configurar GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Construir la demostración
+        run: npm run demo:build
+        env:
+          DEMO_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - name: Subir el sitio
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: demo-out
+
+  desplegar:
+    needs: construir
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.despliegue.outputs.page_url }}
+    steps:
+      - name: Desplegar en GitHub Pages
+        id: despliegue
+        uses: actions/deploy-pages@v4

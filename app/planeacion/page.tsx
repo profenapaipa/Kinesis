@@ -19,7 +19,7 @@ export default async function PlaneacionPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-semibold">Planeación por asignatura</h2>
+        <h2 className="text-xl font-bold">Planeación por asignatura</h2>
         <p className="text-sm text-muted-foreground">
           Selecciona una asignatura para cargar o revisar tu planeación de
           clase, organizadas según las áreas obligatorias y fundamentales del
