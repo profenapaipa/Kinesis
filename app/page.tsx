@@ -17,10 +17,13 @@ import {
 } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { requireRole } from "@/lib/auth/session";
+import { BRAND } from "@/lib/brand";
 import { getTeacherDashboard, type DashboardActivity, type TeacherDashboard } from "@/lib/data/teacherDashboard";
 import { getSubject, MEN_SUBJECTS } from "@/lib/subjects";
 
-export const metadata: Metadata = { title: "Inicio" };
+// `absolute` porque esta página comparte segmento con app/layout.tsx, y la
+// plantilla "%s · Kinesis" solo se aplica a los segmentos hijos.
+export const metadata: Metadata = { title: { absolute: `Inicio · ${BRAND.name}` } };
 
 const DUA_LABEL = ["Sin DUA", "1 de 3 principios", "2 de 3 principios", "DUA completo"];
 

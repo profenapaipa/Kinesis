@@ -63,7 +63,10 @@ Los crea `npm run db:seed`. **Todos los estudiantes son ficticios.**
 ## Demostración pública
 
 Hay una demostración navegable publicada en GitHub Pages con **datos
-ficticios**. Se construye con `npm run demo:build` (sale en `demo-out/`) y se
+ficticios**: **https://profenapaipa.github.io/Kinesis/**. Desde que el
+repositorio se renombró a `Kinesis`, la dirección anterior
+(`/planeacion-inclusiva-piar/`) da 404, porque GitHub Pages no la redirige.
+Se construye con `npm run demo:build` (sale en `demo-out/`) y se
 publica sola en cada push a `main`.
 
 **No es la aplicación en uso, y la diferencia importa:** GitHub Pages solo

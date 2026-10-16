@@ -46,9 +46,9 @@ const BUILD_DIR = join(ROOT, ".demo-build");
 const OUT_DIR = join(ROOT, "demo-out");
 
 // Ruta en la que GitHub Pages sirve el repositorio: para
-// https://usuario.github.io/planeacion-inclusiva-piar/ es
-// "/planeacion-inclusiva-piar". El workflow la calcula del nombre del repo.
-const BASE_PATH = (process.env.DEMO_BASE_PATH ?? "/planeacion-inclusiva-piar").replace(/\/+$/, "");
+// https://usuario.github.io/Kinesis/ es
+// "/Kinesis". El workflow la calcula del nombre del repo.
+const BASE_PATH = (process.env.DEMO_BASE_PATH ?? "/Kinesis").replace(/\/+$/, "");
 
 // Un sub-sitio por rol. `keep` son las entradas de `app/` que ese rol puede
 // ver, derivadas de NAV_BY_ROLE/ROLE_HOME en components/AppShell.tsx. El resto
