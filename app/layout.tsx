@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 // Cada página declara solo su sección ("Estudiantes") y la plantilla le
-// agrega la marca: "Estudiantes · Andamio".
+// agrega la marca: "Estudiantes · Kinesis".
 export const metadata: Metadata = {
   title: {
     default: `${BRAND.name} · ${BRAND.descriptor}`,

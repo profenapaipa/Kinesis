@@ -1,33 +1,39 @@
-# Identidad de marca — Andamio
+# Identidad de marca — Kinesis
 
 Documento de referencia para cualquiera que escriba una pantalla, un texto o una pieza de difusión del proyecto. La implementación vive en `lib/brand.ts` (nombre y textos), `components/brand/BrandMark.tsx` (logo) y `app/globals.css` (color y tipografía).
 
-> **Estado: propuesta.** El nombre lo decide el Equipo 3 (Camila Segura y Santiago Vanegas). Si eligen otro, se cambia en `lib/brand.ts` y `app/icon.svg` y el resto de la app lo toma solo. Ver "Alternativas" al final.
+> **Estado: decidido el 2026-10-16.** El nombre es *Kinesis*. Ese mismo día se había propuesto *Andamio* y se reemplazó por decisión del proyecto. Para cambiarlo otra vez basta tocar `lib/brand.ts` y `app/icon.svg`: el resto de la app lo toma solo.
 
 ## 1. El nombre
 
-**Andamio** · *Planeación inclusiva con PIAR y DUA*
+**Kinesis** · *Planeación inclusiva con PIAR y DUA*
 
-En la sesión del 9 y 10 de septiembre el semillero pidió nombres propios, no descripciones, y con una razón que se pueda defender. "Planeación Inclusiva PIAR" describe lo que hace la app, pero nadie se acuerda de un nombre así. La razón de este:
+*Kínesis* (κίνησις) es la palabra griega para **movimiento**. En la sesión del 9 y 10 de septiembre el semillero pidió nombres propios, no descripciones, y con una razón que se pueda defender. Esta es la de Kinesis:
 
-- **Un andamio es un apoyo que sostiene mientras se construye y se quita cuando la obra ya se sostiene sola.** Eso mismo es un ajuste razonable: no se queda para siempre, se revisa y se retira cuando el estudiante ya no lo necesita. El Decreto 1421 de 2017 pide justamente eso, revisar el PIAR de forma periódica.
-- **En pedagogía la palabra ya tiene ese sentido.** Wood, Bruner y Ross (1976) llamaron *andamiaje* (*scaffolding*) al apoyo que un adulto le da a un niño y que va retirando a medida que el niño avanza. Los docentes la reconocen.
-- **No señala a nadie.** No menciona discapacidad ni diagnóstico. Una familia puede decir "lo vemos en Andamio" sin exponer a su hijo o hija, y el estudiante puede usar la app frente a sus compañeros sin que lo marque.
+- **El PIAR no es una etiqueta: es un plan que se mueve.** El Decreto 1421 de 2017 exige revisarlo de forma periódica, porque el estudiante cambia y sus apoyos también tienen que cambiar. Kinesis nombra ese avance, no una condición fija.
+- **Inclusión es quitar lo que frena.** El Diseño Universal de Aprendizaje no busca "arreglar" al estudiante: busca quitar las barreras de la clase para que todos avancen. La app hace eso con la información, que deja de estar quieta en una carpeta y circula entre el docente, el equipo de apoyo y la familia.
+- **No señala a nadie.** No menciona discapacidad ni diagnóstico. Una familia puede decir "lo vemos en Kinesis" sin exponer a su hijo o hija.
+- **Es corto y se pronuncia igual en español y en inglés**, lo que ayuda si el proyecto llega a otros colegios o a eventos fuera del país.
 
-Riesgo conocido: "Andamio" fue uno de los seis *ejemplos* de la sesión del 9 y 10 de septiembre (con Pulpo, Micelio, Fragua, Órbita y Bitácora). Si el semillero lo eligió como nombre propio, hay que escoger otro para no confundir el proyecto con el semillero.
+### Dos riesgos y cómo se manejan
+
+1. **"Kinesis" suena a "kinestésico".** El proyecto dejó explícitamente de usar el modelo VAK (visual, auditivo, kinestésico) como prescripción, porque la evidencia no lo respalda (ver el replanteamiento en `docs/HOJA_DE_RUTA.md`). Por eso la marca **nunca** se asocia a "aprender haciendo" ni a un estilo de aprendizaje: el movimiento del nombre es el **progreso**, no un canal sensorial. El lema lo fija: *"Aprender en movimiento: apoyos que avanzan con cada estudiante."* También puede evocar *kinesiología* (fisioterapia). Por eso conviene presentar siempre el nombre junto al descriptor.
+2. **Otras marcas ya usan el nombre.** Por ejemplo Amazon Kinesis (un servicio de AWS) y Kinesis Corporation (teclados ergonómicos). Para un proyecto escolar sin fines comerciales no es un problema inmediato. Si Kinesis se va a ofrecer a otros colegios, antes hay que consultar la base de marcas de la Superintendencia de Industria y Comercio (SIC) en las clases de software y de servicios educativos.
 
 ## 2. El logo
 
-Una **"A" dibujada como andamio de tijera**: dos patas que se apoyan una en la otra y dos travesaños para subir. Es una sola forma, en dos colores y sin sombras, que es la regla de logo del semillero ("si al achicarlo al tamaño de una uña todavía se entiende, sirve").
+Una **"K" en movimiento**: el brazo superior sigue de largo como una trayectoria y termina en un punto, el estudiante que avanza. Es una sola forma, en dos colores y sin sombras: la regla de logo del semillero ("si al achicarlo al tamaño de una uña todavía se entiende, sirve"). Se comprobó renderizándolo a 16 px.
 
 | Uso | Archivo | Colores |
 |---|---|---|
-| Dentro de la app | `components/brand/BrandMark.tsx` | Sigue el tema: `--primary` de fondo, `--primary-foreground` de trazo |
+| Dentro de la app | `components/brand/BrandMark.tsx` | Sigue el tema: `--primary` de fondo, `--primary-foreground` de trazo y punto |
 | Pestaña del navegador | `app/icon.svg` | Fijos: pizarra `#5b7088` y blanco en modo claro, turquesa `#3fd9c4` y `#08201d` en modo oscuro |
+| Portada de la demostración | `scripts/demo-landing.html` | Color de acción de la portada y blanco |
 
 Reglas:
 - No se estira, no se gira, no se le agregan sombras ni degradados.
-- El espacio libre alrededor del logo es, como mínimo, el grosor de un travesaño.
+- El punto no se separa de la K ni se usa solo como logo.
+- El espacio libre alrededor del logo es, como mínimo, el grosor del trazo.
 - Tamaño mínimo: 16 px, el de la pestaña del navegador.
 - Al lado del logo va el nombre en Nunito 900 (`BrandLockup`). El descriptor solo se agrega donde quepa sin apretar.
 
@@ -57,7 +63,7 @@ La paleta ya estaba definida (2026-10-14, ver `docs/HOJA_DE_RUTA.md`). Lo que ag
 
 ## 5. Voz y tono
 
-Andamio le habla a cuatro públicos, pero siempre con la misma voz: **cercana y concreta, sin tecnicismos**. Cambia el registro; el respeto es el mismo para todos.
+Kinesis le habla a cuatro públicos, pero siempre con la misma voz: **cercana y concreta, sin tecnicismos**. Cambia el registro; el respeto es el mismo para todos.
 
 | Público | Registro | Sí | No |
 |---|---|---|---|
@@ -81,10 +87,10 @@ Lo que tienen en común todas las pantallas de inicio (`components/panel/Panel.t
 4. **Estados vacíos que enseñan.** Un panel vacío explica qué va a aparecer ahí y cómo se consigue.
 5. **Accesible de entrada:** contraste AA, `aria-current` en la navegación, foco visible y animaciones que respetan `prefers-reduced-motion`.
 
-## Alternativas, si el equipo prefiere otro nombre
+## Historial del nombre
 
-| Nombre | La razón en dos líneas |
-|---|---|
-| **Puente** | Une lo que planea el docente con lo que necesita cada estudiante. Es más genérico y ya hay muchos productos con ese nombre. |
-| **Tejido** | El PIAR lo arman entre varios: docente, apoyo y familia (Decreto 1421). Se entiende menos a primera vista. |
-| **Brújula** | Orienta sin decidir por nadie. Es frecuente en educación y diferencia poco. |
+| Fecha | Nombre | Por qué cambió |
+|---|---|---|
+| hasta el 2026-10-15 | Planeación Inclusiva PIAR | Describía lo que hace la app, pero no era un nombre propio |
+| 2026-10-16 | Andamio (propuesta) | El apoyo que se retira cuando ya no hace falta. Además, era uno de los ejemplos de la sesión del 9 y 10 de septiembre |
+| 2026-10-16 | **Kinesis** | Decisión del proyecto: el aprendizaje y el PIAR como algo en movimiento |

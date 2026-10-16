@@ -1,6 +1,6 @@
 # De proyecto de semillero a solución sostenible
 
-Qué es Andamio, qué hace falta para que un colegio lo use de verdad y para que siga funcionando cuando el equipo que lo creó se gradúe. Es un documento vivo: complementa `docs/HOJA_DE_RUTA.md` (qué se construye) con el porqué y el para quién.
+Qué es Kinesis, qué hace falta para que un colegio lo use de verdad y para que siga funcionando cuando el equipo que lo creó se gradúe. Es un documento vivo: complementa `docs/HOJA_DE_RUTA.md` (qué se construye) con el porqué y el para quién.
 
 > **Estado de los datos: todos ficticios.** Ningún estudiante, diagnóstico, PIAR, planeación ni usuario de la base de datos corresponde a una persona real, incluidos los registros que el equipo creó a mano para probar. La app lo dice en cada pantalla con una cinta de "Entorno de pruebas" (`lib/dataMode.ts`), y esa cinta solo se apaga a propósito, después de cumplir la lista de la sección 5.
 
@@ -25,7 +25,7 @@ En Colombia, el Decreto 1421 de 2017 obliga a cada colegio a construir un **PIAR
 
 ## 3. La propuesta de valor
 
-| Para | Andamio le permite | En vez de |
+| Para | Kinesis le permite | En vez de |
 |---|---|---|
 | **Docente** | Diseñar la actividad una vez para todo el curso (DUA) y ver al lado qué necesita cada estudiante con PIAR | Buscar el PIAR en una carpeta y adaptar estudiante por estudiante después de clase |
 | **Orientador/a** | Tener a todos los estudiantes del colegio, con su diagnóstico, en un solo lugar con acceso controlado | Hojas de cálculo compartidas con información clínica abierta a cualquiera |
@@ -42,7 +42,7 @@ El criterio del Formato 1 ("se les facilita organizar las actividades") se puede
 | Indicador | Cómo se mide | Dónde está el dato |
 |---|---|---|
 | Actividades con DUA completo | % de actividades con los 3 principios escritos (ya visible en el inicio del docente) | `activities.*_notes` |
-| Tiempo de planeación | Cronómetro en el pilotaje: planear una clase con y sin Andamio | Prueba con usuarios antes de la muestra (la ruta del semestre la ubicaba el 14 y 15 de oct) |
+| Tiempo de planeación | Cronómetro en el pilotaje: planear una clase con y sin Kinesis | Prueba con usuarios antes de la muestra (la ruta del semestre la ubicaba el 14 y 15 de oct) |
 | Cobertura del PIAR | % de estudiantes con PIAR cuyo perfil tiene barreras y apoyos registrados | `pedagogical_*`, `effective_supports` |
 | Uso real | Docentes que crearon al menos una actividad en el periodo | `activities.teacher_user_id` |
 | Seguimiento | Actividades con seguimiento registrado frente a pendientes | `tracking_entries`, `activities.status` (Fase 6) |
@@ -51,9 +51,9 @@ Para la muestra del 28 y 29 de octubre bastan dos: **el % de DUA completo** y **
 
 ## 5. Lo que exige la ley, más allá del PIAR
 
-Aquí es donde un proyecto estudiantil suele dejar de ser viable si no se planea. Andamio guarda **datos de salud de menores de edad**, que es la categoría más protegida de la ley colombiana.
+Aquí es donde un proyecto estudiantil suele dejar de ser viable si no se planea. Kinesis guarda **datos de salud de menores de edad**, que es la categoría más protegida de la ley colombiana.
 
-| Norma | Qué exige | Cómo está Andamio |
+| Norma | Qué exige | Cómo está Kinesis |
 |---|---|---|
 | **Ley 1581 de 2012**, Art. 5 | Los datos de salud son *sensibles*: se necesita autorización explícita y solo se tratan para una finalidad concreta | ✅ El diagnóstico está aislado en `clinical_info` y solo lo abre `canViewDiagnosis()`. ⏳ Falta el registro de la autorización de la familia |
 | **Ley 1581 de 2012**, Art. 7 | Los datos de niños, niñas y adolescentes solo se tratan en su interés superior y respetando sus derechos | ✅ La vista del estudiante no muestra el diagnóstico. ⏳ Falta una política de tratamiento publicada |
@@ -69,7 +69,7 @@ Aquí es donde un proyecto estudiantil suele dejar de ser viable si no se planea
 - [ ] Registro en `audit_log` de cada lectura de `clinical_info`.
 - [ ] Catálogos sin datos personales: que una categoría de apoyo no pueda llevar un nombre ni un diagnóstico (en las pruebas apareció "santiago Vanegas / tiene tdh", que es ficticio, pero nada lo impide).
 - [ ] Contraseñas de demostración retiradas.
-- [ ] Recién entonces, compilar con `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1` para quitar la cinta de "Entorno de pruebas".
+- [ ] Recién entonces, compilar con `NEXT_PUBLIC_KINESIS_DATOS_REALES=1` para quitar la cinta de "Entorno de pruebas".
 
 ## 6. Arquitectura para producción
 

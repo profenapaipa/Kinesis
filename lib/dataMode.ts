@@ -5,7 +5,7 @@
 //
 // Por eso el valor por defecto es "ficticio" y la app lo dice en cada
 // pantalla (components/FictionalDataBanner.tsx). Solo se apaga definiendo
-// NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1 al compilar, y eso NO debe hacerse
+// NEXT_PUBLIC_KINESIS_DATOS_REALES=1 al compilar, y eso NO debe hacerse
 // antes de cumplir la lista de "Antes de cargar un solo dato real" de
 // docs/PRODUCTO_Y_SOSTENIBILIDAD.md (consentimiento de las familias,
 // política de tratamiento, copias de seguridad cifradas). Que el aviso sea
@@ -15,4 +15,4 @@
 // NEXT_PUBLIC_ porque el aviso vive en componentes de cliente; Next lo
 // incrusta al compilar.
 
-export const IS_FICTIONAL_DATA = process.env.NEXT_PUBLIC_ANDAMIO_DATOS_REALES !== "1";
+export const IS_FICTIONAL_DATA = process.env.NEXT_PUBLIC_KINESIS_DATOS_REALES !== "1";

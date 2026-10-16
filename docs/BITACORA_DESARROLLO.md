@@ -23,6 +23,40 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-10-16, tercera tanda] — La marca pasa de Andamio a Kinesis
+
+**Fase activa:** Pista de Diseño UX/UI
+
+### Cambios implementados
+- `lib/brand.ts`: nombre *Kinesis* y nuevo lema ("Aprender en movimiento:
+  apoyos que avanzan con cada estudiante").
+- Logo nuevo en `components/brand/BrandMark.tsx`, `app/icon.svg` y
+  `scripts/demo-landing.html`: una "K" cuyo brazo superior sigue de largo y
+  termina en un punto. Se renderizó con Edge en modo headless a 220, 32 y
+  16 px para comprobar que sigue siendo legible.
+- `NEXT_PUBLIC_ANDAMIO_DATOS_REALES` pasa a `NEXT_PUBLIC_KINESIS_DATOS_REALES`.
+  Nadie la había definido todavía, así que el cambio no rompe ninguna
+  instalación.
+- `docs/IDENTIDAD_DE_MARCA.md` reescrito: razón del nombre, logo, riesgos e
+  historial. README, hoja de ruta, documento de producto, insumos del
+  artículo y changelog, actualizados.
+
+### Decisiones de arquitectura
+- **Gracias a `lib/brand.ts`, cambiar de marca tocó un solo módulo de
+  código** (más el ícono y la portada estática, que no pueden importar de
+  TypeScript). Ninguna página tuvo que cambiar.
+- **Riesgos del nombre, documentados.** "Kinesis" evoca "kinestésico", y el
+  proyecto rechazó el modelo VAK como prescripción; también hay marcas
+  existentes (Amazon Kinesis, Kinesis Corporation). La marca se presenta
+  siempre como movimiento = progreso, y antes de ofrecerla fuera del colegio
+  hay que consultar la SIC.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-10-16, segunda tanda] — Datos ficticios explícitos, inicio del orientador y retiro del código simulado
 
 **Fase activa:** Pista de Diseño UX/UI + Fase 9 (retiro de mock data)

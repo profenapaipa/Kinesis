@@ -1,8 +1,8 @@
 import { BRAND } from "@/lib/brand";
 import { cn } from "@/lib/utils";
 
-// El logo de Andamio: una "A" dibujada como andamio de tijera — dos patas
-// que se apoyan una en la otra y dos travesaños donde uno se sube. Cumple la
+// El logo de Kinesis: una "K" cuyo brazo superior sigue de largo como una
+// trayectoria y termina en un punto, el estudiante que avanza. Cumple la
 // prueba de logo del semillero (sesión del 9 y 10 de septiembre): una sola
 // forma, dos colores, sin sombras, legible al tamaño de una uña.
 //
@@ -10,9 +10,11 @@ import { cn } from "@/lib/utils";
 // para que el logo acompañe el modo claro y el oscuro sin una segunda versión.
 // app/icon.svg repite el mismo trazo con colores fijos para la pestaña.
 
-const BRAND_MARK_PATHS = {
-  legs: "M9.5 24.5 16 7.5l6.5 17",
-  rungs: "M12.2 17.5h7.6M10.9 21h10.2",
+const BRAND_MARK = {
+  stem: "M11 8v16",
+  arm: "M11.5 17.5 18 11",
+  leg: "M14 15l6.5 9",
+  dot: { cx: 22.2, cy: 6.8, r: 2.4 },
 } as const;
 
 export function BrandMark({ className, title }: { className?: string; title?: string }) {
@@ -32,9 +34,11 @@ export function BrandMark({ className, title }: { className?: string; title?: st
         strokeLinecap="round"
         strokeLinejoin="round"
       >
-        <path d={BRAND_MARK_PATHS.legs} />
-        <path d={BRAND_MARK_PATHS.rungs} />
+        <path d={BRAND_MARK.stem} />
+        <path d={BRAND_MARK.arm} />
+        <path d={BRAND_MARK.leg} />
       </g>
+      <circle {...BRAND_MARK.dot} fill="var(--primary-foreground)" />
     </svg>
   );
 }

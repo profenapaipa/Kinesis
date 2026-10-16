@@ -1,4 +1,4 @@
-# Hoja de ruta — Andamio (Planeación Inclusiva PIAR)
+# Hoja de ruta — Kinesis (Planeación Inclusiva PIAR)
 
 Documento vivo. Se actualiza cada vez que se completa o se replantea una fase — ver `docs/BITACORA_DESARROLLO.md` para el detalle técnico de cada una y `CHANGELOG.md` para el registro formal de cambios. El porqué y el para quién (problema, propuesta de valor, marco legal, sostenibilidad) están en `docs/PRODUCTO_Y_SOSTENIBILIDAD.md`; la marca, en `docs/IDENTIDAD_DE_MARCA.md`.
 
@@ -81,13 +81,13 @@ Se cruzó el repositorio con la carpeta del Equipo 3 en Drive (propuesta, avance
 2. **El semillero pidió nombre y logo propios** (sesión del 9 y 10 de septiembre) y la app no tenía identidad: se llamaba "Planeación Inclusiva" y usaba un ícono genérico.
 
 **Ejecutado:**
-- **Marca:** se propone *Andamio* (el porqué está en `docs/IDENTIDAD_DE_MARCA.md`). El nombre y los textos salen de `lib/brand.ts`, el logo de `components/brand/BrandMark.tsx` y `app/icon.svg`, y las páginas usan la plantilla de título "Sección · Andamio". **Pendiente: que el equipo confirme el nombre.**
+- **Marca:** primero se propuso *Andamio* y, ese mismo día, el proyecto la cambió por **Kinesis** (el porqué está en `docs/IDENTIDAD_DE_MARCA.md`). El nombre y los textos salen de `lib/brand.ts`, el logo de `components/brand/BrandMark.tsx` y `app/icon.svg`, y las páginas usan la plantilla de título "Sección · Kinesis".
 - **Inicio del docente sobre datos reales** (`lib/data/teacherDashboard.ts`): estudiantes y PIAR de sus cursos, actividades, % con DUA completo, próximas clases, actividades con DUA incompleto y un único "siguiente paso".
 - **`/generador` → "Ajustes PIAR"**: muestra la actividad real con sus tres principios DUA al lado de las barreras, los apoyos que han funcionado y las fortalezas de cada estudiante con PIAR del curso. No muestra el diagnóstico. Se eliminó `components/AdaptationGenerator.tsx`. La selección va por la ruta `/generador/[activityId]` y no por `?actividad=`, para que la demostración estática siga funcionando.
 - **Guards:** `/` y `/generador` exigen `docente`. `requireRole()` ahora devuelve a cada usuario a su propio panel en vez de a `/`, que habría sido un bucle. `ROLE_HOME` y `ROLE_LABEL` quedan centralizados en `lib/roles.ts`; antes había cuatro copias.
 
 **Segunda tanda, el mismo día:**
-- **Datos ficticios, explícito.** Todos los datos son ficticios, confirmado por el usuario. La app real lo dice en cada pantalla y en el login (`lib/dataMode.ts`). La cinta está encendida por defecto y solo se apaga compilando con `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1`, después de cumplir la lista de la sección 5 de `docs/PRODUCTO_Y_SOSTENIBILIDAD.md`.
+- **Datos ficticios, explícito.** Todos los datos son ficticios, confirmado por el usuario. La app real lo dice en cada pantalla y en el login (`lib/dataMode.ts`). La cinta está encendida por defecto y solo se apaga compilando con `NEXT_PUBLIC_KINESIS_DATOS_REALES=1`, después de cumplir la lista de la sección 5 de `docs/PRODUCTO_Y_SOSTENIBILIDAD.md`.
 - **Inicio del orientador** (`/orientacion`): perfiles PIAR por completar (sin barreras, sin apoyos o sin curso), cursos y % de actividades con DUA en el colegio. No lee `clinical_info`.
 - **Inicio de administración** con las piezas de `components/panel/`.
 - **Código simulado retirado:** `lib/adaptationEngine.ts`, `lib/progress.ts` y `components/ProgressChart.tsx`. `lib/mockData.ts` se queda **solo** como datos de `db/seed.ts`, y una regla de ESLint impide importarlo desde `app/` o `components/`.

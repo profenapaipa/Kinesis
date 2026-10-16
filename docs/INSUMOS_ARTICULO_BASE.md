@@ -6,7 +6,7 @@ Lo marcado con ✍️ solo lo pueden escribir ustedes.
 
 ## Título (máximo 20 palabras)
 
-Qué construyeron, para quién y dónde. Datos: una aplicación web, para docentes, orientadores, familias y estudiantes, en el Instituto Infantil y Juvenil, para organizar el PIAR y planear con DUA. Nombre propuesto: *Andamio* (ver `docs/IDENTIDAD_DE_MARCA.md`). ✍️
+Qué construyeron, para quién y dónde. Datos: una aplicación web, para docentes, orientadores, familias y estudiantes, en el Instituto Infantil y Juvenil, para organizar el PIAR y planear con DUA. Nombre del producto: *Kinesis* (ver `docs/IDENTIDAD_DE_MARCA.md`). ✍️
 
 ## 1.1 El problema
 

@@ -1,16 +1,17 @@
-# Andamio · Planeación inclusiva con PIAR y DUA
+# Kinesis · Planeación inclusiva con PIAR y DUA
 
-> Apoyos que sostienen mientras se aprende, y se retiran cuando ya no hacen falta.
+> Aprender en movimiento: apoyos que avanzan con cada estudiante.
 
 Proyecto del Equipo 3 (Camila Segura y Santiago Vanegas), Semillero de
-Tecnología Maker del Instituto Infantil y Juvenil, 2026-II. *Andamio* es el
-nombre propuesto; ver [`docs/IDENTIDAD_DE_MARCA.md`](docs/IDENTIDAD_DE_MARCA.md).
+Tecnología Maker del Instituto Infantil y Juvenil, 2026-II. *Kinesis* (del griego,
+"movimiento") es el nombre del producto; ver
+[`docs/IDENTIDAD_DE_MARCA.md`](docs/IDENTIDAD_DE_MARCA.md).
 
 > **Todos los datos son ficticios.** Estudiantes, diagnósticos, PIAR,
 > planeaciones y usuarios son inventados, también los que el equipo creó a
 > mano para probar. La app lo muestra en cada pantalla con una cinta de
 > "Entorno de pruebas", que solo se quita compilando con
-> `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1`. Eso no debe hacerse antes de cumplir
+> `NEXT_PUBLIC_KINESIS_DATOS_REALES=1`. Eso no debe hacerse antes de cumplir
 > la lista de la sección 5 de
 > [`docs/PRODUCTO_Y_SOSTENIBILIDAD.md`](docs/PRODUCTO_Y_SOSTENIBILIDAD.md).
 

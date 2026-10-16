@@ -65,9 +65,12 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - `.github/workflows/deploy-demo.yml`: publicación automática en cada push
     a `main` (requiere Settings -> Pages -> Source: "GitHub Actions").
 
-- Identidad de marca *Andamio* (propuesta, pendiente de confirmar por el equipo):
-  `lib/brand.ts`, `components/brand/BrandMark.tsx`, `app/icon.svg` y plantilla
-  de título "Sección · Andamio" en `app/layout.tsx`.
+- Identidad de marca *Kinesis* (del griego, "movimiento"): logo de una "K"
+  cuyo brazo termina en un punto que avanza, `lib/brand.ts`,
+  `components/brand/BrandMark.tsx`, `app/icon.svg` y plantilla de título
+  "Sección · Kinesis" en `app/layout.tsx`. Reemplaza a *Andamio*, propuesto
+  y publicado el mismo día (`1a9ffe3`). La variable de entorno pasa a
+  llamarse `NEXT_PUBLIC_KINESIS_DATOS_REALES`.
 - `components/panel/Panel.tsx`: encabezado con saludo, franja de cifras,
   tarjeta de siguiente paso y estado vacío, compartidos por los paneles.
 - `lib/data/teacherDashboard.ts`: inicio del docente sobre datos reales.
@@ -79,7 +82,7 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Aviso permanente de **datos ficticios** en la app real:
   `lib/dataMode.ts` y `components/FictionalDataBanner.tsx`, más una nota en
   el login. Está encendido por defecto y solo se apaga compilando con
-  `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1`.
+  `NEXT_PUBLIC_KINESIS_DATOS_REALES=1`.
 - Inicio del orientador (`app/orientacion`, `lib/data/supportDashboard.ts`):
   perfiles PIAR por completar, cursos y % de actividades con DUA en todo el
   colegio. `/orientacion` pasa a ser el inicio del rol.
