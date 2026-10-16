@@ -3,6 +3,7 @@ import { Geist_Mono, Nunito } from "next/font/google";
 import { AppChrome } from "@/components/AppChrome";
 import { SessionProvider } from "@/components/SessionProvider";
 import { getSession } from "@/lib/auth/session";
+import { BRAND } from "@/lib/brand";
 import "./globals.css";
 
 // Nunito (opción 2 del comparador en referencias visuales/): una sola
@@ -18,10 +19,15 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+// Cada página declara solo su sección ("Estudiantes") y la plantilla le
+// agrega la marca: "Estudiantes · Andamio".
 export const metadata: Metadata = {
-  title: "Planeación Inclusiva PIAR",
-  description:
-    "Plataforma para cruzar la planeación docente con los perfiles PIAR de los estudiantes y generar adaptaciones curriculares.",
+  title: {
+    default: `${BRAND.name} · ${BRAND.descriptor}`,
+    template: `%s · ${BRAND.name}`,
+  },
+  description: BRAND.description,
+  applicationName: BRAND.name,
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

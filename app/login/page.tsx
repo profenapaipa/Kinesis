@@ -4,24 +4,19 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import {
   BookOpen,
-  GraduationCap,
   PenTool,
   Sparkles,
   Star,
   type LucideIcon,
 } from "lucide-react";
+import { BrandMark } from "@/components/brand/BrandMark";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { BRAND } from "@/lib/brand";
+import { IS_FICTIONAL_DATA } from "@/lib/dataMode";
+import { ROLE_HOME } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types";
-
-const ROLE_HOME: Record<Role, string> = {
-  docente: "/",
-  administrador: "/admin",
-  estudiante: "/estudiante",
-  padre: "/padre",
-  orientador: "/estudiantes",
-};
 
 const FLOATING_BADGES: Array<{ icon: LucideIcon; className: string; delay: string }> = [
   { icon: BookOpen, className: "left-[8%] top-[18%] animate-float-a", delay: "0s" },
@@ -99,18 +94,18 @@ export default function LoginPage() {
 
       <div className="relative z-10 flex w-full max-w-sm flex-col gap-6">
         <div className="flex flex-col items-center gap-2 text-center">
-          <span className="flex size-12 items-center justify-center rounded-2xl bg-primary text-primary-foreground shadow-md">
-            <GraduationCap className="size-6" />
-          </span>
-          <h1 className="text-xl font-black tracking-tight">Planeación Inclusiva</h1>
-          <p className="text-sm text-muted-foreground">
-            Inicia sesión con tu usuario y contraseña.
-          </p>
+          <BrandMark className="size-14" />
+          <h1 className="text-3xl font-black tracking-tight">{BRAND.name}</h1>
+          <p className="text-sm font-semibold text-muted-foreground">{BRAND.descriptor}</p>
+          <p className="max-w-xs text-sm text-muted-foreground">{BRAND.tagline}</p>
         </div>
 
         <Card className="border-none shadow-xl">
           <CardContent className="py-5">
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+              <p className="text-sm text-muted-foreground">
+                Inicia sesión con el usuario y la contraseña que te dio el colegio.
+              </p>
               <div className="flex flex-col gap-1.5">
                 <label htmlFor="username" className="text-sm font-medium">
                   Usuario
@@ -138,7 +133,11 @@ export default function LoginPage() {
                 />
               </div>
 
-              {error && <p className="text-sm text-destructive">{error}</p>}
+              {error && (
+                <p role="alert" className="text-sm text-destructive">
+                  {error}
+                </p>
+              )}
 
               <Button type="submit" className="w-full" disabled={isSubmitting}>
                 {isSubmitting ? "Ingresando..." : "Ingresar"}
@@ -147,7 +146,19 @@ export default function LoginPage() {
           </CardContent>
         </Card>
 
+        {IS_FICTIONAL_DATA && (
+          <p
+            role="note"
+            className="rounded-xl border border-amber-500/30 bg-amber-50 px-3 py-2 text-center text-xs text-amber-950 dark:bg-amber-950/40 dark:text-amber-100"
+          >
+            <strong>Entorno de pruebas:</strong> todos los datos son ficticios.
+            No escribas información real de estudiantes ni familias.
+          </p>
+        )}
+
         <p className="text-center text-xs text-muted-foreground">
+          {BRAND.origin}
+          <br />
           Demo: admin/admin123 · docente/docente123 · nombre.apellido/estudiante123 ·
           orientador.demo/orientador123
         </p>

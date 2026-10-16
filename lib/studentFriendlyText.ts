@@ -1,4 +1,4 @@
-import type { AdjustmentType } from "@/types";
+import type { AdjustmentType, LearningStyle } from "@/types";
 
 // Traducción en segunda persona, cercana y no clínica de cada tipo de ajuste,
 // pensada para mostrarse directamente a estudiantes (y a sus acudientes).
@@ -37,4 +37,15 @@ export const LEARNING_PREFERENCE_LABEL: Record<string, string> = {
   instrucciones_paso_a_paso: "Instrucciones paso a paso",
   videos: "Videos",
   practicar_directamente: "Practicar directamente",
+};
+
+// Etiquetas de pedagogical_profiles.learning_style (db/schema.ts). Es una
+// preferencia, no una prescripción: ver el replanteamiento VAK en
+// docs/HOJA_DE_RUTA.md. Venía de lib/adaptationEngine.ts, retirado junto con
+// el resto del código simulado el 2026-10-16.
+export const LEARNING_STYLE_LABEL: Record<LearningStyle, string> = {
+  visual: "Visual",
+  auditivo: "Auditivo",
+  kinestesico: "Kinestésico",
+  lectoescritura: "Lectoescritura",
 };

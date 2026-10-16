@@ -1,5 +1,10 @@
 import type { LessonPlan, Student } from "@/types";
 
+// SOLO para db/seed.ts. Desde el 2026-10-16 ninguna pantalla lee este
+// archivo: todas leen la BD a través de lib/data/*. Si una página lo
+// importa, se salta lib/permissions.ts y vuelve a mostrar diagnósticos sin
+// control de acceso (fue lo que pasaba en app/page.tsx y app/generador).
+//
 // Roster basado en "listado cursos/estudiantes_PIAR_datos_ficticios.xlsx"
 // (curso 8°-A). Datos ficticios para pruebas de la aplicación — no
 // representan diagnósticos reales.

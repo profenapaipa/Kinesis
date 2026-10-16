@@ -152,7 +152,7 @@ export function CreateGuardianLinkForm({
           </Button>
         </form>
         <p className="text-xs text-muted-foreground">
-          "Autorizado para diagnóstico" solo registra el dato — hoy no le da
+          &ldquo;Autorizado para diagnóstico&rdquo; solo registra el dato — hoy no le da
           acceso a ninguna información clínica; esa información sigue
           restringida al docente asignado.
         </p>

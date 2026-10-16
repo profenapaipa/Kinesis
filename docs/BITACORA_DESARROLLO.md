@@ -23,6 +23,121 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-10-16, segunda tanda] — Datos ficticios explícitos, inicio del orientador y retiro del código simulado
+
+**Fase activa:** Pista de Diseño UX/UI + Fase 9 (retiro de mock data)
+
+### Cambios implementados
+- `lib/dataMode.ts` + `components/FictionalDataBanner.tsx` (en `AppShell`,
+  junto a `DemoBanner`) + nota en `app/login/page.tsx`: "Entorno de pruebas,
+  todos los datos son ficticios". En la demostración no se muestra, porque
+  `DemoBanner` ya dice lo mismo.
+- `lib/data/supportDashboard.ts` + `app/orientacion/page.tsx`. `ROLE_HOME`
+  del orientador pasa a `/orientacion` y su navegación gana "Inicio".
+  En `scripts/build-demo.mjs`, el orientador queda con
+  `home: "/orientacion"` y `keep: ["orientacion", "estudiantes"]`.
+- `app/admin/page.tsx` rehecho con `components/panel/`.
+- `components/admin/CreateSupportCategoryForm.tsx`: ayuda contra nombres y
+  diagnósticos en el catálogo.
+- Retirados `lib/adaptationEngine.ts`, `lib/progress.ts`,
+  `components/ProgressChart.tsx` y tres tipos sin uso. `LEARNING_STYLE_LABEL`
+  pasa a `lib/studentFriendlyText.ts`.
+- `eslint.config.mjs`: `no-restricted-imports` de `@/lib/mockData` en `app/**`
+  y `components/**`.
+
+### Decisiones de arquitectura
+- **El aviso de datos ficticios es lo normal; quitarlo es la excepción
+  deliberada.** Al revés, olvidar una variable dejaría datos reales sin
+  advertencia.
+- **`lib/mockData.ts` no se borró:** `db/seed.ts` lo importa con ruta
+  relativa (`../lib/mockData`). Un primer intento de borrarlo rompió `tsc` y
+  se restauró. Queda como datos de la semilla, y la regla de ESLint convierte
+  la advertencia de su cabecera en un error.
+- **El inicio del orientador no lee `clinical_info`.** Para priorizar a quién
+  acompañar basta saber qué perfiles están incompletos. El diagnóstico sigue
+  en la ficha de cada estudiante, detrás de `canViewDiagnosis()`.
+
+### Verificación (servidor de desarrollo, BD local)
+- Login: muestra "todos los datos son ficticios".
+- Orientador: el login lo lleva a `/orientacion` (200), con la cinta
+  "Entorno de pruebas" y 0 apariciones de texto de diagnóstico.
+- Docente y acudiente en `/orientacion`: 307 a `/` y a `/padre`.
+- Administración: `/admin` responde 200 con "Siguiente paso" y sin texto de
+  diagnóstico. Docente: `/` sigue en 200.
+- ESLint: un archivo de prueba en `components/` que importaba
+  `@/lib/mockData` dio el error esperado; luego se borró.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
+## [2026-10-16] — Identidad de marca y paneles sobre datos reales
+
+**Fase activa:** Pista de Diseño UX/UI + inicio de la Fase 5
+
+### Cambios implementados
+- Marca *Andamio*: `lib/brand.ts`, `components/brand/BrandMark.tsx`,
+  `app/icon.svg` y plantilla de título en `app/layout.tsx`; aplicada en
+  `components/AppShell.tsx` y `app/login/page.tsx`.
+- `lib/roles.ts` reemplaza las copias de `ROLE_HOME`/`ROLE_LABEL` que había
+  en `proxy.ts`, `AppShell.tsx`, `app/login/page.tsx` y `app/admin/usuarios`.
+- `components/panel/Panel.tsx`, `lib/data/teacherDashboard.ts` y un nuevo
+  `app/page.tsx`: inicio del docente sobre datos reales.
+- `components/AdjustmentsView.tsx`, `app/generador/page.tsx` y
+  `app/generador/[activityId]/page.tsx`: ajustes PIAR sobre datos reales.
+  Se eliminó `components/AdaptationGenerator.tsx`.
+- Demostración: `generadorActivityParams()` en `lib/demo/params.ts`, su
+  entrada en `STATIC_PARAMS` y `icon.svg` en `ALWAYS_KEEP` de
+  `scripts/build-demo.mjs`.
+- `proxy.ts`: `icon.svg` queda fuera del matcher. Sin eso, la pestaña de
+  /login pedía el ícono sin sesión y recibía una redirección.
+- Lint: comillas escapadas en `components/admin/CreateGuardianLinkForm.tsx`
+  (era un error que ya existía).
+
+### Decisiones de arquitectura
+- **Los guards nuevos van en `lib/data/*`, no en las páginas.**
+  `getMyActivity()` exige que la actividad sea del docente y que él siga
+  asignado al curso y la asignatura. `listCourseStudentsWithSummaryForTeacher()`
+  exige esa misma asignación. La vista de ajustes no importa nada clínico.
+- **`requireRole()` devuelve a cada uno a su panel.** Con `/` reservado al
+  docente, redirigir ahí a un estudiante habría sido un bucle.
+- **La selección va en la ruta, no en la query string**, porque el export
+  estático de la demostración no admite `searchParams`.
+- **Un id ajeno o inventado en `/generador/[activityId]` da 404**, sin
+  distinguir "no existe" de "no es tuya", igual que en
+  `/estudiantes/[studentId]`.
+
+### Verificación (servidor de desarrollo, BD local)
+- Docente: `/` responde 200 con "Hola, Camila" y cifras reales (10
+  estudiantes, 3 con PIAR). `/generador` y `/generador/<id>` responden 200
+  con las barreras de cada estudiante y sin texto de diagnóstico. Un id
+  inventado da 404.
+- Acudiente y orientador: `/` y `/generador` redirigen (307) a `/padre` y a
+  `/estudiantes`, respectivamente.
+- `/icon.svg` sin sesión: 200, `image/svg+xml`.
+- `npm run demo:build` termina sin errores en los 5 roles. Se generó
+  `docente/generador/<id>` por cada actividad. El texto de diagnóstico no
+  aparece en `docente/generador/**` ni en ningún archivo de
+  `administrador`, `estudiante` ni `padre`.
+
+### Nota sobre los datos de prueba
+- **Todos los datos de la BD son ficticios** (confirmado por el usuario el
+  2026-10-16), incluidos los que el equipo creó a mano para probar. Uno de
+  esos registros es una categoría de apoyo llamada "santiago Vanegas" con la
+  descripción "tiene tdh". Como prueba no tiene problema, pero muestra un
+  riesgo de diseño para cuando haya datos reales: nada impide escribir un
+  nombre y un dato de salud en un catálogo que ven roles sin acceso clínico.
+  Queda como requisito antes de pasar a datos reales (ver
+  `docs/PRODUCTO_Y_SOSTENIBILIDAD.md`).
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
+- [ ] Errores pendientes (detallar):
+
+---
+
 ## [2026-10-14] — Demostración estática en GitHub Pages + tipografía Nunito
 
 **Fase activa:** Pista de despliegue (demostración) + pista paralela de Diseño UX/UI

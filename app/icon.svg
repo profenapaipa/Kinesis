@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Logo de Andamio, mismo trazo que components/brand/BrandMark.tsx. Los
+       colores van fijos porque la pestaña del navegador no conoce los tokens
+       de la app; el media query repite la "Dirección C" del modo oscuro. -->
+  <style>
+    .bg { fill: #5b7088; }
+    .mark { stroke: #ffffff; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #3fd9c4; }
+      .mark { stroke: #08201d; }
+    }
+  </style>
+  <rect class="bg" width="32" height="32" rx="9" />
+  <g class="mark" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M9.5 24.5 16 7.5l6.5 17" />
+    <path d="M12.2 17.5h7.6M10.9 21h10.2" />
+  </g>
+</svg>

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, CalendarClock, ShieldAlert, UserRound } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { LEARNING_STYLE_LABEL } from "@/lib/adaptationEngine";
+import { LEARNING_STYLE_LABEL } from "@/lib/studentFriendlyText";
 import {
   Card,
   CardContent,
@@ -22,7 +22,7 @@ import {
 } from "@/lib/data/students";
 import { canViewDiagnosis, PermissionError } from "@/lib/permissions";
 
-export const metadata: Metadata = { title: "Estudiante · Planeación Inclusiva" };
+export const metadata: Metadata = { title: "Estudiante" };
 
 interface PageProps {
   params: Promise<{ studentId: string }>;

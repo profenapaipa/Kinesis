@@ -65,7 +65,41 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   - `.github/workflows/deploy-demo.yml`: publicación automática en cada push
     a `main` (requiere Settings -> Pages -> Source: "GitHub Actions").
 
+- Identidad de marca *Andamio* (propuesta, pendiente de confirmar por el equipo):
+  `lib/brand.ts`, `components/brand/BrandMark.tsx`, `app/icon.svg` y plantilla
+  de título "Sección · Andamio" en `app/layout.tsx`.
+- `components/panel/Panel.tsx`: encabezado con saludo, franja de cifras,
+  tarjeta de siguiente paso y estado vacío, compartidos por los paneles.
+- `lib/data/teacherDashboard.ts`: inicio del docente sobre datos reales.
+- `/generador` pasa a "Ajustes PIAR", sobre datos reales:
+  `components/AdjustmentsView.tsx`, `app/generador/[activityId]`,
+  `listMyActivities()`/`getMyActivity()` en `lib/data/activities.ts` y
+  `listCourseStudentsWithSummaryForTeacher()` en `lib/data/students.ts`.
+- `lib/roles.ts`: `ROLE_HOME` y `ROLE_LABEL` en un solo lugar.
+- Aviso permanente de **datos ficticios** en la app real:
+  `lib/dataMode.ts` y `components/FictionalDataBanner.tsx`, más una nota en
+  el login. Está encendido por defecto y solo se apaga compilando con
+  `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1`.
+- Inicio del orientador (`app/orientacion`, `lib/data/supportDashboard.ts`):
+  perfiles PIAR por completar, cursos y % de actividades con DUA en todo el
+  colegio. `/orientacion` pasa a ser el inicio del rol.
+- Regla de ESLint: `app/**` y `components/**` no pueden importar
+  `lib/mockData.ts`.
+- Documentación: `docs/IDENTIDAD_DE_MARCA.md`,
+  `docs/PRODUCTO_Y_SOSTENIBILIDAD.md` y `docs/INSUMOS_ARTICULO_BASE.md`.
+
 ### Changed
+- `app/page.tsx` (inicio del docente) deja de leer `lib/mockData.ts`.
+- `requireRole()` redirige al panel propio del rol en vez de a `/`.
+- Navegación: "Dashboard" pasa a "Inicio" y "Generador PIAR" a "Ajustes PIAR";
+  el ítem activo se marca también en las subrutas y lleva `aria-current`.
+- Login con la marca; el mensaje de error lleva `role="alert"`.
+- Inicio de administración rehecho con `components/panel/`: siguiente paso,
+  accesos directos y alertas (incluido el seguimiento pendiente).
+- El formulario de categorías de apoyo pide no escribir nombres ni
+  diagnósticos, porque ese catálogo lo ven familias y estudiantes.
+- `LEARNING_STYLE_LABEL` pasa a `lib/studentFriendlyText.ts`.
+- `lib/mockData.ts` queda solo como datos de `db/seed.ts`.
 - Tipografía: Nunito (opción 2 del comparador en `referencias visuales/
   Opciones de tipografía PIAR.html`) reemplaza a Geist como familia única de
   títulos y texto. `--font-sans` estaba definida de forma circular en
@@ -82,7 +116,19 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   el estilo de aprendizaje (VAK) como encabezado prescriptivo — se presenta
   como preferencia, no como regla de capacidad.
 
+### Removed
+- `components/AdaptationGenerator.tsx` y `lib/adaptationEngine.ts` (motor de
+  reglas sobre estudiantes ficticios).
+- `components/ProgressChart.tsx` y `lib/progress.ts`: la gráfica de avance
+  simulada, que ya no usaba ninguna página.
+- Tipos sin uso en `types/index.ts`: `AdaptedActivity`, `StudentAdaptation`
+  y `StudentProgress`.
+
 ### Security
+- `/` y `/generador` no exigían rol: cualquier usuario con sesión
+  (estudiante, acudiente) podía abrir el generador, que mostraba estudiantes
+  de `lib/mockData.ts` con diagnóstico. Ahora exigen `docente`, y la vista
+  nueva no muestra diagnósticos.
 - Fase 1: se retiraron `diagnosis`, `responsibleProfessional` y `lastReview`
   de las vistas de estudiante y padre (información clínica restringida).
 - Fase 2: `app/estudiantes/[studentId]` mostraba diagnóstico de cualquier

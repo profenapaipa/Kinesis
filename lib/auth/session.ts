@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { sessions, users } from "@/db/schema";
+import { ROLE_HOME } from "@/lib/roles";
 import type { Role } from "@/types";
 
 const SESSION_COOKIE = "session_token";
@@ -85,9 +86,11 @@ export async function requireSession(): Promise<Session> {
   return session;
 }
 
-// Para Server Components/Pages: exige sesión Y uno de los roles dados.
+// Para Server Components/Pages: exige sesión Y uno de los roles dados. Fuera
+// del rol se vuelve al panel propio, no a "/": "/" es el panel docente y
+// exige ese rol, así que mandar ahí a un estudiante sería un bucle.
 export async function requireRole(...roles: Role[]): Promise<Session> {
   const session = await requireSession();
-  if (!roles.includes(session.role)) redirect("/");
+  if (!roles.includes(session.role)) redirect(ROLE_HOME[session.role]);
   return session;
 }

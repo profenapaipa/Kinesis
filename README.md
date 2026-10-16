@@ -1,4 +1,18 @@
-# Planeación Inclusiva PIAR
+# Andamio · Planeación inclusiva con PIAR y DUA
+
+> Apoyos que sostienen mientras se aprende, y se retiran cuando ya no hacen falta.
+
+Proyecto del Equipo 3 (Camila Segura y Santiago Vanegas), Semillero de
+Tecnología Maker del Instituto Infantil y Juvenil, 2026-II. *Andamio* es el
+nombre propuesto; ver [`docs/IDENTIDAD_DE_MARCA.md`](docs/IDENTIDAD_DE_MARCA.md).
+
+> **Todos los datos son ficticios.** Estudiantes, diagnósticos, PIAR,
+> planeaciones y usuarios son inventados, también los que el equipo creó a
+> mano para probar. La app lo muestra en cada pantalla con una cinta de
+> "Entorno de pruebas", que solo se quita compilando con
+> `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1`. Eso no debe hacerse antes de cumplir
+> la lista de la sección 5 de
+> [`docs/PRODUCTO_Y_SOSTENIBILIDAD.md`](docs/PRODUCTO_Y_SOSTENIBILIDAD.md).
 
 Plataforma para que un docente cruce su planeación de clase con los perfiles
 PIAR de sus estudiantes, diseñe desde los tres principios del **Diseño
@@ -83,6 +97,13 @@ Están completas en [`CLAUDE.md`](CLAUDE.md); el resumen:
 
 ## Documentación
 
+- [`docs/PRODUCTO_Y_SOSTENIBILIDAD.md`](docs/PRODUCTO_Y_SOSTENIBILIDAD.md) —
+  problema, propuesta de valor, marco legal (Ley 1581, Decreto 1421) y qué
+  falta para que un colegio la use de verdad.
+- [`docs/IDENTIDAD_DE_MARCA.md`](docs/IDENTIDAD_DE_MARCA.md) — nombre, logo,
+  color, tipografía, voz y principios de los paneles.
+- [`docs/INSUMOS_ARTICULO_BASE.md`](docs/INSUMOS_ARTICULO_BASE.md) — datos
+  verificables para el artículo de la muestra final.
 - [`docs/HOJA_DE_RUTA.md`](docs/HOJA_DE_RUTA.md) — estado por fase y
   decisiones pedagógicas y de diseño.
 - [`docs/BITACORA_DESARROLLO.md`](docs/BITACORA_DESARROLLO.md) — registro

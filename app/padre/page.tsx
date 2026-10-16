@@ -6,7 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { LEARNING_STYLE_LABEL } from "@/lib/adaptationEngine";
+import { LEARNING_STYLE_LABEL } from "@/lib/studentFriendlyText";
 import { requireRole } from "@/lib/auth/session";
 import { listLatestActivityPerSubject } from "@/lib/data/activities";
 import {

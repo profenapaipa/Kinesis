@@ -8,7 +8,7 @@ import { listMySubjectsSummary } from "@/lib/data/activities";
 import { MEN_SUBJECTS } from "@/lib/subjects";
 
 export const metadata: Metadata = {
-  title: "Planeación por asignatura · Planeación Inclusiva",
+  title: "Planeación por asignatura",
 };
 
 export default async function PlaneacionPage() {

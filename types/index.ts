@@ -77,28 +77,6 @@ export interface LessonPlan {
   date: string; // fecha ISO
 }
 
-export interface AdaptedActivity {
-  originalActivityId: string;
-  adaptationDescription: string;
-  specificResources: string[];
-  adjustmentTypesApplied: AdjustmentType[];
-}
-
-export interface StudentAdaptation {
-  student: Student;
-  adaptedActivities: AdaptedActivity[];
-  generalRecommendations: string[];
-}
-
-// Avance académico simulado por asignatura, usado en las gráficas de
-// seguimiento (vista de padres y vista de docente).
-export interface StudentProgress {
-  studentId: string;
-  subject: SubjectId;
-  score: number; // 0-100, avance del período actual
-  previousScore: number; // 0-100, avance del período anterior
-}
-
 export type TestQuestionFormat = "abierta" | "opción múltiple" | "oral" | "visual";
 
 export interface AdaptedTestQuestion {

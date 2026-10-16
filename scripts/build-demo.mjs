@@ -66,8 +66,8 @@ const ROLES = [
   {
     role: "orientador",
     label: "Orientador/a",
-    home: "/estudiantes",
-    keep: ["estudiantes"],
+    home: "/orientacion",
+    keep: ["orientacion", "estudiantes"],
     blurb:
       "Equipo de apoyo pedagógico (Decreto 1421 de 2017): ve a los estudiantes de todo el colegio, con diagnóstico completo.",
   },
@@ -98,7 +98,7 @@ const ROLES = [
 ];
 
 // Entradas de `app/` que todos los roles necesitan.
-const ALWAYS_KEEP = ["layout.tsx", "globals.css", "favicon.ico"];
+const ALWAYS_KEEP = ["layout.tsx", "globals.css", "favicon.ico", "icon.svg"];
 
 // Lo que el export estático no admite (ver la guía de Next en
 // node_modules/next/dist/docs/01-app/02-guides/static-exports.md).
@@ -109,6 +109,7 @@ const STATIC_PARAMS = {
   "app/estudiantes/[studentId]/page.tsx": "studentIdParams",
   "app/planeacion/[subjectId]/page.tsx": "planeacionSubjectParams",
   "app/estudiante/[subjectId]/page.tsx": "estudianteSubjectParams",
+  "app/generador/[activityId]/page.tsx": "generadorActivityParams",
 };
 
 // Se copia una sola vez; `app/` se repone en cada rol.

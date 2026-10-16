@@ -27,7 +27,7 @@ function isSubjectId(value: string): value is SubjectId {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subjectId } = await params;
   if (!isSubjectId(subjectId)) return {};
-  return { title: `${getSubject(subjectId).shortName} · Planeación Inclusiva` };
+  return { title: `${getSubject(subjectId).shortName}` };
 }
 
 export default async function SubjectPlanningPage({ params }: PageProps) {

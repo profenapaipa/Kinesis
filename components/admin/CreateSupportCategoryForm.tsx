@@ -45,6 +45,13 @@ export function CreateSupportCategoryForm() {
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+          {/* El catálogo lo ven roles sin acceso clínico (incluido el
+              estudiante, por el texto amigable): una categoría describe un
+              apoyo, nunca a una persona ni un diagnóstico. */}
+          <p id="categoryHint" className="text-xs text-muted-foreground">
+            Describe el apoyo, no a la persona: sin nombres de estudiantes ni
+            diagnósticos. Este catálogo lo ven docentes, familias y estudiantes.
+          </p>
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium" htmlFor="categoryName">
               Nombre
@@ -54,6 +61,7 @@ export function CreateSupportCategoryForm() {
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="Ej: Tiempos extendidos"
+              aria-describedby="categoryHint"
               required
               className="h-9 rounded-lg border border-input bg-transparent px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
             />

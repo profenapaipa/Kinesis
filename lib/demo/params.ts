@@ -1,4 +1,4 @@
-// `generateStaticParams()` para las tres rutas dinámicas, usado SOLO por el
+// `generateStaticParams()` para las cuatro rutas dinámicas, usado SOLO por el
 // build de la demostración estática: `scripts/build-demo.mjs` agrega al final
 // de cada página dinámica un `export async function generateStaticParams()`
 // que llama a la función correspondiente de este módulo.
@@ -13,7 +13,11 @@
 // corre fuera del contexto de render, donde `notFound()` no es válido.
 
 import { getSession } from "@/lib/auth/session";
-import { listLatestActivityPerSubject, listMySubjectsSummary } from "@/lib/data/activities";
+import {
+  listLatestActivityPerSubject,
+  listMyActivities,
+  listMySubjectsSummary,
+} from "@/lib/data/activities";
 import { getMyStudentProfile, listAllStudentsForSupport, listMyStudents } from "@/lib/data/students";
 import type { Role } from "@/types";
 
@@ -60,4 +64,14 @@ export async function estudianteSubjectParams(): Promise<Array<{ subjectId: stri
 
   const latestBySubject = await listLatestActivityPerSubject(profile.courseId);
   return [...latestBySubject.keys()].map((subjectId) => ({ subjectId }));
+}
+
+// /generador/[activityId] — `components/AdjustmentsView.tsx` enlaza una
+// pestaña por cada actividad del docente, con esta misma lista.
+export async function generadorActivityParams(): Promise<Array<{ activityId: string }>> {
+  const session = await sessionForRoles("docente");
+  if (!session) return [];
+
+  const activities = await listMyActivities(session);
+  return activities.map((activity) => ({ activityId: activity.id }));
 }

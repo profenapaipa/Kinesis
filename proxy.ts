@@ -4,6 +4,7 @@ import type { NextRequest } from "next/server";
 import { eq } from "drizzle-orm";
 import { db } from "@/db";
 import { sessions, users } from "@/db/schema";
+import { ROLE_HOME } from "@/lib/roles";
 import type { Role } from "@/types";
 
 // Reemplaza a middleware.ts (renombrado a proxy.ts desde Next.js 16). Chequeo
@@ -17,14 +18,6 @@ const LOGIN_PATH = "/login";
 const ROLE_PREFIXES: Array<{ prefix: string; role: Role }> = [
   { prefix: "/admin", role: "administrador" },
 ];
-
-const ROLE_HOME: Record<Role, string> = {
-  docente: "/",
-  administrador: "/admin",
-  estudiante: "/estudiante",
-  padre: "/padre",
-  orientador: "/estudiantes",
-};
 
 function hashToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
@@ -71,5 +64,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt).*)"],
+  // icon.svg es el ícono de marca (app/icon.svg): sin excluirlo, la pestaña
+  // de /login pediría el ícono sin sesión y recibiría una redirección.
+  matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icon.svg|sitemap.xml|robots.txt).*)"],
 };

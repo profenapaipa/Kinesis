@@ -1,6 +1,6 @@
-# Hoja de ruta — Planeación Inclusiva PIAR
+# Hoja de ruta — Andamio (Planeación Inclusiva PIAR)
 
-Documento vivo. Se actualiza cada vez que se completa o se replantea una fase — ver `docs/BITACORA_DESARROLLO.md` para el detalle técnico de cada una y `CHANGELOG.md` para el registro formal de cambios.
+Documento vivo. Se actualiza cada vez que se completa o se replantea una fase — ver `docs/BITACORA_DESARROLLO.md` para el detalle técnico de cada una y `CHANGELOG.md` para el registro formal de cambios. El porqué y el para quién (problema, propuesta de valor, marco legal, sostenibilidad) están en `docs/PRODUCTO_Y_SOSTENIBILIDAD.md`; la marca, en `docs/IDENTIDAD_DE_MARCA.md`.
 
 ## Estado por fase
 
@@ -12,13 +12,13 @@ Documento vivo. Se actualiza cada vez que se completa o se replantea una fase �
 | 3 | Vínculo acudiente-estudiante | ✅ Completa |
 | 4 | Planeación de clase real sobre `activities` | ✅ Completa |
 | 4.1 | Diseño Universal de Aprendizaje (DUA) en la creación de actividad + reencuadre del modelo VAK | ✅ Completa |
-| 5 | Generador de ajustes individuales focalizados (reenfocada — ver más abajo) | ⏳ Pendiente |
+| 5 | Generador de ajustes individuales focalizados (reenfocada — ver más abajo) | 🟡 Iniciada: vista de cruce real en `/generador` (2026-10-16); falta registrar el ajuste |
 | 6 | Seguimiento pedagógico y avance | ⏳ Pendiente |
 | 7 | Equipo de apoyo / orientador (nueva) | ✅ Completa (acceso institucional completo, confirmado) |
 | 8 | Pulido administrativo | ⏳ Pendiente |
 | 9 | Calidad, retiro de mock data y despliegue | ⏳ Pendiente |
 | — | Demostración pública con datos ficticios (GitHub Pages) | ✅ Completa |
-| — | Diseño UX/UI (pista paralela, no bloquea las anteriores) | 🎨 En curso |
+| — | Diseño UX/UI (pista paralela, no bloquea las anteriores) | 🎨 En curso: marca y paneles (2026-10-16) |
 
 ## Replanteamiento pedagógico (2026-10-02)
 
@@ -72,3 +72,24 @@ Lo que se publica es una **demostración navegable con datos ficticios** (`npm r
 Decisión clave: la demostración usa las páginas, `lib/data/*` y `lib/permissions.ts` **reales**, no copias. En un export estático los Server Components corren durante el build, en Node, así que SQLite funciona mientras compila. Se verificó contra el HTML publicado que `administrador`, `estudiante` y `padre` no contienen el texto del diagnóstico en ningún archivo, y que `docente` (asignado al curso) y `orientador` sí: `canViewDiagnosis()` siguió siendo la única puerta.
 
 Esto **no reemplaza** el despliegue de la Fase 9: para que el colegio la use de verdad hace falta un host con Node y disco persistente (o mover SQLite a libSQL/Turso si se va a serverless).
+
+## Identidad de marca y paneles sobre datos reales (2026-10-16)
+
+Se cruzó el repositorio con la carpeta del Equipo 3 en Drive (propuesta, avance del 30 de julio, Formato 1, guías de sesión y ruta del semestre). Dos hallazgos cambiaron la prioridad:
+
+1. **El inicio del docente (`app/page.tsx`) y el generador (`app/generador`) seguían sobre `lib/mockData.ts`**, aunque el resto de la app ya leía la BD desde la Fase 2. Además, ninguno de los dos exigía rol: un estudiante o un acudiente con sesión podía abrir `/generador` y ver estudiantes ficticios **con diagnóstico**. Los datos eran ficticios, pero el patrón contradecía la regla de aislamiento clínico.
+2. **El semillero pidió nombre y logo propios** (sesión del 9 y 10 de septiembre) y la app no tenía identidad: se llamaba "Planeación Inclusiva" y usaba un ícono genérico.
+
+**Ejecutado:**
+- **Marca:** se propone *Andamio* (el porqué está en `docs/IDENTIDAD_DE_MARCA.md`). El nombre y los textos salen de `lib/brand.ts`, el logo de `components/brand/BrandMark.tsx` y `app/icon.svg`, y las páginas usan la plantilla de título "Sección · Andamio". **Pendiente: que el equipo confirme el nombre.**
+- **Inicio del docente sobre datos reales** (`lib/data/teacherDashboard.ts`): estudiantes y PIAR de sus cursos, actividades, % con DUA completo, próximas clases, actividades con DUA incompleto y un único "siguiente paso".
+- **`/generador` → "Ajustes PIAR"**: muestra la actividad real con sus tres principios DUA al lado de las barreras, los apoyos que han funcionado y las fortalezas de cada estudiante con PIAR del curso. No muestra el diagnóstico. Se eliminó `components/AdaptationGenerator.tsx`. La selección va por la ruta `/generador/[activityId]` y no por `?actividad=`, para que la demostración estática siga funcionando.
+- **Guards:** `/` y `/generador` exigen `docente`. `requireRole()` ahora devuelve a cada usuario a su propio panel en vez de a `/`, que habría sido un bucle. `ROLE_HOME` y `ROLE_LABEL` quedan centralizados en `lib/roles.ts`; antes había cuatro copias.
+
+**Segunda tanda, el mismo día:**
+- **Datos ficticios, explícito.** Todos los datos son ficticios, confirmado por el usuario. La app real lo dice en cada pantalla y en el login (`lib/dataMode.ts`). La cinta está encendida por defecto y solo se apaga compilando con `NEXT_PUBLIC_ANDAMIO_DATOS_REALES=1`, después de cumplir la lista de la sección 5 de `docs/PRODUCTO_Y_SOSTENIBILIDAD.md`.
+- **Inicio del orientador** (`/orientacion`): perfiles PIAR por completar (sin barreras, sin apoyos o sin curso), cursos y % de actividades con DUA en el colegio. No lee `clinical_info`.
+- **Inicio de administración** con las piezas de `components/panel/`.
+- **Código simulado retirado:** `lib/adaptationEngine.ts`, `lib/progress.ts` y `components/ProgressChart.tsx`. `lib/mockData.ts` se queda **solo** como datos de `db/seed.ts`, y una regla de ESLint impide importarlo desde `app/` o `components/`.
+
+**Siguiente en esta pista:** llevar `components/panel/` a los paneles de la familia y del estudiante, con su propio tono (ver la sección de voz en `docs/IDENTIDAD_DE_MARCA.md`).

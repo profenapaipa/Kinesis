@@ -15,7 +15,12 @@ import {
   users,
 } from "@/db/schema";
 import type { Session } from "@/lib/auth/session";
-import { isGuardianOfStudent, isTeacherAssignedToStudentCourse, PermissionError } from "@/lib/permissions";
+import {
+  isGuardianOfStudent,
+  isTeacherAssignedToCourseSubject,
+  isTeacherAssignedToStudentCourse,
+  PermissionError,
+} from "@/lib/permissions";
 import type { LearningStyle } from "@/types";
 
 // Consultas de datos para las vistas de estudiante y padre. Este archivo
@@ -321,4 +326,40 @@ export async function getPedagogicalSummaryForSupport(
 ): Promise<PedagogicalSummary | null> {
   if (session.role !== "orientador") throw new PermissionError("adaptaciones");
   return fetchPedagogicalSummary(studentUserId);
+}
+
+export interface CourseStudentWithSummary {
+  studentUserId: string;
+  fullName: string;
+  summary: PedagogicalSummary;
+}
+
+// Estudiantes con perfil pedagógico de un curso, con su resumen (barreras,
+// fortalezas, apoyos que han funcionado) — para cruzarlos con una actividad
+// en app/generador. Mismo nivel de detalle que el docente ya ve en
+// app/estudiantes/[studentId]; sin nada clínico. Exige asignación real en
+// ese curso+asignatura, no solo ser docente.
+export async function listCourseStudentsWithSummaryForTeacher(
+  session: Session,
+  courseId: string,
+  subjectId: string
+): Promise<CourseStudentWithSummary[]> {
+  if (session.role !== "docente") throw new PermissionError("adaptaciones");
+  if (!(await isTeacherAssignedToCourseSubject(session.userId, courseId, subjectId))) {
+    throw new PermissionError("adaptaciones");
+  }
+
+  const rows = await db
+    .select({ studentUserId: enrollments.studentUserId, fullName: users.fullName })
+    .from(enrollments)
+    .innerJoin(users, eq(users.id, enrollments.studentUserId))
+    .innerJoin(pedagogicalProfiles, eq(pedagogicalProfiles.studentUserId, enrollments.studentUserId))
+    .where(and(eq(enrollments.courseId, courseId), eq(enrollments.status, "activa")));
+
+  const result: CourseStudentWithSummary[] = [];
+  for (const row of rows) {
+    const summary = await fetchPedagogicalSummary(row.studentUserId);
+    if (summary) result.push({ ...row, summary });
+  }
+  return result.sort((a, b) => a.fullName.localeCompare(b.fullName, "es"));
 }

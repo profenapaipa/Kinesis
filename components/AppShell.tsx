@@ -6,7 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   CalendarRange,
   ClipboardList,
-  GraduationCap,
   LayoutDashboard,
   Link2,
   LogOut,
@@ -15,10 +14,14 @@ import {
   Users,
   type LucideIcon,
 } from "lucide-react";
+import { BrandLockup, BrandMark } from "@/components/brand/BrandMark";
 import { DemoBanner } from "@/components/DemoBanner";
+import { FictionalDataBanner } from "@/components/FictionalDataBanner";
 import { useSession } from "@/components/SessionProvider";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { BRAND } from "@/lib/brand";
+import { ROLE_HOME, ROLE_LABEL } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types";
 
@@ -35,14 +38,14 @@ interface NavItem {
 }
 
 const DOCENTE_NAV: NavItem[] = [
-  { href: "/", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/", label: "Inicio", icon: LayoutDashboard },
   { href: "/estudiantes", label: "Estudiantes", icon: Users },
   { href: "/planeacion", label: "Planeación", icon: ClipboardList },
-  { href: "/generador", label: "Generador PIAR", icon: Sparkles },
+  { href: "/generador", label: "Ajustes PIAR", icon: Sparkles },
 ];
 
 const ADMIN_NAV: NavItem[] = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { href: "/admin", label: "Inicio", icon: LayoutDashboard },
   { href: "/admin/usuarios", label: "Usuarios", icon: Users },
   { href: "/admin/cursos", label: "Cursos", icon: Shapes },
   { href: "/admin/acudientes", label: "Acudientes", icon: Link2 },
@@ -55,24 +58,19 @@ const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   administrador: ADMIN_NAV,
   estudiante: [{ href: "/estudiante", label: "Mi panel", icon: LayoutDashboard }],
   padre: [{ href: "/padre", label: "Mi panel", icon: LayoutDashboard }],
-  orientador: [{ href: "/estudiantes", label: "Estudiantes", icon: Users }],
+  orientador: [
+    { href: "/orientacion", label: "Inicio", icon: LayoutDashboard },
+    { href: "/estudiantes", label: "Estudiantes", icon: Users },
+  ],
 };
 
-const ROLE_HOME: Record<Role, string> = {
-  docente: "/",
-  administrador: "/admin",
-  estudiante: "/estudiante",
-  padre: "/padre",
-  orientador: "/estudiantes",
-};
-
-const ROLE_LABEL: Record<Role, string> = {
-  docente: "Profesor",
-  administrador: "Administrador",
-  estudiante: "Estudiante",
-  padre: "Padre / Madre",
-  orientador: "Orientador/a",
-};
+// El inicio de cada rol solo se marca en su propia ruta (si no, "/admin"
+// quedaría encendido en todas las pantallas de administración); el resto se
+// marca también en sus subrutas, p. ej. /planeacion/matematicas.
+function isNavActive(pathname: string, href: string, home: string): boolean {
+  if (href === home) return pathname === href;
+  return pathname === href || pathname.startsWith(`${href}/`);
+}
 
 function getInitials(name: string): string {
   const initials = name
@@ -109,24 +107,23 @@ export function AppShell({ children }: { children: ReactNode }) {
       <div className="flex min-h-screen w-full md:min-h-0 md:overflow-hidden md:rounded-3xl md:shadow-xl md:ring-1 md:ring-black/5">
         {/* Barra lateral — escritorio */}
         <aside className="hidden w-60 shrink-0 flex-col border-r bg-sidebar md:flex">
-          <Link href={ROLE_HOME[session.role]} className="flex items-center gap-2 px-5 py-5">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-primary text-primary-foreground">
-              <GraduationCap className="size-5" />
-            </span>
-            <span className="flex flex-col leading-tight">
-              <span className="text-sm font-semibold">Planeación Inclusiva</span>
-              <span className="text-xs text-muted-foreground">PIAR · Áreas MEN</span>
-            </span>
+          <Link
+            href={ROLE_HOME[session.role]}
+            className="px-5 py-5"
+            aria-label={`${BRAND.name}, ir a mi inicio`}
+          >
+            <BrandLockup />
           </Link>
 
           <nav className="flex flex-col gap-0.5 px-3">
             {navItems.map((item) => {
-              const isActive = pathname === item.href;
+              const isActive = isNavActive(pathname, item.href, ROLE_HOME[session.role]);
               const Icon = item.icon;
               return (
                 <Link
                   key={item.href}
                   href={item.href}
+                  aria-current={isActive ? "page" : undefined}
                   className={cn(
                     "flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
                     isActive
@@ -161,14 +158,13 @@ export function AppShell({ children }: { children: ReactNode }) {
         {/* Columna principal */}
         <div className="flex min-h-screen flex-1 flex-col md:min-h-0">
           <DemoBanner />
+          <FictionalDataBanner />
 
           <header className="sticky top-0 z-40 flex flex-col gap-3 border-b bg-background/95 px-4 py-3 backdrop-blur sm:px-6 md:flex-row md:items-center md:justify-between">
             <div className="flex items-center justify-between gap-3 md:hidden">
               <Link href={ROLE_HOME[session.role]} className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-                  <GraduationCap className="size-4" />
-                </span>
-                <span className="text-sm font-semibold">Planeación Inclusiva</span>
+                <BrandMark className="size-8" />
+                <span className="text-base font-black tracking-tight">{BRAND.name}</span>
               </Link>
               <Button variant="ghost" size="icon-sm" onClick={handleLogout} aria-label={logoutLabel}>
                 <LogOut className="size-4" />
@@ -177,11 +173,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
             <nav className="flex gap-1 overflow-x-auto md:hidden">
               {navItems.map((item) => {
-                const isActive = pathname === item.href;
+                const isActive = isNavActive(pathname, item.href, ROLE_HOME[session.role]);
                 return (
                   <Link
                     key={item.href}
                     href={item.href}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "shrink-0 rounded-lg px-3 py-1.5 text-sm font-medium",
                       isActive

@@ -220,3 +220,83 @@ export async function listLatestActivityPerSubject(
   }
   return latestBySubject;
 }
+
+// Para la vista de ajustes PIAR (app/generador): todas las actividades del
+// docente, sin filtrar por asignatura, para elegir sobre cuál cruzar.
+export interface MyActivityOption {
+  id: string;
+  subjectId: SubjectId;
+  topic: string;
+  courseName: string;
+}
+
+export async function listMyActivities(session: Session): Promise<MyActivityOption[]> {
+  if (session.role !== "docente") throw new PermissionError("planeacion");
+
+  const rows = await db
+    .select({
+      id: activities.id,
+      subjectId: activities.subjectId,
+      topic: activities.topic,
+      courseName: courses.name,
+      createdAt: activities.createdAt,
+    })
+    .from(activities)
+    .innerJoin(courses, eq(courses.id, activities.courseId))
+    .where(eq(activities.teacherUserId, session.userId));
+
+  return rows
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+    .map((row) => ({
+      id: row.id,
+      subjectId: row.subjectId as SubjectId,
+      topic: row.topic,
+      courseName: row.courseName,
+    }));
+}
+
+export interface MyActivityDetail extends TeacherActivity {
+  courseId: string;
+  subjectId: SubjectId;
+}
+
+// Una actividad concreta del docente. Doble guard: tiene que ser suya Y
+// seguir teniendo asignado ese curso+asignatura (si la administración le
+// retiró la asignación, deja de verla aunque la haya creado).
+export async function getMyActivity(
+  session: Session,
+  activityId: string
+): Promise<MyActivityDetail | null> {
+  if (session.role !== "docente") throw new PermissionError("planeacion");
+
+  const row = await db
+    .select({
+      id: activities.id,
+      courseId: activities.courseId,
+      subjectId: activities.subjectId,
+      courseName: courses.name,
+      grade: courses.grade,
+      group: courses.group,
+      topic: activities.topic,
+      objective: activities.objective,
+      instructions: activities.instructions,
+      resources: activities.resources,
+      representationNotes: activities.representationNotes,
+      expressionNotes: activities.expressionNotes,
+      engagementNotes: activities.engagementNotes,
+      evidenceRequested: activities.evidenceRequested,
+      status: activities.status,
+      scheduledDate: activities.scheduledDate,
+      createdAt: activities.createdAt,
+    })
+    .from(activities)
+    .innerJoin(courses, eq(courses.id, activities.courseId))
+    .where(and(eq(activities.id, activityId), eq(activities.teacherUserId, session.userId)))
+    .get();
+
+  if (!row) return null;
+  if (!(await isTeacherAssignedToCourseSubject(session.userId, row.courseId, row.subjectId))) {
+    return null;
+  }
+  return { ...row, subjectId: row.subjectId as SubjectId };
+}

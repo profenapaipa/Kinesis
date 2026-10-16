@@ -5,17 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
 import { listUsers } from "@/lib/data/users";
-import type { Role } from "@/types";
+import { ROLE_LABEL } from "@/lib/roles";
 
 export const metadata: Metadata = { title: "Usuarios · Administración" };
-
-const ROLE_LABEL: Record<Role, string> = {
-  administrador: "Administrador",
-  docente: "Profesor",
-  estudiante: "Estudiante",
-  padre: "Padre / Madre",
-  orientador: "Orientador/a",
-};
 
 export default async function AdminUsersPage() {
   const session = await requireSession();

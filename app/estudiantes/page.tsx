@@ -4,7 +4,7 @@ import { requireRole } from "@/lib/auth/session";
 import { listAllStudentsForSupport, listMyStudents } from "@/lib/data/students";
 
 export const metadata: Metadata = {
-  title: "Lista de estudiantes · Planeación Inclusiva",
+  title: "Lista de estudiantes",
 };
 
 export default async function EstudiantesPage() {
