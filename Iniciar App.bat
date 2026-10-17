@@ -1,6 +1,6 @@
 @echo off
 setlocal
-title Planeacion Inclusiva PIAR
+title Kinesis
 cd /d "%~dp0"
 
 if not exist "node_modules" (
@@ -15,15 +15,15 @@ if not exist "node_modules" (
 )
 
 echo Iniciando el servidor de la aplicacion...
-start "Planeacion Inclusiva - Servidor (no cerrar)" cmd /k "npm run dev"
+start "Kinesis - Servidor (no cerrar)" cmd /k "npm run dev"
 
 echo Esperando a que la aplicacion este lista...
 set INTENTOS=0
 
 :esperar
 set /a INTENTOS+=1
-curl -s -o NUL -w "%%{http_code}" http://localhost:3000 > "%TEMP%\pi_status.txt" 2>NUL
-set /p STATUS=<"%TEMP%\pi_status.txt"
+curl -s -o NUL -w "%%{http_code}" http://localhost:3000 > "%TEMP%\kinesis_status.txt" 2>NUL
+set /p STATUS=<"%TEMP%\kinesis_status.txt"
 if "%STATUS%"=="200" goto listo
 if %INTENTOS% GEQ 40 goto agotado
 timeout /t 1 /nobreak >nul
@@ -33,7 +33,7 @@ goto esperar
 start "" "http://localhost:3000"
 echo.
 echo La aplicacion se abrio en tu navegador.
-echo Para detenerla, cierra la ventana "Planeacion Inclusiva - Servidor".
+echo Para detenerla, cierra la ventana "Kinesis - Servidor".
 goto fin
 
 :agotado

@@ -2,13 +2,11 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
-/* El modo oscuro sigue la preferencia del sistema operativo, igual que el
-   comparador de `referencias visuales/Opciones de tipografía PIAR.html`. Es
-   el comportamiento por defecto de Tailwind v4, pero se deja escrito para que
-   quede claro que es una decisión: la app no tiene interruptor de tema, así
-   que un `.dark` nunca se activaría. Si más adelante se agrega un
-   interruptor, basta volver a la variante por clase. */
-@custom-variant dark (@media (prefers-color-scheme: dark));
+/* El modo oscuro lo decide el menú "Apariencia" (components/theme/): el
+   script de <head> pone data-mode="dark" o "light" en <html> según la
+   elección de la persona o, en modo "Sistema", según el sistema operativo.
+   Ver lib/theme.ts. */
+@custom-variant dark (&:where([data-mode="dark"], [data-mode="dark"] *));
 
 @theme inline {
   --color-background: var(--background);
@@ -52,96 +50,161 @@
   --radius-2xl: calc(var(--radius) * 1.8);
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
+  --shadow-card: 0 14px 34px -16px var(--shadow-card-color), 0 1px 2px var(--shadow-card-color);
 }
 
-/* Modo claro — "Dirección B · clara y serena" de las referencias visuales:
-   fondo hueso, superficies blancas, bordes casi imperceptibles y un azul
-   pizarra desaturado como color de acción. */
-:root {
-  --palette-cream: #fafaf8;
-  --palette-blue: #dde8f0;
-  --palette-mint: #dcefe6;
-  --palette-gray: #e3e5e9;
-  --palette-navy: #5b7088;
+/* ---------------------------------------------------------------------------
+   Paleta — estilo de "referencias visuales/Referencia final diseño.html".
 
-  --background: var(--palette-cream);
-  --foreground: #24303f;
+   Todo sale de un solo color de acción con dos tonos: --accent-light (modo
+   claro) y --accent-dark (modo oscuro), más el color del texto que va encima
+   de cada uno. lib/theme.ts define los colores predefinidos y calcula los
+   personalizados; aquí se derivan fondos, superficies, bordes y el degradado
+   de los encabezados con color-mix(), así que cambiar el color principal
+   tiñe toda la app de forma coherente.
+   ------------------------------------------------------------------------- */
+
+/* Valores por defecto = color de la marca (Kinesis, verde bosque). */
+:root {
+  --accent-light: #1b7f56;
+  --accent-dark: #6fd08c;
+  --accent-on-light: #ffffff;
+  --accent-on-dark: #05231a;
+}
+
+/* Colores predefinidos. El personalizado no tiene bloque: lib/theme.ts
+   escribe sus cuatro valores directamente en el style de <html>. */
+[data-accent="oceano"] {
+  --accent-light: #1d6fb8;
+  --accent-dark: #7cc0f5;
+  --accent-on-light: #ffffff;
+  --accent-on-dark: #06192b;
+}
+[data-accent="uva"] {
+  --accent-light: #6b4fc8;
+  --accent-dark: #b9a6ff;
+  --accent-on-light: #ffffff;
+  --accent-on-dark: #1a1238;
+}
+[data-accent="coral"] {
+  --accent-light: #c2410c;
+  --accent-dark: #ff9a6b;
+  --accent-on-light: #ffffff;
+  --accent-on-dark: #2b0f02;
+}
+[data-accent="pizarra"] {
+  --accent-light: #5b7088;
+  --accent-dark: #3fd9c4;
+  --accent-on-light: #ffffff;
+  --accent-on-dark: #08201d;
+}
+[data-accent="daltonico"] {
+  --accent-light: #0072b2;
+  --accent-dark: #56b4e9;
+  --accent-on-light: #ffffff;
+  --accent-on-dark: #04121f;
+}
+
+/* Modo claro: fondo apenas teñido, tarjetas blancas, texto casi negro con
+   un toque del color principal. */
+:root {
+  --background: color-mix(in oklab, var(--accent-light) 6%, #f3f5f4);
+  --foreground: color-mix(in oklab, var(--accent-light) 14%, #0c1512);
   --card: #ffffff;
-  --card-foreground: #24303f;
+  --card-foreground: var(--foreground);
   --popover: #ffffff;
-  --popover-foreground: #24303f;
-  --primary: var(--palette-navy);
-  --primary-foreground: #ffffff;
-  --secondary: #eef1f4;
-  --secondary-foreground: #24303f;
-  --muted: #eef1f4;
-  --muted-foreground: #5b6573;
-  --accent: #e7eef3;
-  --accent-foreground: #24303f;
+  --popover-foreground: var(--foreground);
+  --primary: var(--accent-light);
+  --primary-foreground: var(--accent-on-light);
+  --secondary: color-mix(in oklab, var(--accent-light) 9%, #f1f3f2);
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in oklab, var(--accent-light) 8%, #f1f3f2);
+  --muted-foreground: color-mix(in oklab, var(--accent-light) 18%, #4a5450);
+  --accent: color-mix(in oklab, var(--accent-light) 14%, #eef1ef);
+  --accent-foreground: var(--foreground);
   --destructive: #c23b3b;
-  --border: var(--palette-gray);
-  --input: #dcdfe4;
-  --ring: var(--palette-navy);
-  --chart-1: var(--palette-navy);
+  --border: color-mix(in oklab, var(--foreground) 13%, transparent);
+  --input: color-mix(in oklab, var(--foreground) 18%, transparent);
+  --ring: var(--accent-light);
+  --chart-1: var(--accent-light);
   --chart-2: #eb6834;
-  --chart-3: #4f6378;
+  --chart-3: color-mix(in oklab, var(--accent-light) 60%, #000);
   --chart-4: #eda100;
-  --chart-5: #a9c4d6;
+  --chart-5: color-mix(in oklab, var(--accent-light) 40%, #fff);
   --radius: 0.875rem;
   --sidebar: #ffffff;
-  --sidebar-foreground: #24303f;
-  --sidebar-primary: var(--palette-navy);
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eef1f4;
-  --sidebar-accent-foreground: #24303f;
-  --sidebar-border: var(--palette-gray);
-  --sidebar-ring: var(--palette-navy);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--accent-light);
+  --sidebar-primary-foreground: var(--accent-on-light);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--accent-light);
+
+  /* Degradado de los encabezados: del color principal muy oscuro al tono
+     claro. El texto (blanco) siempre va sobre la mitad oscura. */
+  --hero: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent-light) 42%, #000) 0%,
+    var(--accent-light) 62%,
+    color-mix(in oklab, var(--accent-dark) 80%, var(--accent-light)) 100%
+  );
+  --shadow-card-color: rgb(12 21 18 / 0.1);
 }
 
-/* Modo oscuro — "Dirección C · vibrante" de las referencias visuales: azul
-   noche como fondo, tarjetas un paso más claras y turquesa como único color
-   de acción (los acentos ámbar del PIAR se mantienen, ver dark: en los
-   componentes). */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --palette-cream: #16222b;
-    --palette-blue: #16222b;
-    --palette-mint: #15282c;
-    --palette-gray: #243541;
-    --palette-navy: #3fd9c4;
+/* Modo oscuro: casi negro con el matiz del color principal, tarjetas un
+   paso más claras y el tono claro del color como acción. */
+[data-mode="dark"] {
+  --background: color-mix(in oklab, var(--accent-dark) 5%, #060a09);
+  --foreground: color-mix(in oklab, var(--accent-dark) 8%, #eef3f1);
+  --card: color-mix(in oklab, var(--accent-dark) 9%, #0b1210);
+  --card-foreground: var(--foreground);
+  --popover: color-mix(in oklab, var(--accent-dark) 11%, #0d1513);
+  --popover-foreground: var(--foreground);
+  --primary: var(--accent-dark);
+  --primary-foreground: var(--accent-on-dark);
+  --secondary: color-mix(in oklab, var(--accent-dark) 16%, #101917);
+  --secondary-foreground: var(--foreground);
+  --muted: color-mix(in oklab, var(--accent-dark) 14%, #101917);
+  --muted-foreground: color-mix(in oklab, var(--accent-dark) 30%, #9aa6a1);
+  --accent: color-mix(in oklab, var(--accent-dark) 22%, #121c19);
+  --accent-foreground: var(--foreground);
+  --destructive: #ef5f5f;
+  --border: rgb(255 255 255 / 0.12);
+  --input: rgb(255 255 255 / 0.16);
+  --ring: var(--accent-dark);
+  --chart-1: var(--accent-dark);
+  --chart-2: #eb8a5f;
+  --chart-3: color-mix(in oklab, var(--accent-dark) 60%, #fff);
+  --chart-4: #f0c674;
+  --chart-5: color-mix(in oklab, var(--accent-dark) 50%, #000);
+  --sidebar: var(--card);
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--accent-dark);
+  --sidebar-primary-foreground: var(--accent-on-dark);
+  --sidebar-accent: var(--muted);
+  --sidebar-accent-foreground: var(--foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--accent-dark);
 
-    --background: #16222b;
-    --foreground: #e8f1f2;
-    --card: #1d2e39;
-    --card-foreground: #e8f1f2;
-    --popover: #1d2e39;
-    --popover-foreground: #e8f1f2;
-    --primary: #3fd9c4;
-    --primary-foreground: #08201d;
-    --secondary: #233645;
-    --secondary-foreground: #e8f1f2;
-    --muted: #233645;
-    --muted-foreground: #9aa5b1;
-    --accent: #233645;
-    --accent-foreground: #e8f1f2;
-    --destructive: #ef5f5f;
-    --border: var(--palette-gray);
-    --input: #2b3f4e;
-    --ring: #3fd9c4;
-    --chart-1: #3fd9c4;
-    --chart-2: #eb8a5f;
-    --chart-3: #7fd3e8;
-    --chart-4: #f0c674;
-    --chart-5: #5b7088;
-    --sidebar: #1a2832;
-    --sidebar-foreground: #e8f1f2;
-    --sidebar-primary: #3fd9c4;
-    --sidebar-primary-foreground: #08201d;
-    --sidebar-accent: #233645;
-    --sidebar-accent-foreground: #e8f1f2;
-    --sidebar-border: var(--palette-gray);
-    --sidebar-ring: #3fd9c4;
-  }
+  --hero: linear-gradient(
+    135deg,
+    color-mix(in oklab, var(--accent-light) 30%, #000) 0%,
+    color-mix(in oklab, var(--accent-light) 85%, #000) 62%,
+    color-mix(in oklab, var(--accent-dark) 70%, var(--accent-light)) 100%
+  );
+  --shadow-card-color: rgb(0 0 0 / 0.35);
+  color-scheme: dark;
+}
+
+[data-mode="light"] {
+  color-scheme: light;
+}
+
+/* "Texto más grande" del menú Apariencia: todo está en rem, así que basta
+   con subir la base. */
+[data-text-size="large"] {
+  font-size: 112.5%;
 }
 
 @layer base {
@@ -153,14 +216,19 @@
   }
   html {
     @apply bg-background font-sans;
-    /* Para que los controles nativos, la barra de desplazamiento y el lienzo
-       del navegador acompañen el tema; `app/layout.tsx` pinta el body con una
-       utilidad translúcida y sin esto el fondo real quedaría blanco. */
+    /* Antes de que corra el script del tema, los controles nativos siguen
+       al sistema; después, [data-mode] fija el esquema elegido. */
     color-scheme: light dark;
   }
   /* Nunito tiene terminaciones redondeadas y aguanta pesos altos sin verse
      dura: los títulos van gruesos, como en la referencia. Las utilidades
      `font-*` de cada componente siguen teniendo prioridad sobre esto. */
+  /* Casillas y opciones en el color principal, como las de la referencia. */
+  input[type="checkbox"],
+  input[type="radio"],
+  progress {
+    accent-color: var(--primary);
+  }
   h1,
   h2,
   h3 {
@@ -170,37 +238,73 @@
   }
 }
 
-@keyframes float-a {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
+/* ---------------------------------------------------------------------------
+   Piezas del estilo de la referencia final de diseño.
+   ------------------------------------------------------------------------- */
+
+/* Fondo de los encabezados (PanelHeader) y de los bloques destacados. */
+@utility bg-hero {
+  background-image: var(--hero);
+}
+
+/* Entrada escalonada: cada bloque de la página sube y aparece 70 ms después
+   del anterior (".sheet>*" de la referencia). components/AppShell.tsx pone
+   la clase en el contenedor de la página, así que se animan los bloques de
+   primer nivel de cada página (los hijos de su raíz). */
+@keyframes kn-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
   }
+}
+
+.kn-stagger > * > * {
+  animation: kn-rise 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+.kn-stagger > * > :nth-child(2) { animation-delay: 70ms; }
+.kn-stagger > * > :nth-child(3) { animation-delay: 140ms; }
+.kn-stagger > * > :nth-child(4) { animation-delay: 210ms; }
+.kn-stagger > * > :nth-child(5) { animation-delay: 280ms; }
+.kn-stagger > * > :nth-child(6) { animation-delay: 350ms; }
+.kn-stagger > * > :nth-child(n + 7) { animation-delay: 420ms; }
+
+/* Paneles emergentes (menú Apariencia). */
+@keyframes kn-pop {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+.kn-pop {
+  animation: kn-pop 0.2s ease-out both;
+}
+
+/* Círculos translúcidos que flotan dentro del degradado. */
+@keyframes kn-orb {
   50% {
-    transform: translate(6px, -18px) rotate(4deg);
+    transform: translate(22px, 18px) scale(1.1);
   }
 }
-
-@keyframes float-b {
-  0%,
-  100% {
-    transform: translate(0, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate(-10px, 14px) rotate(-3deg);
-  }
+.kn-orb {
+  animation: kn-orb 9s ease-in-out infinite;
 }
 
-.animate-float-a {
-  animation: float-a 7s ease-in-out infinite;
+/* Barras de avance que crecen desde la izquierda. */
+@keyframes kn-grow {
+  from {
+    transform: scaleX(0);
+  }
 }
-
-.animate-float-b {
-  animation: float-b 8s ease-in-out infinite;
+.kn-grow {
+  transform-origin: left;
+  animation: kn-grow 1s 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animate-float-a,
-  .animate-float-b {
+  .kn-stagger > * > *,
+  .kn-pop,
+  .kn-orb,
+  .kn-grow {
     animation: none;
   }
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CreateSupportCategoryForm } from "@/components/admin/CreateSupportCategoryForm";
 import { ToggleSupportCategoryButton } from "@/components/admin/ToggleSupportCategoryButton";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
@@ -14,13 +15,12 @@ export default async function AdminSupportCategoriesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-black tracking-tight">Categorías de apoyo</h1>
-        <p className="text-muted-foreground">
-          Reemplazan el listado fijo de ajustes anterior — el profesor las usa al registrar
-          apoyos efectivos y seguimiento de cada estudiante.
-        </p>
-      </div>
+      <PanelHeader
+        size="compact"
+        eyebrow="Administración"
+        title="Categorías de apoyo"
+        description={<>Reemplazan el listado fijo de ajustes anterior — el profesor las usa al registrar apoyos efectivos y seguimiento de cada estudiante.</>}
+      />
 
       <CreateSupportCategoryForm />
 

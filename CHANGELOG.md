@@ -71,6 +71,23 @@ y este proyecto se adhiere a [Semantic Versioning](https://semver.org/lang/es/).
   "Sección · Kinesis" en `app/layout.tsx`. Reemplaza a *Andamio*, propuesto
   y publicado el mismo día (`1a9ffe3`). La variable de entorno pasa a
   llamarse `NEXT_PUBLIC_KINESIS_DATOS_REALES`.
+- Estilo de la referencia final de diseño en toda la app
+  (`referencias visuales/Referencia final diseño.html`): encabezados en
+  degradado (`PanelHeader`, también en versión compacta con "volver"), cifras
+  montadas sobre el degradado, tarjetas redondeadas con sombra, pestañas
+  tipo píldora, barra de navegación flotante en el celular y entrada
+  escalonada de los bloques. Login, portada y 404 de la demostración
+  rediseñados con la misma línea.
+- Menú **Apariencia** (`components/theme/`, `lib/theme.ts`): modo Sistema /
+  Claro / Oscuro, seis colores principales (Kinesis, Océano, Uva, Coral,
+  Pizarra, Daltónico), color personalizado con contraste AA garantizado y
+  "texto más grande". La paleta completa se deriva del color elegido con
+  `color-mix()`; un script en `<head>` evita el destello del tema.
+- Paneles de la familia (`/padre`) y del estudiante (`/estudiante`) con las
+  piezas de `components/panel/`, cada uno con su tono. La familia ve a todos
+  sus hijos vinculados (antes solo el primero).
+- El paquete pasa a llamarse `kinesis` (antes `planeacion-piar`), igual que
+  el repositorio y la carpeta; `Iniciar App.bat` también dice Kinesis.
 - `components/panel/Panel.tsx`: encabezado con saludo, franja de cifras,
   tarjeta de siguiente paso y estado vacío, compartidos por los paneles.
 - `lib/data/teacherDashboard.ts`: inicio del docente sobre datos reales.

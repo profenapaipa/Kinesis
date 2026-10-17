@@ -1,6 +1,6 @@
-import Link from "next/link";
-import { ArrowLeft, Clock, MessageCircle, Puzzle } from "lucide-react";
+import { Clock, MessageCircle, Puzzle } from "lucide-react";
 import { MemoryPuzzle } from "@/components/MemoryPuzzle";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -118,23 +118,13 @@ export default async function EstudianteSubjectPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/estudiante"
-        className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Volver a mis asignaturas
-      </Link>
-
-      <div className="flex items-center gap-3">
-        <span
-          className="flex size-11 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: `${subject.color}1a`, color: subject.color }}
-        >
-          <Icon className="size-5" />
-        </span>
-        <h2 className="text-xl font-bold">{subject.name}</h2>
-      </div>
+      <PanelHeader
+        size="compact"
+        back={{ href: "/estudiante", label: "Mis asignaturas" }}
+        icon={<Icon className="size-5" style={{ color: subject.color }} />}
+        title={subject.name}
+        description={plan ? `Tema actual: ${plan.topic}` : undefined}
+      />
 
       {!plan ? (
         <Card>

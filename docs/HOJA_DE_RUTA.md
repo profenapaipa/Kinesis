@@ -92,4 +92,9 @@ Se cruzó el repositorio con la carpeta del Equipo 3 en Drive (propuesta, avance
 - **Inicio de administración** con las piezas de `components/panel/`.
 - **Código simulado retirado:** `lib/adaptationEngine.ts`, `lib/progress.ts` y `components/ProgressChart.tsx`. `lib/mockData.ts` se queda **solo** como datos de `db/seed.ts`, y una regla de ESLint impide importarlo desde `app/` o `components/`.
 
-**Siguiente en esta pista:** llevar `components/panel/` a los paneles de la familia y del estudiante, con su propio tono (ver la sección de voz en `docs/IDENTIDAD_DE_MARCA.md`).
+**Tercera tanda (2026-10-16): referencia final de diseño y apariencia configurable.**
+- Toda la app sigue `referencias visuales/Referencia final diseño.html`: encabezado en degradado con la hoja de cifras encima, tarjetas redondeadas, pestañas píldora, barra inferior flotante en el celular. Solo se tomó lo visual: la lógica de esa referencia guarda diagnósticos en `localStorage` y la IA se llama desde el navegador con la clave a la vista, dos cosas que la app no debe hacer.
+- Menú **Apariencia**: modo Sistema/Claro/Oscuro, seis colores y uno personalizado, texto más grande (ver la sección 3 de `docs/IDENTIDAD_DE_MARCA.md`).
+- Paneles de la familia y del estudiante con `components/panel/`. Retirado el bloque "Avance académico — disponible próximamente" de la familia: no había datos detrás, y la regla de los paneles es no mostrar cifras sin respaldo.
+
+**Siguiente en esta pista:** probar los paneles con el Equipo 3 y con dos o tres docentes antes de la muestra (28 y 29 de octubre); exportar `app/favicon.ico` con el logo; decidir si la preferencia de apariencia debe viajar con la cuenta (hoy es por dispositivo).

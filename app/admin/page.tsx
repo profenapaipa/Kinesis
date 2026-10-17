@@ -83,15 +83,16 @@ export default async function AdminDashboardPage() {
           </>
         }
         aside={<NextStepCard {...nextStep(stats)} />}
-      />
-
-      <StatStrip
-        items={[
-          { label: "Estudiantes", value: stats.totalStudents, hint: `${stats.studentsWithPiar} con PIAR` },
-          { label: "Profesores", value: stats.totalTeachers },
-          { label: "Cursos", value: stats.totalCourses },
-          { label: "Actividades", value: stats.activeActivities, hint: "Creadas por los docentes" },
-        ]}
+        footer={
+          <StatStrip
+            items={[
+              { label: "Estudiantes", value: stats.totalStudents, hint: `${stats.studentsWithPiar} con PIAR` },
+              { label: "Profesores", value: stats.totalTeachers },
+              { label: "Cursos", value: stats.totalCourses },
+              { label: "Actividades", value: stats.activeActivities, hint: "Creadas por los docentes" },
+            ]}
+          />
+        }
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
@@ -102,7 +103,7 @@ export default async function AdminDashboardPage() {
               <Link
                 key={href}
                 href={href}
-                className="flex items-start gap-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/10 outline-none transition-shadow hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50"
+                className="flex items-start gap-3 rounded-2xl bg-card p-4 shadow-card ring-1 ring-border outline-none transition-[translate,box-shadow] hover:-translate-y-0.5 hover:ring-primary motion-reduce:hover:translate-y-0 focus-visible:ring-3 focus-visible:ring-ring/50"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
                   <Icon className="size-5" />
@@ -119,7 +120,7 @@ export default async function AdminDashboardPage() {
         <section className="flex flex-col gap-3">
           <SectionTitle title="Alertas" />
           {alerts.length === 0 ? (
-            <p className="flex items-center gap-2 rounded-2xl bg-card p-4 text-sm ring-1 ring-foreground/10">
+            <p className="flex items-center gap-2 rounded-2xl bg-card p-4 text-sm shadow-card ring-1 ring-border">
               <CheckCircle2 className="size-4 shrink-0 text-primary" />
               No hay alertas pendientes.
             </p>

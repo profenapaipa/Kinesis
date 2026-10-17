@@ -1,4 +1,4 @@
-# Bitácora de Desarrollo — Planeación Inclusiva PIAR
+# Bitácora de Desarrollo — Kinesis (planeación inclusiva PIAR)
 
 Registro cronológico de cambios, decisiones de arquitectura y estado de
 verificación del proyecto. Las entradas más recientes van arriba.
@@ -20,6 +20,29 @@ verificación del proyecto. Las entradas más recientes van arriba.
 ### Estado de `npx tsc --noEmit`
 - [ ] Sin errores
 - [ ] Errores pendientes (detallar):
+
+---
+
+## [2026-10-16, cuarta tanda] — Referencia final de diseño y apariencia configurable
+
+**Fase activa:** Pista de Diseño UX/UI
+
+### Cambios implementados
+- Repositorio y carpeta renombrados a **Kinesis**: el paquete npm pasa a `kinesis` (`package.json`, `package-lock.json`, la verificación de `scripts/build-demo.mjs`) y `Iniciar App.bat` muestra el nombre nuevo.
+- Estilo de `referencias visuales/Referencia final diseño.html` en todas las pantallas: `PanelHeader` en degradado (normal y compacto), cifras montadas sobre el degradado, `PanelCard`, `ProgressBar`, primitivas de `components/ui/` (tarjeta, botón, pestañas, insignia, avatar, campos) y un shell nuevo con barra lateral flotante y barra inferior en el celular.
+- Menú Apariencia (`lib/theme.ts`, `components/theme/ThemeProvider.tsx`, `components/theme/ThemeMenu.tsx`): modo, color principal (6 + personalizado) y texto grande.
+- Paneles de la familia y del estudiante rehechos con las piezas compartidas.
+
+### Decisiones de arquitectura
+- **La paleta sale de un solo color.** Cada color define cuatro valores (tono claro, tono oscuro y el texto de cada uno); el resto de tokens se calcula con `color-mix()` en `app/globals.css`. Así un color nuevo no exige rediseñar nada.
+- **El modo oscuro pasa de media query a atributo** (`data-mode` en `<html>`), porque ahora lo decide la persona. "Sistema" sigue siendo el predeterminado.
+- **Sin destello:** el tema se aplica con un script en `<head>` antes del primer pintado, como recomienda la guía "Preventing flash before hydration" de Next 16; `<html>` lleva `suppressHydrationWarning` y el proveedor lo reaplica en `useLayoutEffect` (en desarrollo, Strict Mode borra los atributos al remontar).
+- **Preferencia por dispositivo, no por cuenta** (`localStorage`): no requiere tocar la base de datos ni funciona distinto en la demostración estática.
+- **El color personalizado no puede romper el contraste:** `deriveCustomAccent()` oscurece el tono claro hasta 4,6:1 contra blanco y aclara el oscuro hasta 7:1 contra la superficie oscura.
+- **De la referencia, solo lo visual.** Su JavaScript guarda diagnósticos en el navegador y llama a la API de IA con la clave en el cliente; nada de eso se trajo.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores
 
 ---
 

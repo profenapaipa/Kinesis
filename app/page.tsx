@@ -12,12 +12,14 @@ import {
   EmptyState,
   NextStepCard,
   PanelHeader,
+  ProgressBar,
   SectionTitle,
   StatStrip,
 } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { requireRole } from "@/lib/auth/session";
 import { BRAND } from "@/lib/brand";
+import { formatToday } from "@/lib/format";
 import { getTeacherDashboard, type DashboardActivity, type TeacherDashboard } from "@/lib/data/teacherDashboard";
 import { getSubject, MEN_SUBJECTS } from "@/lib/subjects";
 
@@ -26,16 +28,6 @@ import { getSubject, MEN_SUBJECTS } from "@/lib/subjects";
 export const metadata: Metadata = { title: { absolute: `Inicio · ${BRAND.name}` } };
 
 const DUA_LABEL = ["Sin DUA", "1 de 3 principios", "2 de 3 principios", "DUA completo"];
-
-function formatToday(): string {
-  const text = new Intl.DateTimeFormat("es-CO", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    timeZone: "America/Bogota",
-  }).format(new Date());
-  return text.charAt(0).toUpperCase() + text.slice(1);
-}
 
 function formatDay(isoDate: string): string {
   return new Intl.DateTimeFormat("es-CO", {
@@ -123,19 +115,20 @@ export default async function Home() {
         title={`Hola, ${firstName}`}
         description="Diseña tu clase una vez para todo el curso y deja los ajustes individuales para lo que el diseño universal no alcanza a cubrir."
         aside={<NextStepCard {...step} />}
-      />
-
-      <StatStrip
-        items={[
-          { label: "Estudiantes", value: data.studentCount, hint: `En ${data.courses.length} curso(s)` },
-          { label: "Con PIAR", value: data.withProfileCount, hint: "Tienen perfil pedagógico" },
-          { label: "Actividades", value: data.activityCount, hint: "Creadas por ti" },
-          { label: "Con DUA completo", value: duaPercent, hint: "Los 3 principios escritos" },
-        ]}
+        footer={
+          <StatStrip
+            items={[
+              { label: "Estudiantes", value: data.studentCount, hint: `En ${data.courses.length} curso(s)` },
+              { label: "Con PIAR", value: data.withProfileCount, hint: "Tienen perfil pedagógico" },
+              { label: "Actividades", value: data.activityCount, hint: "Creadas por ti" },
+              { label: "Con DUA completo", value: duaPercent, hint: "Los 3 principios escritos" },
+            ]}
+          />
+        }
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-        <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
+        <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border">
           <SectionTitle title="Próximas clases" description="Actividades con fecha desde hoy." />
           {data.upcoming.length === 0 ? (
             <EmptyState
@@ -156,7 +149,7 @@ export default async function Home() {
           )}
         </section>
 
-        <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
+        <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border">
           <SectionTitle
             title="Diseño universal por completar"
             description="Representación, acción y expresión, participación."
@@ -205,7 +198,7 @@ export default async function Home() {
             {data.courses.map((course) => (
               <div
                 key={course.courseId}
-                className="flex flex-col gap-3 rounded-2xl bg-card p-5 ring-1 ring-foreground/10"
+                className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border"
               >
                 <div className="flex items-baseline justify-between gap-2">
                   <span className="text-2xl font-black tracking-tight">{course.courseName}</span>
@@ -213,10 +206,16 @@ export default async function Home() {
                     {course.studentCount} estudiante(s)
                   </span>
                 </div>
-                <p className="text-sm">
-                  <span className="font-bold text-primary">{course.withProfileCount}</span> con PIAR
-                  activo
-                </p>
+                <div className="flex flex-col gap-1.5">
+                  <p className="text-sm">
+                    <span className="font-bold text-primary">{course.withProfileCount}</span> con PIAR
+                    activo
+                  </p>
+                  <ProgressBar
+                    value={course.studentCount === 0 ? 0 : (course.withProfileCount / course.studentCount) * 100}
+                    label={`Estudiantes con PIAR en ${course.courseName}`}
+                  />
+                </div>
                 <div className="flex flex-wrap gap-1.5">
                   {course.subjectIds.map((subjectId) => (
                     <Badge key={subjectId} variant="secondary">
@@ -250,7 +249,7 @@ export default async function Home() {
                 <Link
                   key={subject.id}
                   href={`/planeacion/${subject.id}`}
-                  className="flex items-center gap-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/10 outline-none transition-shadow hover:shadow-md focus-visible:ring-3 focus-visible:ring-ring/50"
+                  className="flex items-center gap-3 rounded-2xl bg-card p-4 shadow-card ring-1 ring-border outline-none transition-[translate,box-shadow] hover:-translate-y-0.5 hover:ring-primary motion-reduce:hover:translate-y-0 focus-visible:ring-3 focus-visible:ring-ring/50"
                 >
                   <span
                     className="flex size-10 shrink-0 items-center justify-center rounded-xl"

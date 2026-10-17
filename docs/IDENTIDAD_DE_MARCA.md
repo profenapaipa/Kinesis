@@ -1,6 +1,6 @@
 # Identidad de marca — Kinesis
 
-Documento de referencia para cualquiera que escriba una pantalla, un texto o una pieza de difusión del proyecto. La implementación vive en `lib/brand.ts` (nombre y textos), `components/brand/BrandMark.tsx` (logo) y `app/globals.css` (color y tipografía).
+Documento de referencia para cualquiera que escriba una pantalla, un texto o una pieza de difusión del proyecto. La implementación vive en `lib/brand.ts` (nombre y textos), `components/brand/BrandMark.tsx` (logo) y `app/globals.css` (color y tipografía) y `lib/theme.ts` (colores elegibles y modo claro/oscuro).
 
 > **Estado: decidido el 2026-10-16.** El nombre es *Kinesis*. Ese mismo día se había propuesto *Andamio* y se reemplazó por decisión del proyecto. Para cambiarlo otra vez basta tocar `lib/brand.ts` y `app/icon.svg`: el resto de la app lo toma solo.
 
@@ -27,7 +27,7 @@ Una **"K" en movimiento**: el brazo superior sigue de largo como una trayectoria
 | Uso | Archivo | Colores |
 |---|---|---|
 | Dentro de la app | `components/brand/BrandMark.tsx` | Sigue el tema: `--primary` de fondo, `--primary-foreground` de trazo y punto |
-| Pestaña del navegador | `app/icon.svg` | Fijos: pizarra `#5b7088` y blanco en modo claro, turquesa `#3fd9c4` y `#08201d` en modo oscuro |
+| Pestaña del navegador | `app/icon.svg` | Fijos, los del color Kinesis: verde `#1b7f56` y blanco en modo claro, `#6fd08c` y `#05231a` en modo oscuro |
 | Portada de la demostración | `scripts/demo-landing.html` | Color de acción de la portada y blanco |
 
 Reglas:
@@ -39,19 +39,33 @@ Reglas:
 
 Pendiente: `app/favicon.ico` sigue siendo el ícono por defecto de Next. Los navegadores modernos prefieren `icon.svg`, pero falta exportar un `.ico` con el logo para los que no leen SVG.
 
-## 3. Color
+## 3. Color y apariencia
 
-La paleta ya estaba definida (2026-10-14, ver `docs/HOJA_DE_RUTA.md`). Lo que agrega este documento es para qué sirve cada color.
+Desde el 2026-10-16 la app sigue el estilo de `referencias visuales/Referencia final diseño.html`: encabezados en degradado con una "hoja" de tarjetas montada encima, tarjetas muy redondeadas con sombra suave, pestañas tipo píldora y, en el celular, una barra de navegación flotante abajo. De esa referencia se tomó **solo lo visual**: su lógica guarda diagnósticos en el navegador y choca con las reglas de `CLAUDE.md`.
 
-| Rol | Claro ("Dirección B") | Oscuro ("Dirección C") | Uso |
+**Un solo color manda.** Cada persona elige en el menú **Apariencia** (ícono de paleta, arriba a la derecha y en el login) el color principal y el modo. Fondos, superficies, bordes y el degradado se derivan de ese color con `color-mix()` en `app/globals.css`, así que toda la app cambia de forma coherente. La elección se guarda en el dispositivo (`localStorage`), no en la cuenta.
+
+| Color | Claro | Oscuro | Nota |
 |---|---|---|---|
-| Acción | `#5b7088` pizarra | `#3fd9c4` turquesa | Botones, enlaces, cifras, el logo. **Un solo color de acción por pantalla.** |
-| Fondo | `#fafaf8` hueso | `#16222b` azul noche | Lienzo |
-| Superficie | `#ffffff` | `#1d2e39` | Tarjetas y paneles |
-| Texto | `#24303f` | `#e8f1f2` | — |
-| Texto secundario | `#5b6573` | `#9aa5b1` | Descripciones, pistas |
-| Asignaturas | `lib/subjects.ts` | igual | Solo como fondo o ícono, **nunca como texto**: siempre van acompañados del nombre del área |
-| PIAR | ámbar | ámbar | Marca lo que pide atención del equipo de apoyo. Nunca rojo: un PIAR no es un error |
+| **Kinesis** (predeterminado, el de la marca) | `#1b7f56` | `#6fd08c` | Verde bosque de la referencia |
+| Océano | `#1d6fb8` | `#7cc0f5` | |
+| Uva | `#6b4fc8` | `#b9a6ff` | |
+| Coral | `#c2410c` | `#ff9a6b` | |
+| Pizarra | `#5b7088` | `#3fd9c4` | La paleta anterior (direcciones B y C) |
+| Daltónico | `#0072b2` | `#56b4e9` | Okabe-Ito; el tema "cb" de la referencia |
+| Personalizado | se calcula | se calcula | Cualquier color: `deriveCustomAccent()` lo oscurece o aclara hasta pasar contraste AA |
+
+- **Modo:** Sistema (sigue al sistema operativo, el predeterminado), Claro u Oscuro. Un script en `<head>` aplica la elección antes del primer pintado, para que nunca se vea un destello del tema equivocado.
+- **Texto más grande:** sube la base tipográfica al 112,5 %. Todo está en `rem`, así que crece la interfaz completa.
+- **Contraste:** cada color trae su texto encima con contraste ≥ 4,5:1. El texto del degradado es blanco y va sobre la mitad oscura.
+- **Agregar un color:** una entrada en `ACCENT_PRESETS` (`lib/theme.ts`) y un bloque `[data-accent="…"]` en `app/globals.css`, con los mismos cuatro valores.
+
+Colores que no cambian con el tema:
+
+| Rol | Uso |
+|---|---|
+| Asignaturas (`lib/subjects.ts`) | Solo como fondo o ícono, **nunca como texto**: siempre van acompañados del nombre del área |
+| PIAR y avisos, ámbar | Marca lo que pide atención del equipo de apoyo y la cinta de datos ficticios. Nunca rojo: un PIAR no es un error |
 
 ## 4. Tipografía
 
@@ -79,13 +93,16 @@ Tres reglas que no se negocian:
 
 ## 6. Paneles
 
-Lo que tienen en común todas las pantallas de inicio (`components/panel/Panel.tsx`), tomado de las referencias de `referencias visuales/`:
+Lo que tienen en común todas las pantallas (`components/panel/Panel.tsx`), tomado de la referencia final de diseño:
 
-1. **Un saludo grande.** El titular dice dónde está la persona, no el nombre del sistema.
-2. **Un solo siguiente paso.** Lo que más destraba hoy, con un verbo: "Crea", "Completa", "Revisa".
-3. **Las cifras como protagonistas**, en una sola franja y no en una tarjeta por número.
+1. **Un encabezado en degradado de borde a borde** (`PanelHeader`): ocupa todo el ancho de la columna, sube por detrás de la barra superior (que se vuelve blanca encima) y solo redondea las esquinas de abajo, como la referencia. Saludo grande en los inicios y versión compacta, con botón "volver", en las pantallas internas. El titular dice dónde está la persona, no el nombre del sistema.
+2. **Un solo siguiente paso.** Lo que más destraba hoy, con un verbo: "Crea", "Completa", "Revisa". Va como tarjeta sólida dentro del degradado.
+3. **Las cifras como protagonistas**, en una sola franja montada sobre el borde del degradado (`footer` de `PanelHeader`). Suben desde cero al aparecer (`CountUp`), y las proporciones se muestran con barras de avance (`ProgressBar`).
 4. **Estados vacíos que enseñan.** Un panel vacío explica qué va a aparecer ahí y cómo se consigue.
-5. **Accesible de entrada:** contraste AA, `aria-current` en la navegación, foco visible y animaciones que respetan `prefers-reduced-motion`.
+5. **Movimiento con propósito:** los bloques entran escalonados y las tarjetas se elevan al pasar el cursor; todo se apaga con `prefers-reduced-motion`.
+6. **Accesible de entrada:** contraste AA en todos los colores, `aria-current` en la navegación, foco visible.
+
+Cada público tiene su panel: docente (`/`), orientación (`/orientacion`), administración (`/admin`), familia (`/padre`: qué está aprendiendo, sus apoyos y cómo acompañar desde casa) y estudiante (`/estudiante`: "Hecho para ti", sus asignaturas con tema primero y los apoyos que puede pedir).
 
 ## Historial del nombre
 

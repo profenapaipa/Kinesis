@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CreateUserForm } from "@/components/admin/CreateUserForm";
 import { ToggleUserActiveButton } from "@/components/admin/ToggleUserActiveButton";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
@@ -15,10 +16,12 @@ export default async function AdminUsersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-black tracking-tight">Usuarios</h1>
-        <p className="text-muted-foreground">{users.length} usuario(s) registrados.</p>
-      </div>
+      <PanelHeader
+        size="compact"
+        eyebrow="Administración"
+        title="Usuarios"
+        description={<>{users.length} usuario(s) registrados.</>}
+      />
 
       <CreateUserForm />
 

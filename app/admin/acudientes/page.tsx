@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CreateGuardianLinkForm } from "@/components/admin/CreateGuardianLinkForm";
 import { RemoveGuardianLinkButton } from "@/components/admin/RemoveGuardianLinkButton";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
@@ -19,12 +20,12 @@ export default async function AdminGuardiansPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-black tracking-tight">Acudientes</h1>
-        <p className="text-muted-foreground">
-          {links.length} vínculo(s) entre acudiente y estudiante.
-        </p>
-      </div>
+      <PanelHeader
+        size="compact"
+        eyebrow="Administración"
+        title="Acudientes"
+        description={<>{links.length} vínculo(s) entre acudiente y estudiante.</>}
+      />
 
       <CreateGuardianLinkForm guardians={guardians} students={students} />
 

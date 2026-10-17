@@ -1,19 +1,21 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-import { CheckCircle2, ChevronRight } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronRight, HeartHandshake } from "lucide-react";
+import { EmptyState, PanelCard, PanelHeader, SectionTitle } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/session";
 import { listLatestActivityPerSubject } from "@/lib/data/activities";
 import { getMyPedagogicalSummary, getMyStudentProfile } from "@/lib/data/students";
+import { firstName } from "@/lib/format";
 import { LEARNING_PREFERENCE_LABEL } from "@/lib/studentFriendlyText";
 import { MEN_SUBJECTS } from "@/lib/subjects";
 
+export const metadata: Metadata = { title: "Mi panel" };
+
+// Panel del estudiante. Tono cercano y frases cortas (ver "Tono por público"
+// en docs/IDENTIDAD_DE_MARCA.md): lo primero es qué está aprendiendo y luego
+// cómo lo acompañan. Nunca muestra diagnóstico ni la palabra "PIAR" como
+// etiqueta sobre la persona; solo los apoyos, en lenguaje de estudiante.
 export default async function EstudiantePage() {
   const session = await requireRole("estudiante");
   const profile = await getMyStudentProfile(session);
@@ -21,134 +23,140 @@ export default async function EstudiantePage() {
   const latestActivityBySubject = profile.courseId
     ? await listLatestActivityPerSubject(profile.courseId)
     : new Map();
-  const firstName = profile.fullName.split(" ")[0];
+
+  // Primero las asignaturas que ya tienen tema: es lo que el estudiante
+  // puede abrir hoy.
+  const subjects = [...MEN_SUBJECTS].sort(
+    (a, b) =>
+      Number(latestActivityBySubject.has(b.id)) - Number(latestActivityBySubject.has(a.id))
+  );
+  const friendlySupports =
+    pedagogical?.effectiveSupports.filter((support) => support.studentFriendlyText) ?? [];
+  const courseLabel = profile.grade
+    ? `Curso ${profile.grade}${profile.group ? ` ${profile.group}` : ""}`
+    : "Sin curso activo";
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-black tracking-tight">Hola, {firstName}</h1>
-        <p className="text-muted-foreground">
-          {profile.grade ?? "Sin curso activo"}
-          {profile.group ? ` · ${profile.group}` : ""}
-        </p>
-      </div>
+      <PanelHeader
+        eyebrow={courseLabel}
+        title={`Hola, ${firstName(profile.fullName)}`}
+        description="Aquí ves lo que estás aprendiendo en cada asignatura y cómo te acompañamos en clase."
+        footer={
+          friendlySupports.length > 0 ? (
+            <section className="rounded-3xl bg-card p-6 shadow-card ring-1 ring-border">
+              <p className="text-xs font-bold tracking-[0.14em] text-primary uppercase">
+                Tu plan de aprendizaje
+              </p>
+              <h2 className="mt-1 text-2xl font-black">Hecho para ti</h2>
+              <ul className="mt-4 flex flex-col gap-2.5">
+                {friendlySupports.map((support, index) => (
+                  <li key={index} className="flex items-start gap-2.5">
+                    <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-primary" />
+                    <span>{support.studentFriendlyText}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ) : undefined
+        }
+      />
 
-      <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Mis asignaturas</h2>
-        <p className="text-sm text-muted-foreground">
-          Entra a una asignatura para ver las actividades que cargó tu docente
-          y tu prueba adaptada.
-        </p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {MEN_SUBJECTS.map((subject) => {
+      <section className="flex flex-col gap-3">
+        <SectionTitle
+          title="Mis asignaturas"
+          description="Entra a una asignatura para ver la actividad de tu docente y tu prueba adaptada."
+        />
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {subjects.map((subject) => {
             const Icon = subject.icon;
             const plan = latestActivityBySubject.get(subject.id);
 
-            const cardContent = (
-              <Card className="h-full transition-shadow group-hover:shadow-md group-focus-visible:ring-2 group-focus-visible:ring-ring">
-                <CardContent className="flex items-start gap-3 py-4">
-                  <span
-                    className="flex size-9 shrink-0 items-center justify-center rounded-lg"
-                    style={{
-                      backgroundColor: `${subject.color}1a`,
-                      color: subject.color,
-                    }}
-                  >
-                    <Icon className="size-4" />
+            const content = (
+              <>
+                <span
+                  className="flex size-11 shrink-0 items-center justify-center rounded-2xl"
+                  style={{ backgroundColor: `${subject.color}1f`, color: subject.color }}
+                >
+                  <Icon className="size-5" />
+                </span>
+                <span className="flex min-w-0 flex-1 flex-col">
+                  <span className="font-bold">{subject.shortName}</span>
+                  <span className="truncate text-sm text-muted-foreground">
+                    {plan ? plan.topic : "Todavía sin tema"}
                   </span>
-                  <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="text-sm font-medium">{subject.shortName}</span>
-                    <span className="truncate text-xs text-muted-foreground">
-                      {plan ? `Tema actual: ${plan.topic}` : "Sin planeación cargada"}
-                    </span>
-                  </div>
-                  {plan && (
-                    <ChevronRight className="mt-1 size-4 shrink-0 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
-                  )}
-                </CardContent>
-              </Card>
+                </span>
+                {plan && (
+                  <ChevronRight className="size-5 shrink-0 text-primary transition-transform group-hover:translate-x-0.5 motion-reduce:transition-none" />
+                )}
+              </>
             );
 
             return plan ? (
               <Link
                 key={subject.id}
                 href={`/estudiante/${subject.id}`}
-                className="group focus-visible:outline-none"
+                className="group flex items-center gap-3 rounded-3xl bg-card p-4 shadow-card ring-1 ring-border outline-none transition-[translate,box-shadow] hover:-translate-y-1 hover:ring-primary focus-visible:ring-3 focus-visible:ring-ring/50 motion-reduce:hover:translate-y-0"
               >
-                {cardContent}
+                {content}
               </Link>
             ) : (
-              <div key={subject.id} className="opacity-70">
-                {cardContent}
+              <div
+                key={subject.id}
+                className="flex items-center gap-3 rounded-3xl bg-muted/60 p-4 opacity-75"
+              >
+                {content}
               </div>
             );
           })}
         </div>
+      </section>
+
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <PanelCard>
+          <SectionTitle
+            title="Apoyos que puedes pedir"
+            description="Si los necesitas, pídeselos a tu docente: son tuyos."
+          />
+          {pedagogical && pedagogical.effectiveSupports.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {pedagogical.effectiveSupports.map((support, index) => (
+                <Badge key={index} variant="secondary">
+                  {support.categoryName ?? support.description}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={HeartHandshake}
+              title="Aún no hay apoyos registrados"
+              description="Si sientes que algo te cuesta en clase, cuéntaselo a tu docente o al orientador del colegio."
+            />
+          )}
+        </PanelCard>
+
+        <PanelCard>
+          <SectionTitle
+            title="Tu forma de aprender"
+            description="Así dijiste que aprendes mejor. Igual vas a aprender de muchas formas."
+          />
+          {profile.learningPreferences.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {profile.learningPreferences.map((option) => (
+                <Badge key={option} variant="secondary">
+                  {LEARNING_PREFERENCE_LABEL[option] ?? option}
+                </Badge>
+              ))}
+            </div>
+          ) : (
+            <EmptyState
+              icon={BookOpen}
+              title="Todavía no lo has contado"
+              description="Con tu docente puedes decir si aprendes mejor viendo, escuchando o haciendo."
+            />
+          )}
+        </PanelCard>
       </div>
-
-      <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">Mis apoyos</h2>
-
-        {pedagogical ? (
-          <Card>
-            <CardHeader>
-              <CardTitle>Así te acompañamos en clase</CardTitle>
-              <CardDescription>
-                Estos son los apoyos que tu colegio tiene preparados para ti,
-                de acuerdo con tu PIAR.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-col gap-5">
-              {pedagogical.effectiveSupports.some((support) => support.studentFriendlyText) && (
-                <ul className="flex flex-col gap-2.5">
-                  {pedagogical.effectiveSupports
-                    .filter((support) => support.studentFriendlyText)
-                    .map((support, index) => (
-                      <li key={index} className="flex items-start gap-2.5 text-sm">
-                        <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-primary" />
-                        <span>{support.studentFriendlyText}</span>
-                      </li>
-                    ))}
-                </ul>
-              )}
-
-              {pedagogical.effectiveSupports.length > 0 && (
-                <div>
-                  <p className="text-sm font-medium">Apoyos que puedes usar</p>
-                  <div className="mt-1.5 flex flex-wrap gap-1.5">
-                    {pedagogical.effectiveSupports.map((support, index) => (
-                      <Badge key={index} variant="secondary">
-                        {support.categoryName ?? support.description}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        ) : (
-          <Card>
-            <CardContent className="py-6 text-sm text-muted-foreground">
-              Actualmente no tienes un PIAR activo. Si tú o tu familia creen
-              que podrías necesitar apoyos adicionales, hablen con el
-              orientador o coordinador de tu colegio.
-            </CardContent>
-          </Card>
-        )}
-      </div>
-
-      {profile.learningPreferences.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <h2 className="text-lg font-semibold">Tu forma de aprender</h2>
-          <div className="flex flex-wrap gap-1.5">
-            {profile.learningPreferences.map((option) => (
-              <Badge key={option} variant="outline">
-                {LEARNING_PREFERENCE_LABEL[option] ?? option}
-              </Badge>
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

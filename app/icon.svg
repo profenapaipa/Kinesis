@@ -1,15 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <!-- Logo de Kinesis, mismo trazo que components/brand/BrandMark.tsx. Los
        colores van fijos porque la pestaña del navegador no conoce los tokens
-       de la app; el media query repite la "Dirección C" del modo oscuro. -->
+       de la app; son los del color "Kinesis" (verde bosque) de lib/theme.ts,
+       el predeterminado, con su tono claro para el modo oscuro. -->
   <style>
-    .bg { fill: #5b7088; }
+    .bg { fill: #1b7f56; }
     .mark { stroke: #ffffff; }
     .dot { fill: #ffffff; }
     @media (prefers-color-scheme: dark) {
-      .bg { fill: #3fd9c4; }
-      .mark { stroke: #08201d; }
-      .dot { fill: #08201d; }
+      .bg { fill: #6fd08c; }
+      .mark { stroke: #05231a; }
+      .dot { fill: #05231a; }
     }
   </style>
   <rect class="bg" width="32" height="32" rx="9" />

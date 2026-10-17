@@ -188,8 +188,8 @@ function assertProjectRoot() {
   if (!existsSync(manifest)) throw new Error(`No se encontró package.json en ${ROOT}.`);
 
   const { name } = JSON.parse(readFileSync(manifest, "utf8"));
-  if (name !== "planeacion-piar") {
-    throw new Error(`Se esperaba el proyecto "planeacion-piar" y se encontró "${name}".`);
+  if (name !== "kinesis") {
+    throw new Error(`Se esperaba el proyecto "kinesis" y se encontró "${name}".`);
   }
   for (const [label, binary] of Object.entries(BIN)) {
     if (!existsSync(binary)) {

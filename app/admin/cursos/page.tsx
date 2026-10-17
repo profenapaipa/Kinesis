@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { AssignTeacherForm } from "@/components/admin/AssignTeacherForm";
 import { CreateCourseForm } from "@/components/admin/CreateCourseForm";
 import { EnrollStudentForm } from "@/components/admin/EnrollStudentForm";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { requireSession } from "@/lib/auth/session";
@@ -25,10 +26,12 @@ export default async function AdminCoursesPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h1 className="text-2xl font-black tracking-tight">Cursos</h1>
-        <p className="text-muted-foreground">{courses.length} curso(s) creados.</p>
-      </div>
+      <PanelHeader
+        size="compact"
+        eyebrow="Administración"
+        title="Cursos"
+        description={<>{courses.length} curso(s) creados.</>}
+      />
 
       <CreateCourseForm periods={periods} />
       <EnrollStudentForm courses={courses} students={students} periods={periods} />

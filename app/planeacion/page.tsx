@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { requireRole } from "@/lib/auth/session";
@@ -18,14 +19,12 @@ export default async function PlaneacionPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold">Planeación por asignatura</h2>
-        <p className="text-sm text-muted-foreground">
-          Selecciona una asignatura para cargar o revisar tu planeación de
-          clase, organizadas según las áreas obligatorias y fundamentales del
-          MEN.
-        </p>
-      </div>
+      <PanelHeader
+        size="compact"
+        eyebrow="Planeación"
+        title="Planeación por asignatura"
+        description="Selecciona una asignatura para cargar o revisar tu planeación de clase, organizadas según las áreas obligatorias y fundamentales del MEN."
+      />
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {MEN_SUBJECTS.map((subject) => {

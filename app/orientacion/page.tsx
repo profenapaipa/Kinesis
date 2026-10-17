@@ -41,19 +41,20 @@ export default async function OrientacionPage() {
         title={`Hola, ${firstName}`}
         description="Todo el colegio en una vista: a quién le falta información en su PIAR y cómo van los docentes con el diseño universal."
         aside={<NextStepCard {...step} />}
-      />
-
-      <StatStrip
-        items={[
-          { label: "Estudiantes", value: data.studentCount, hint: `${data.withoutCourseCount} sin curso` },
-          { label: "Con PIAR", value: data.withProfileCount, hint: "Perfil pedagógico registrado" },
-          { label: "Perfiles por completar", value: data.profilesToComplete.length },
-          { label: "Actividades con DUA", value: duaPercent, hint: `De ${data.activityCount} en el colegio` },
-        ]}
+        footer={
+          <StatStrip
+            items={[
+              { label: "Estudiantes", value: data.studentCount, hint: `${data.withoutCourseCount} sin curso` },
+              { label: "Con PIAR", value: data.withProfileCount, hint: "Perfil pedagógico registrado" },
+              { label: "Perfiles por completar", value: data.profilesToComplete.length },
+              { label: "Actividades con DUA", value: duaPercent, hint: `De ${data.activityCount} en el colegio` },
+            ]}
+          />
+        }
       />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
-        <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 ring-1 ring-foreground/10">
+        <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border">
           <SectionTitle
             title="Perfiles PIAR por completar"
             description="Estudiantes con PIAR a los que les falta información para que el docente pueda ajustar."
@@ -111,7 +112,7 @@ export default async function OrientacionPage() {
               {data.courses.map((course) => (
                 <li
                   key={course.courseName}
-                  className="flex items-baseline justify-between gap-3 rounded-2xl bg-card p-4 ring-1 ring-foreground/10"
+                  className="flex items-baseline justify-between gap-3 rounded-2xl bg-card p-4 shadow-card ring-1 ring-border"
                 >
                   <span className="text-xl font-black tracking-tight">{course.courseName}</span>
                   <span className="text-sm text-muted-foreground">

@@ -85,8 +85,8 @@ export async function AdjustmentsView({
               className={cn(
                 "shrink-0 rounded-full px-4 py-2 text-sm font-semibold ring-1 outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                 isSelected
-                  ? "bg-foreground text-background ring-foreground"
-                  : "bg-card text-muted-foreground ring-foreground/10 hover:text-foreground"
+                  ? "bg-primary text-primary-foreground ring-primary"
+                  : "bg-card text-muted-foreground ring-border hover:text-foreground"
               )}
             >
               {getSubject(option.subjectId).shortName} · {option.topic}
@@ -103,7 +103,7 @@ export async function AdjustmentsView({
         />
       ) : (
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-          <section className="flex flex-col gap-4 self-start rounded-2xl bg-card p-5 ring-1 ring-foreground/10 lg:sticky lg:top-24">
+          <section className="flex flex-col gap-4 self-start rounded-2xl bg-card p-5 shadow-card ring-1 ring-border lg:sticky lg:top-24">
             <div className="flex items-center gap-3">
               <span
                 className="flex size-10 shrink-0 items-center justify-center rounded-xl"
@@ -166,7 +166,7 @@ export async function AdjustmentsView({
               students.map((student) => (
                 <article
                   key={student.studentUserId}
-                  className="flex flex-col gap-4 rounded-2xl bg-card p-5 ring-1 ring-foreground/10"
+                  className="flex flex-col gap-4 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border"
                 >
                   <div className="flex items-center justify-between gap-3">
                     <span className="flex items-center gap-2.5">

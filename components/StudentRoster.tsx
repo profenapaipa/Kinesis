@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -71,13 +72,12 @@ export function StudentRoster({ students }: { students: RosterStudent[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-col gap-1">
-        <h2 className="text-xl font-bold">Lista de estudiantes</h2>
-        <p className="text-sm text-muted-foreground">
-          {students.length} estudiantes registrados · {piarCount} con PIAR
-          activo
-        </p>
-      </div>
+      <PanelHeader
+        size="compact"
+        eyebrow="Estudiantes"
+        title="Lista de estudiantes"
+        description={`${students.length} estudiantes registrados · ${piarCount} con PIAR activo`}
+      />
 
       {students.length === 0 ? (
         <Card>

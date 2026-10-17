@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, CalendarClock, ShieldAlert, UserRound } from "lucide-react";
+import { CalendarClock, ShieldAlert, UserRound } from "lucide-react";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { LEARNING_STYLE_LABEL } from "@/lib/studentFriendlyText";
 import {
@@ -55,26 +55,13 @@ export default async function StudentDetailPage({ params }: PageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <Link
-        href="/estudiantes"
-        className="flex w-fit items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft className="size-4" />
-        Volver al listado
-      </Link>
-
-      <div className="flex flex-wrap items-start justify-between gap-3">
-        <div className="flex flex-col gap-1">
-          <h2 className="text-xl font-bold">{profile.fullName}</h2>
-          <p className="text-sm text-muted-foreground">
-            {profile.grade ?? "Sin curso activo"}
-            {profile.group ? ` · ${profile.group}` : ""}
-          </p>
-        </div>
-        {pedagogical && (
-          <Badge className="bg-amber-500 text-white dark:bg-amber-600">PIAR activo</Badge>
-        )}
-      </div>
+      <PanelHeader
+        size="compact"
+        back={{ href: "/estudiantes", label: "Volver al listado" }}
+        eyebrow={pedagogical ? "PIAR activo" : "Sin PIAR activo"}
+        title={profile.fullName}
+        description={`${profile.grade ?? "Sin curso activo"}${profile.group ? ` · ${profile.group}` : ""}`}
+      />
 
       {pedagogical ? (
         <Card>

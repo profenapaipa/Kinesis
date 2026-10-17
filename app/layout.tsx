@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Geist_Mono, Nunito } from "next/font/google";
 import { AppChrome } from "@/components/AppChrome";
 import { SessionProvider } from "@/components/SessionProvider";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { getSession } from "@/lib/auth/session";
 import { BRAND } from "@/lib/brand";
+import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
 // Nunito (opción 2 del comparador en referencias visuales/): una sola
@@ -34,14 +36,23 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   const session = await getSession();
 
   return (
+    // suppressHydrationWarning: el script de <head> agrega data-mode,
+    // data-accent y, con color personalizado, un style a <html> antes de que
+    // React hidrate. Ver "Preventing flash before hydration" en la guía de Next.
     <html
       lang="es"
       className={`${nunito.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full bg-muted/30">
-        <SessionProvider session={session}>
-          <AppChrome>{children}</AppChrome>
-        </SessionProvider>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
+      <body className="min-h-full bg-background">
+        <ThemeProvider>
+          <SessionProvider session={session}>
+            <AppChrome>{children}</AppChrome>
+          </SessionProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

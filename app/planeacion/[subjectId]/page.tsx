@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ClipboardList } from "lucide-react";
 import { CreateActivityForm } from "@/components/CreateActivityForm";
+import { PanelHeader } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -43,15 +44,12 @@ export default async function SubjectPlanningPage({ params }: PageProps) {
   if (courses.length === 0) {
     return (
       <div className="flex flex-col gap-6">
-        <div className="flex items-center gap-3">
-          <span
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl"
-            style={{ backgroundColor: `${subject.color}1a`, color: subject.color }}
-          >
-            <Icon className="size-5" />
-          </span>
-          <h2 className="text-xl font-bold">{subject.name}</h2>
-        </div>
+        <PanelHeader
+          size="compact"
+          back={{ href: "/planeacion", label: "Planeación" }}
+          icon={<Icon className="size-5" style={{ color: subject.color }} />}
+          title={subject.name}
+        />
         <Card>
           <CardContent className="py-8 text-center text-sm text-muted-foreground">
             No tienes la asignatura {subject.shortName} asignada en ningún curso.
@@ -65,24 +63,19 @@ export default async function SubjectPlanningPage({ params }: PageProps) {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex items-center gap-3">
-        <span
-          className="flex size-11 shrink-0 items-center justify-center rounded-xl"
-          style={{ backgroundColor: `${subject.color}1a`, color: subject.color }}
-        >
-          <Icon className="size-5" />
-        </span>
-        <div className="flex flex-col gap-0.5">
-          <h2 className="text-xl font-bold">{subject.name}</h2>
-          <p className="text-sm text-muted-foreground">
-            {plans.length > 0
-              ? `${plans.length} actividad${plans.length > 1 ? "es" : ""} cargada${
-                  plans.length > 1 ? "s" : ""
-                }`
-              : "Aún no hay actividades cargadas para esta asignatura"}
-          </p>
-        </div>
-      </div>
+      <PanelHeader
+        size="compact"
+        back={{ href: "/planeacion", label: "Planeación" }}
+        icon={<Icon className="size-5" style={{ color: subject.color }} />}
+        title={subject.name}
+        description={
+          plans.length > 0
+            ? `${plans.length} actividad${plans.length > 1 ? "es" : ""} cargada${
+                plans.length > 1 ? "s" : ""
+              }`
+            : "Aún no hay actividades cargadas para esta asignatura"
+        }
+      />
 
       <CreateActivityForm subjectId={subjectId} courses={courses} />
 

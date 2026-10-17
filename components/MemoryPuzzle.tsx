@@ -101,7 +101,7 @@ export function MemoryPuzzle({ seed }: { seed: string }) {
                 "flex aspect-square items-center justify-center rounded-xl border text-2xl transition-all focus-visible:ring-3 focus-visible:ring-ring/50",
                 isRevealed
                   ? matched.has(index)
-                    ? "border-(--palette-mint) bg-(--palette-mint)/40"
+                    ? "border-primary bg-primary/15"
                     : "border-primary bg-primary/10"
                   : "border-border bg-muted hover:bg-muted/70"
               )}
@@ -113,7 +113,7 @@ export function MemoryPuzzle({ seed }: { seed: string }) {
       </div>
 
       {isWon && (
-        <div className="flex items-center gap-2 rounded-lg bg-(--palette-mint)/40 px-3 py-2 text-sm font-medium">
+        <div className="flex items-center gap-2 rounded-xl bg-primary/15 px-3 py-2 text-sm font-medium">
           <PartyPopper className="size-4" />
           ¡Completaste el reto en {moves} intentos!
         </div>
