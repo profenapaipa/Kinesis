@@ -10,5 +10,8 @@ export function formatToday(): string {
 }
 
 export function firstName(fullName: string): string {
+  // Los estudiantes de la demostración se llaman «Estudiante 8A-03»: la primera
+  // palabra sola ("Estudiante") no los identifica.
+  if (/^Estudiante\s/.test(fullName)) return fullName;
   return fullName.split(" ")[0] ?? fullName;
 }

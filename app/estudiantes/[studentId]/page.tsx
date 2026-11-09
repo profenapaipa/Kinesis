@@ -1,3 +1,4 @@
+import { firstName } from "@/lib/format";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { CalendarClock, ShieldAlert, UserRound } from "lucide-react";
@@ -12,7 +13,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { FollowUpCard } from "@/components/followup/FollowUpCard";
 import { requireRole } from "@/lib/auth/session";
+import { getFollowSummary, listFollowUp } from "@/lib/data/followUp";
 import { getClinicalDiagnosis } from "@/lib/data/clinicalInfo";
 import {
   getPedagogicalSummaryForSupport,
@@ -50,6 +53,8 @@ export default async function StudentDetailPage({ params }: PageProps) {
   const pedagogical = isSupport
     ? await getPedagogicalSummaryForSupport(session, studentId)
     : await getPedagogicalSummaryForTeacher(session, studentId);
+  const followNotes = await listFollowUp(session, studentId);
+  const followSummary = await getFollowSummary(session, studentId);
   const canSeeDiagnosis = await canViewDiagnosis(session, studentId);
   const diagnosis = canSeeDiagnosis ? await getClinicalDiagnosis(session, studentId) : null;
 
@@ -60,7 +65,7 @@ export default async function StudentDetailPage({ params }: PageProps) {
         back={{ href: "/estudiantes", label: "Volver al listado" }}
         eyebrow={pedagogical ? "PIAR activo" : "Sin PIAR activo"}
         title={profile.fullName}
-        description={`${profile.grade ?? "Sin curso activo"}${profile.group ? ` · ${profile.group}` : ""}`}
+        description={profile.grade ? `Curso ${profile.grade.replace("°", "")}${profile.group ?? ""}` : "Sin curso activo"}
       />
 
       {pedagogical ? (
@@ -161,18 +166,26 @@ export default async function StudentDetailPage({ params }: PageProps) {
       ) : (
         <Card>
           <CardContent className="py-6 text-sm text-muted-foreground">
-            {profile.fullName.split(" ")[0]} no tiene un PIAR activo actualmente.
+            {firstName(profile.fullName)} no tiene un PIAR activo actualmente.
           </CardContent>
         </Card>
       )}
 
       <Card>
         <CardHeader>
-          <CardTitle>Avance del estudiante</CardTitle>
-          <CardDescription>Seguimiento por asignatura frente al período anterior.</CardDescription>
+          <CardTitle>Seguimiento y recomendaciones</CardTitle>
+          <CardDescription>
+            Síntesis de lo que orientación y el docente han recomendado y acordado, junto con el avance
+            del estudiante. Sin información clínica.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="py-6 text-sm text-muted-foreground">
-          El seguimiento de avance estará disponible próximamente.
+        <CardContent>
+          <FollowUpCard
+            studentUserId={studentId}
+            role={session.role as "orientador" | "docente"}
+            notes={followNotes}
+            summary={followSummary}
+          />
         </CardContent>
       </Card>
     </div>

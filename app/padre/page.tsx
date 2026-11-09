@@ -9,7 +9,9 @@ import {
   type StatItem,
 } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
+import { FollowUpCard } from "@/components/followup/FollowUpCard";
 import { requireRole, type Session } from "@/lib/auth/session";
+import { listFollowUp } from "@/lib/data/followUp";
 import { RoleSummaryCard } from "@/components/RoleSummaryCard";
 import { getRoleSummary } from "@/lib/data/roleSummary";
 import { listLatestActivityPerSubject, type StudentActivityView } from "@/lib/data/activities";
@@ -42,7 +44,8 @@ async function loadChild(session: Session, child: GuardianChild) {
     const plan = latestActivityBySubject.get(subject.id);
     return plan ? [{ subject, topic: plan.topic }] : [];
   });
-  return { child, profile, pedagogical, currentTopics };
+  const followNotes = await listFollowUp(session, child.studentUserId);
+  return { child, profile, pedagogical, currentTopics, followNotes };
 }
 
 type ChildData = Awaited<ReturnType<typeof loadChild>>;
@@ -68,7 +71,7 @@ function childStats({ pedagogical, currentTopics }: ChildData): StatItem[] {
 }
 
 function ChildSection({ data, showStats }: { data: ChildData; showStats: boolean }) {
-  const { profile, pedagogical, currentTopics } = data;
+  const { profile, pedagogical, currentTopics, followNotes, child } = data;
   const name = firstName(profile.fullName);
   const course = profile.grade
     ? `${profile.grade}${profile.group ? ` ${profile.group}` : ""}`
@@ -192,6 +195,16 @@ function ChildSection({ data, showStats }: { data: ChildData; showStats: boolean
             ))}
           </ul>
         </section>
+      )}
+
+      {followNotes.length > 0 && (
+        <PanelCard>
+          <SectionTitle
+            title="Seguimiento"
+            description="Lo que el colegio decidió compartir contigo sobre el acompañamiento."
+          />
+          <FollowUpCard studentUserId={child.studentUserId} notes={followNotes} summary={null} role="padre" />
+        </PanelCard>
       )}
     </div>
   );

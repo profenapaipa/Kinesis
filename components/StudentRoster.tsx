@@ -37,7 +37,7 @@ function StudentCard({ student }: { student: RosterStudent }) {
       <CardHeader className="flex-row items-start justify-between gap-2">
         <div>
           <CardTitle>{student.fullName}</CardTitle>
-          <CardDescription>{student.group}</CardDescription>
+          <CardDescription>Curso {student.grade.replace("°", "")}{student.group}</CardDescription>
         </div>
         <div className="flex flex-col items-end gap-1">
           <Badge variant="outline">{student.grade}</Badge>

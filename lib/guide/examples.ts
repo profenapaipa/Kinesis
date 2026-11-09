@@ -13,7 +13,7 @@ import type { Role } from "@/types";
 //              resumen por rol). En la demostración se ve pero no se guarda.
 //   - "pronto": todavía NO existe (editar el PIAR desde la pantalla, ajustes
 //              devueltos con nota, IA conectada). Se dice, no se simula.
-// Los estudiantes se nombran solo con el código de la plataforma (P-03…); la
+// Los estudiantes se nombran solo con el código de la plataforma (8A-03…); la
 // demostración de Kinesis usa nombres ficticios y no hay que confundirlos.
 
 export type StepStatus = "hoy" | "nuevo" | "pronto";
@@ -45,42 +45,42 @@ export const GUIDE_CASES: GuideCase[] = [
     id: 6,
     subject: "Tecnología e informática",
     activity: "Mi primer programa con Turtle (Python)",
-    student: "P-04",
+    student: "8A-04",
     supports: "pasos con un ejemplo que ya funciona, apoyo visual, programación en pareja, retos por niveles y editor con letra grande",
   },
   {
     id: 1,
     subject: "Inglés",
     activity: "Mi rutina del día",
-    student: "P-03",
+    student: "8A-03",
     supports: "pasos cortos, apoyo visual, tiempo adicional, evitar leer en voz alta y una sola tarea a la vez",
   },
   {
     id: 2,
     subject: "Matemáticas",
     activity: "Recetas y escalas: razón y proporción",
-    student: "P-07",
+    student: "8A-07",
     supports: "vocabulario de apoyo y tiempo adicional",
   },
   {
     id: 3,
     subject: "Ciencias naturales",
     activity: "Quién come a quién: cadenas alimentarias",
-    student: "P-02",
+    student: "8A-02",
     supports: "descansos activos e instrucciones orales y escritas",
   },
   {
     id: 4,
     subject: "Lengua castellana",
     activity: "Escribo un cuento corto",
-    student: "P-05",
+    student: "8A-05",
     supports: "evitar leer en voz alta frente al curso y pasos cortos",
   },
   {
     id: 5,
     subject: "Ciencias sociales",
     activity: "Línea de tiempo de la Independencia",
-    student: "P-08",
+    student: "8A-08",
     supports: "apoyo visual y una sola tarea; orientación devuelve el ajuste con una nota",
   },
 ];
@@ -96,6 +96,7 @@ export const GUIDE_BY_ROLE: Record<Role, GuideExample[]> = {
         { text: "Escribe los tres principios del DUA: ejemplo y diagrama de flujo, código o bloques o explicación oral, y elegir la figura con pareja y pausa.", status: "hoy", href: "/planeacion/tecnologia-informatica" },
         { text: "En Ajustes PIAR contrasta con el estudiante: ejemplo funcionando, retos por niveles y programación en pareja.", status: "hoy", href: "/generador" },
         { text: "Tras la sesión, registra: «con el diagrama de flujo antes del código terminó el cuadrado». Pídele a Niky que ordene la nota.", status: "nuevo", href: "/bitacora" },
+        { text: "Califica la actividad en Progreso: nota de 1,0 a 5,0 y un comentario. El quiz de Wisfox es evidencia, la nota es tuya.", status: "nuevo", href: "/progreso" },
       ],
       result: "La actividad queda alineada con la malla y con los apoyos del estudiante, y la bitácora guarda qué funcionó con fecha.",
       decides: "Qué evidencias de la malla trabajas en esta actividad (no hay que cubrirlas todas) y cuál es el reto mínimo.",
@@ -164,6 +165,7 @@ export const GUIDE_BY_ROLE: Record<Role, GuideExample[]> = {
         { text: "En Inicio revisa que el perfil no figure entre los «por completar».", status: "hoy", href: "/orientacion" },
         { text: "Abre la ficha: apoyos, barreras y fortalezas del estudiante.", status: "hoy", href: "/estudiantes" },
         { text: "Mira en la bitácora qué funcionó en Tecnología: diagrama antes del código, trabajo en pareja.", status: "nuevo", href: "/bitacora" },
+        { text: "En la ficha, deja una recomendación de orientación sin diagnóstico («normalizar el error, resultados visibles primero») y la fecha de la próxima revisión.", status: "nuevo", href: "/estudiantes" },
         { text: "Revisa en Documentos que estén el PIAR y la valoración pedagógica.", status: "nuevo", href: "/documentos" },
         { text: "Confirmar «retos por niveles» como apoyo con fecha de revisión.", status: "pronto" },
       ],
@@ -293,6 +295,7 @@ export const GUIDE_BY_ROLE: Record<Role, GuideExample[]> = {
         { text: "Mira «Mi primer programa con Turtle (Python)» como tema de Tecnología.", status: "hoy", href: "/padre" },
         { text: "Lee «Para la casa»: preguntarle qué dibujó hoy con el código y celebrar el intento aunque falle.", status: "hoy", href: "/padre" },
         { text: "Cuenta lo que ves en casa: «dibujó su inicial con el código».", status: "nuevo", href: "/bitacora" },
+        { text: "Lee las recomendaciones que el colegio compartió contigo y cómo va en Progreso.", status: "nuevo", href: "/progreso" },
       ],
       result: "La familia acompaña sin necesidad de entender el código y el colegio sabe qué se vio en casa.",
       decides: "Cómo celebrar el intento en casa.",
@@ -356,6 +359,7 @@ export const GUIDE_BY_ROLE: Record<Role, GuideExample[]> = {
         { text: "Lee los pasos: cada uno trae un ejemplo que ya funciona y que puedes cambiar.", status: "hoy", href: "/estudiante" },
         { text: "Marca en «Mi forma de aprender»: imágenes y trabajar con un compañero.", status: "nuevo", href: "/estudiante" },
         { text: "Si te da error, recuerda: error, pista, nuevo intento. Después cuenta qué te ayudó.", status: "nuevo", href: "/bitacora" },
+        { text: "Mira tu nota y el comentario de tu docente en Mi progreso.", status: "nuevo", href: "/progreso" },
       ],
       result: "Tu docente sabe qué te ayuda a programar.",
       decides: "Con qué reto empiezas: mínimo, esperado o extra.",

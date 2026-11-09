@@ -1,3 +1,4 @@
+import { firstName as nameOf } from "@/lib/format";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CheckCircle2, ClipboardCheck, UserRound, Users } from "lucide-react";
@@ -24,7 +25,7 @@ export default async function OrientacionPage() {
   const step = first
     ? {
         icon: ClipboardCheck,
-        title: `Completa el perfil de ${first.fullName.split(" ")[0]}`,
+        title: `Completa el perfil de ${nameOf(first.fullName)}`,
         description: `Le falta: ${first.missing.join(", ")}. Sin eso, su docente no tiene con qué ajustar la clase.`,
         href: `/estudiantes/${first.studentUserId}`,
         cta: "Abrir su ficha",

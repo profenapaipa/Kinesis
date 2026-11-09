@@ -1,7 +1,7 @@
 // Script de semilla — idempotente (se puede correr varias veces sin
 // duplicar datos). Uso: npm run db:seed
 //
-// Siembra 10 estudiantes simulados del curso 8°-A (solo código P-01 a P-10, 6 con
+// Siembra 10 estudiantes simulados del curso 8°-A (solo código 8A-01 a 8A-10, 6 con
 // PIAR; ver db/demoRoster.ts) a usuarios/matrículas/perfil-pedagógico/información-clínica reales,
 // y siembra un administrador y un docente de demostración.
 
@@ -10,12 +10,14 @@ import { db } from "./index";
 import {
   academicPeriods,
   activities,
+  activityProgress,
   classLogEntries,
   clinicalInfo,
   courses,
   courseTeachers,
   effectiveSupports,
   enrollments,
+  followUpNotes,
   guardianStudents,
   institutionDocuments,
   pedagogicalBarriers,
@@ -383,20 +385,20 @@ async function main() {
       days: number;
     };
     const logSeeds: LogSeed[] = [
-      { by: "docente", student: "P-04", act: "tecnologia", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con el diagrama de flujo antes del código terminó el cuadrado con Turtle.", viaNiky: true, days: 6 },
-      { by: "docente", student: "P-04", act: "tecnologia", kind: "lo_que_funciono", modality: "en_pareja", outcome: "funciono", body: "En pareja, con roles que rotan, corrigió el error y explicó qué pasó.", days: 5 },
-      { by: "docente", student: "P-04", act: "tecnologia", kind: "novedad", body: "Se detuvo ante el primer error; la pareja le recordó «error, pista, nuevo intento» y siguió.", days: 5 },
-      { by: "docente", student: "P-03", act: "ingles", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con una tarjeta de imágenes por cada paso terminó «Mi rutina del día» sin pedir ayuda.", shared: true, viaNiky: true, days: 4 },
-      { by: "docente", student: "P-03", act: "ingles", kind: "lo_que_funciono", modality: "digital", outcome: "funciono", body: "Entregó la rutina grabada y se mostró tranquilo.", shared: true, days: 3 },
-      { by: "docente", student: "P-03", act: "ingles", kind: "lo_que_funciono", modality: "auditiva", outcome: "funciono_parcialmente", body: "Escuchar el vocabulario sin la tarjeta le sirvió a medias.", days: 3 },
-      { by: "docente", student: "P-07", act: "matematicas", kind: "novedad", body: "Pidió el glosario dos veces durante la clase de razón y proporción.", days: 2 },
-      { by: "docente", student: "P-07", act: "matematicas", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La tabla de datos le ayudó a ubicar la razón antes de resolver.", days: 2 },
-      { by: "docente", student: "P-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Con la pausa activa a mitad de clase volvió a la cadena alimentaria.", days: 1 },
-      { by: "docente", student: "P-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Armar la cadena con tarjetas le ayudó a entender quién come a quién.", viaNiky: true, days: 1 },
-      { by: "docente", student: "P-02", kind: "observacion", body: "Revisar la próxima semana cómo se organiza al trabajar en pareja.", days: 1 },
-      { by: "docente", student: "P-08", act: "sociales", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La línea con imágenes le ayudó a ubicar los hechos en orden; faltó probar una sola tarea a la vez.", shared: true, days: 1 },
-      { by: "padre", student: "P-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "En casa, la lista con dibujos le ayudó a organizar su tarde.", days: 2 },
-      { by: "estudiante", student: "P-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con las imágenes entendí mejor los pasos.", days: 1 },
+      { by: "docente", student: "8A-04", act: "tecnologia", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con el diagrama de flujo antes del código terminó el cuadrado con Turtle.", viaNiky: true, days: 6 },
+      { by: "docente", student: "8A-04", act: "tecnologia", kind: "lo_que_funciono", modality: "en_pareja", outcome: "funciono", body: "En pareja, con roles que rotan, corrigió el error y explicó qué pasó.", days: 5 },
+      { by: "docente", student: "8A-04", act: "tecnologia", kind: "novedad", body: "Se detuvo ante el primer error; la pareja le recordó «error, pista, nuevo intento» y siguió.", days: 5 },
+      { by: "docente", student: "8A-03", act: "ingles", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con una tarjeta de imágenes por cada paso terminó «Mi rutina del día» sin pedir ayuda.", shared: true, viaNiky: true, days: 4 },
+      { by: "docente", student: "8A-03", act: "ingles", kind: "lo_que_funciono", modality: "digital", outcome: "funciono", body: "Entregó la rutina grabada y se mostró tranquilo.", shared: true, days: 3 },
+      { by: "docente", student: "8A-03", act: "ingles", kind: "lo_que_funciono", modality: "auditiva", outcome: "funciono_parcialmente", body: "Escuchar el vocabulario sin la tarjeta le sirvió a medias.", days: 3 },
+      { by: "docente", student: "8A-07", act: "matematicas", kind: "novedad", body: "Pidió el glosario dos veces durante la clase de razón y proporción.", days: 2 },
+      { by: "docente", student: "8A-07", act: "matematicas", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La tabla de datos le ayudó a ubicar la razón antes de resolver.", days: 2 },
+      { by: "docente", student: "8A-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Con la pausa activa a mitad de clase volvió a la cadena alimentaria.", days: 1 },
+      { by: "docente", student: "8A-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Armar la cadena con tarjetas le ayudó a entender quién come a quién.", viaNiky: true, days: 1 },
+      { by: "docente", student: "8A-02", kind: "observacion", body: "Revisar la próxima semana cómo se organiza al trabajar en pareja.", days: 1 },
+      { by: "docente", student: "8A-08", act: "sociales", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La línea con imágenes le ayudó a ubicar los hechos en orden; faltó probar una sola tarea a la vez.", shared: true, days: 1 },
+      { by: "padre", student: "8A-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "En casa, la lista con dibujos le ayudó a organizar su tarde.", days: 2 },
+      { by: "estudiante", student: "8A-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con las imágenes entendí mejor los pasos.", days: 1 },
     ];
     for (const seed of logSeeds) {
       const studentUserId = studentIdByMock.get(seed.student);
@@ -428,9 +430,9 @@ async function main() {
     console.log("Sembrando «mi forma de aprender» de demostración...");
     type PreferenceOption = (typeof studentLearningPreferences.$inferInsert)["option"];
     const preferences: Array<[string, PreferenceOption[]]> = [
-      ["P-03", ["imagenes", "instrucciones_paso_a_paso"]],
-      ["P-02", ["explicaciones_profesor", "practicar_directamente"]],
-      ["P-04", ["imagenes", "trabajar_con_companero"]],
+      ["8A-03", ["imagenes", "instrucciones_paso_a_paso"]],
+      ["8A-02", ["explicaciones_profesor", "practicar_directamente"]],
+      ["8A-04", ["imagenes", "trabajar_con_companero"]],
     ];
     for (const [key, options] of preferences) {
       const studentUserId = studentIdByMock.get(key);
@@ -438,6 +440,76 @@ async function main() {
       for (const option of options) {
         await db.insert(studentLearningPreferences).values({ studentUserId, option, selected: true });
       }
+    }
+  }
+
+  const existingProgress = await db.select({ id: activityProgress.id }).from(activityProgress).get();
+  if (!existingProgress) {
+    console.log("Sembrando progreso y notas de demostración...");
+    // Evidencia que vendría de Wisfox (quizes y rutas). Es de ejemplo: respalda el
+    // avance pero la nota la pone el docente.
+    const quiz = (n: number) => ["Quiz de Wisfox", `${n} de 5`] as const;
+    const progressSeeds: Array<{ act: string; student: string; status: "en_curso" | "entregada" | "calificada"; score?: number; fb?: string; ev?: readonly [string, string] }> = [
+      { act: "tecnologia", student: "8A-04", status: "calificada", score: 4.2, fb: "Tu cuadrado con ciclo funciona. Sigue con la figura propia.", ev: quiz(4) },
+      { act: "tecnologia", student: "8A-03", status: "calificada", score: 4.5, fb: "Muy buen orden en el diagrama de flujo." },
+      { act: "tecnologia", student: "8A-02", status: "entregada", ev: quiz(3) },
+      { act: "tecnologia", student: "8A-01", status: "calificada", score: 3.8, fb: "Falta explicar qué cambiaste." },
+      { act: "tecnologia", student: "8A-05", status: "en_curso" },
+      { act: "ingles", student: "8A-03", status: "calificada", score: 4.3, fb: "Tu rutina grabada se entiende muy bien.", ev: quiz(5) },
+      { act: "ingles", student: "8A-05", status: "entregada" },
+      { act: "matematicas", student: "8A-07", status: "calificada", score: 4.0, fb: "Usaste bien el glosario para escalar la receta.", ev: quiz(4) },
+      { act: "matematicas", student: "8A-03", status: "en_curso" },
+      { act: "ciencias", student: "8A-02", status: "calificada", score: 4.6, fb: "Tu cadena alimentaria quedó completa.", ev: quiz(5) },
+      { act: "lengua", student: "8A-05", status: "entregada" },
+      { act: "sociales", student: "8A-08", status: "en_curso", ev: quiz(3) },
+    ];
+    for (const seed of progressSeeds) {
+      const activityId = activityIdByKey.get(seed.act);
+      const studentUserId = studentIdByMock.get(seed.student);
+      if (!activityId || !studentUserId) continue;
+      await db.insert(activityProgress).values({
+        activityId,
+        studentUserId,
+        status: seed.status,
+        evidenceSource: seed.ev?.[0] ?? null,
+        evidenceDetail: seed.ev?.[1] ?? null,
+        score: seed.score ?? null,
+        feedback: seed.fb ?? null,
+        gradedBy: seed.score ? teacher.id : null,
+        gradedAt: seed.score ? new Date().toISOString() : null,
+      });
+    }
+  }
+
+  const existingFollow = await db.select({ id: followUpNotes.id }).from(followUpNotes).get();
+  if (!existingFollow) {
+    console.log("Sembrando seguimiento y recomendaciones de demostración...");
+    type FollowInsert = typeof followUpNotes.$inferInsert;
+    const followSeeds: Array<{ student: string; by: "orientador" | "docente"; kind: FollowInsert["kind"]; body: string; shared?: boolean; review?: string; days: number }> = [
+      { student: "8A-03", by: "orientador", kind: "recomendacion", body: "Anticipar los cambios de actividad con una señal visual y dividir las instrucciones en pasos cortos. Ofrecer siempre la entrega grabada en las actividades orales.", shared: true, review: "2026-11-27", days: 12 },
+      { student: "8A-03", by: "orientador", kind: "acuerdo", body: "Con la familia se acordó practicar en casa una lista con dibujos para organizar la tarde y avisar al colegio si hay cambios de ánimo antes de una exposición.", shared: true, days: 9 },
+      { student: "8A-03", by: "docente", kind: "seguimiento", body: "Periodo 3: entregó sus actividades orales grabadas y completó la rutina de cinco pasos sin ayuda. Se mantienen los apoyos.", shared: true, days: 4 },
+      { student: "8A-04", by: "orientador", kind: "recomendacion", body: "Normalizar el error como parte del proceso («error, pista, nuevo intento») y dar primero resultados visibles y rápidos antes de pasar a lo abstracto. Mantener la programación en pareja con roles claros.", shared: true, review: "2026-11-27", days: 10 },
+      { student: "8A-04", by: "docente", kind: "seguimiento", body: "Tecnología, periodo 3: con el diagrama antes del código terminó el cuadrado con Turtle; corrigió un error con su pareja y explicó qué pasó. Va a por la figura propia.", shared: true, days: 3 },
+      { student: "8A-02", by: "orientador", kind: "recomendacion", body: "Programar las pausas activas (cada 25 minutos) en lugar de esperar a que se agote, dar las instrucciones por dos canales y asignarle roles activos en el trabajo de grupo.", shared: true, review: "2026-11-27", days: 11 },
+      { student: "8A-02", by: "docente", kind: "seguimiento", body: "En Ciencias naturales armó la cadena alimentaria con tarjetas y mantuvo la atención con una sola pausa. Seguimos con el mismo apoyo.", days: 2 },
+      { student: "8A-07", by: "orientador", kind: "recomendacion", body: "Presentar el vocabulario nuevo con imagen y ejemplo antes de la actividad, y verificar que entiende el enunciado antes de pedir la solución.", shared: true, review: "2026-11-27", days: 10 },
+      { student: "8A-05", by: "orientador", kind: "recomendacion", body: "Ofrecer formatos de entrega alternativos desde el diseño de la actividad y reconocer por escrito sus avances; evitar la lectura pública forzada.", shared: true, review: "2026-11-27", days: 9 },
+      { student: "8A-08", by: "orientador", kind: "acuerdo", body: "El docente propone entregar una tarea a la vez en Ciencias sociales; orientación lo revisa y responde antes del próximo periodo.", days: 1 },
+    ];
+    for (const seed of followSeeds) {
+      const studentUserId = studentIdByMock.get(seed.student);
+      if (!studentUserId) continue;
+      await db.insert(followUpNotes).values({
+        studentUserId,
+        authorUserId: seed.by === "docente" ? teacher.id : orientador.id,
+        authorRole: seed.by,
+        kind: seed.kind,
+        body: seed.body,
+        sharedWithGuardian: seed.shared ?? false,
+        reviewDate: seed.review ?? null,
+        createdAt: daysAgo(seed.days),
+      });
     }
   }
 
@@ -463,13 +535,13 @@ async function main() {
       { docType: "calendario-periodos", title: "Calendario escolar y periodos académicos", by: adminUser.id, fileName: "03_Calendario_escolar_y_periodos_2026.pdf", sizeBytes: 2_700, mimeType: PDF, days: 38 },
       { docType: "malla-curricular", title: "Malla curricular por área y grado", by: teacher.id, forCourse: techActivityCourse, fileName: "MALLA_TECNOLOGIA_1_a_11_2026.xlsx", sizeBytes: 1_361_535, mimeType: XLSX, days: 30 },
       { docType: "plan-aula-dua", title: "Plan de aula con DUA", by: teacher.id, forCourse: techActivityCourse, fileName: "02_Plan_de_aula_DUA_Tecnologia_8A_Python_Turtle.pdf", sizeBytes: 5_800, mimeType: PDF, days: 12 },
-      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-03", fileName: "01_PIAR_P-03.pdf", sizeBytes: 4_300, mimeType: PDF, days: 9 },
-      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-07", fileName: "02_PIAR_P-07.pdf", sizeBytes: 4_100, mimeType: PDF, days: 9 },
-      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-02", fileName: "03_PIAR_P-02.pdf", sizeBytes: 4_200, mimeType: PDF, days: 8 },
-      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-04", fileName: "06_PIAR_P-04.pdf", sizeBytes: 4_400, mimeType: PDF, days: 8 },
-      { docType: "acta-familia", title: "Acta de socialización del PIAR con la familia", by: orientador.id, student: "P-03", fileName: "07_Acta_socializacion_PIAR_P-03.pdf", sizeBytes: 2_800, mimeType: PDF, days: 6 },
-      { docType: "autorizacion-datos-menores", title: "Autorización de tratamiento de datos de menores", by: guardian.id, student: "P-03", fileName: "02_Autorizacion_datos_P-03_firmada.pdf", sizeBytes: 2_500, mimeType: PDF, days: 5 },
-      { docType: "soporte-clinico", title: "Soporte clínico o informe de un profesional externo", by: orientador.id, student: "P-03", fileName: "01_Soporte_clinico_P-03.pdf", sizeBytes: 2_700, mimeType: PDF, days: 5 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "8A-03", fileName: "01_PIAR_8A-03.pdf", sizeBytes: 4_300, mimeType: PDF, days: 9 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "8A-07", fileName: "02_PIAR_8A-07.pdf", sizeBytes: 4_100, mimeType: PDF, days: 9 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "8A-02", fileName: "03_PIAR_8A-02.pdf", sizeBytes: 4_200, mimeType: PDF, days: 8 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "8A-04", fileName: "06_PIAR_8A-04.pdf", sizeBytes: 4_400, mimeType: PDF, days: 8 },
+      { docType: "acta-familia", title: "Acta de socialización del PIAR con la familia", by: orientador.id, student: "8A-03", fileName: "07_Acta_socializacion_PIAR_8A-03.pdf", sizeBytes: 2_800, mimeType: PDF, days: 6 },
+      { docType: "autorizacion-datos-menores", title: "Autorización de tratamiento de datos de menores", by: guardian.id, student: "8A-03", fileName: "02_Autorizacion_datos_8A-03_firmada.pdf", sizeBytes: 2_500, mimeType: PDF, days: 5 },
+      { docType: "soporte-clinico", title: "Soporte clínico o informe de un profesional externo", by: orientador.id, student: "8A-03", fileName: "01_Soporte_clinico_8A-03.pdf", sizeBytes: 2_700, mimeType: PDF, days: 5 },
     ];
     for (const doc of docSeeds) {
       await db.insert(institutionDocuments).values({
@@ -490,8 +562,8 @@ async function main() {
   console.log("\nListo. Credenciales de demostración:");
   console.log("  Administrador -> usuario: admin           contraseña: admin123");
   console.log("  Docente       -> usuario: docente         contraseña: docente123");
-  console.log("  Estudiantes   -> usuario: p-01 a p-10  contraseña: estudiante123");
-  console.log("  Acudiente     -> usuario: padre.demo      contraseña: padre123 (vinculado al estudiante P-03)");
+  console.log("  Estudiantes   -> usuario: 8a-01 a 8a-10  contraseña: estudiante123");
+  console.log("  Acudiente     -> usuario: padre.demo      contraseña: padre123 (vinculado al estudiante 8A-03)");
   console.log("  Orientador/a  -> usuario: orientador.demo contraseña: orientador123 (acceso institucional completo)");
 }
 

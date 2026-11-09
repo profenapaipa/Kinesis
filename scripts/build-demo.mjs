@@ -59,7 +59,7 @@ const ROLES = [
     role: "docente",
     label: "Docente",
     home: "/",
-    keep: ["page.tsx", "estudiantes", "planeacion", "generador", "bitacora", "documentos", "guia"],
+    keep: ["page.tsx", "estudiantes", "planeacion", "generador", "progreso", "bitacora", "documentos", "guia"],
     blurb:
       "Su lista de estudiantes, la planeación por asignatura con los tres principios del DUA y el generador de ajustes.",
   },
@@ -83,7 +83,7 @@ const ROLES = [
     role: "estudiante",
     label: "Estudiante",
     home: "/estudiante",
-    keep: ["estudiante", "bitacora", "guia"],
+    keep: ["estudiante", "progreso", "bitacora", "guia"],
     blurb:
       "Su propio panel: sus asignaturas, sus apoyos explicados en lenguaje cercano y su prueba adaptada.",
   },
@@ -91,7 +91,7 @@ const ROLES = [
     role: "padre",
     label: "Acudiente",
     home: "/padre",
-    keep: ["padre", "bitacora", "documentos", "guia"],
+    keep: ["padre", "progreso", "bitacora", "documentos", "guia"],
     blurb:
       "Panel de la familia: el resumen pedagógico de su hijo o hija, sin acceso al diagnóstico clínico.",
   },

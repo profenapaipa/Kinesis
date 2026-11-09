@@ -172,8 +172,7 @@ export default async function EstudianteSubjectPage({
                   Actividad interactiva de repaso
                 </CardTitle>
                 <CardDescription>
-                  Una pausa activa para todos los estudiantes con PIAR — encuentra
-                  las parejas.
+                  Una pausa activa para quien la quiera: encuentra las parejas.
                 </CardDescription>
               </CardHeader>
               <CardContent>

@@ -1,4 +1,4 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { integer, real, sqliteTable, text, uniqueIndex } from "drizzle-orm/sqlite-core";
 
 // Todas las tablas usan id de texto (UUID) para mantener el mismo estilo de
 // identificador legible que ya usaba lib/mockData.ts, y timestamps ISO-8601
@@ -412,6 +412,66 @@ export const institutionDocuments = sqliteTable("institution_documents", {
   storagePath: text("storage_path"),
   uploadedBy: text("uploaded_by").references(() => users.id),
   notes: text("notes"),
+  createdAt: createdAt(),
+});
+
+// ---------------------------------------------------------------------------
+// Progreso y calificación por actividad
+// ---------------------------------------------------------------------------
+
+// Una fila por estudiante y actividad. El estado y la nota los pone el docente
+// en Kinesis; la "evidencia" es de dónde viene lo que respalda el avance (p. ej.
+// un quiz de Wisfox) y NUNCA reemplaza la nota: Wisfox aporta evidencia, el
+// docente califica. La escala es la del sistema institucional (1,0 a 5,0 en el
+// ejemplo); los ajustes del PIAR cambian el tiempo o el formato, no la escala.
+export const activityProgress = sqliteTable(
+  "activity_progress",
+  {
+    id: id(),
+    activityId: text("activity_id")
+      .notNull()
+      .references(() => activities.id, { onDelete: "cascade" }),
+    studentUserId: text("student_user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    status: text("status", { enum: ["sin_empezar", "en_curso", "entregada", "calificada"] })
+      .notNull()
+      .default("sin_empezar"),
+    evidenceSource: text("evidence_source"),
+    evidenceDetail: text("evidence_detail"),
+    score: real("score"),
+    feedback: text("feedback"),
+    gradedBy: text("graded_by").references(() => users.id),
+    gradedAt: text("graded_at"),
+    updatedAt: text("updated_at")
+      .notNull()
+      .$defaultFn(() => new Date().toISOString()),
+  },
+  (table) => [uniqueIndex("activity_progress_unique").on(table.activityId, table.studentUserId)]
+);
+
+// ---------------------------------------------------------------------------
+// Seguimiento por estudiante y síntesis de recomendaciones
+// ---------------------------------------------------------------------------
+
+// Notas del equipo de apoyo y del docente sobre UN estudiante: recomendaciones
+// de orientación escolar, acuerdos y seguimiento por periodo. Es la parte
+// pedagógica: NUNCA lleva diagnóstico ni información clínica (esa vive aparte en
+// clinical_info). Solo llega a la familia lo que quien escribe marca como
+// compartido.
+export const followUpNotes = sqliteTable("follow_up_notes", {
+  id: id(),
+  studentUserId: text("student_user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  authorUserId: text("author_user_id")
+    .notNull()
+    .references(() => users.id),
+  authorRole: text("author_role", { enum: ["orientador", "docente"] }).notNull(),
+  kind: text("kind", { enum: ["recomendacion", "acuerdo", "seguimiento"] }).notNull(),
+  body: text("body").notNull(),
+  sharedWithGuardian: integer("shared_with_guardian", { mode: "boolean" }).notNull().default(false),
+  reviewDate: text("review_date"),
   createdAt: createdAt(),
 });
 

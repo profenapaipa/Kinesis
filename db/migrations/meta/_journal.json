@@ -22,6 +22,20 @@
       "when": 1794187795117,
       "tag": "0002_young_the_initiative",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1794194907276,
+      "tag": "0003_tan_randall_flagg",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794196933261,
+      "tag": "0004_mushy_the_captain",
+      "breakpoints": true
     }
   ]
 }

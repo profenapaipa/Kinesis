@@ -46,6 +46,12 @@ verificación del proyecto. Las entradas más recientes van arriba.
 - Los perfiles salen de los documentos de ejemplo (planes con DUA, PIAR, actas, soportes clínicos simulados) construidos sobre la malla de Tecnología de 8° y las Orientaciones Curriculares del MEN (2022). La guía por rol suma el caso principal de Tecnología.
 - «Tiempos extendidos» ahora calcula 1,5 veces (antes 1,4), igual que dicen los PIAR de ejemplo.
 
+### Actualización del 8 de noviembre, noche: progreso, seguimiento y nombres de curso
+- Estudiantes como «Estudiante 8A-03» (curso, guion, número) en semilla, guía y documentos de ejemplo.
+- **Progreso** (`/progreso`, `activity_progress`): estado, evidencia (p. ej. quiz de Wisfox), nota de 1,0 a 5,0 y comentario. Solo el docente califica; estudiante y familia leen lo suyo.
+- **Seguimiento por estudiante** (`follow_up_notes`): síntesis de recomendaciones de orientación, acuerdos y seguimiento, con fecha de revisión; la familia ve solo lo compartido. Sin información clínica.
+- Se retiró el rótulo «para estudiantes con PIAR» de la actividad de repaso.
+
 ### Pendiente (no existe todavía)
 - Editar el PIAR desde la pantalla, ajustes devueltos con nota de orientación, IA conectada, `audit_log` en la lectura clínica, aplicar la matriz de permisos con `requireAccess()` en todo el código (hoy solo en lo nuevo), pruebas automáticas de permisos.
 - Normas citadas en el catálogo de documentos: por confirmar en la fuente oficial.

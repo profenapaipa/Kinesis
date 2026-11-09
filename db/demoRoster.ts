@@ -1,6 +1,6 @@
 // Datos SIMULADOS de la demostración: estudiantes con código, perfiles PIAR,
 // actividades con DUA y categorías de apoyo nuevas. Reemplaza a lib/mockData.ts
-// en la semilla. Ningún estudiante tiene nombre: solo código (P-01 a P-10), para
+// en la semilla. Ningún estudiante tiene nombre: solo código (8A-01 a 8A-10), para
 // que quede claro que son datos simulados y para que coincidan con los códigos
 // de la exposición guiada de la plataforma Sinapsis.
 //
@@ -9,10 +9,10 @@
 // Tecnología de 8° y las Orientaciones Curriculares del MEN (2022).
 // Las "impresiones" clínicas son ficticias y no tienen valor clínico.
 
-export const DEMO_STUDENT_CODES = Array.from({ length: 10 }, (_, i) => `P-${String(i + 1).padStart(2, "0")}`);
+export const DEMO_STUDENT_CODES = Array.from({ length: 10 }, (_, i) => `8A-${String(i + 1).padStart(2, "0")}`);
 
 /** El estudiante y la familia de la demostración (la plataforma empieza por este caso). */
-export const DEMO_GUARDIAN_CHILD = "P-03";
+export const DEMO_GUARDIAN_CHILD = "8A-03";
 
 export interface DemoPiar {
   learningStyle: "visual" | "auditivo" | "kinestesico" | "lectoescritura";
@@ -26,7 +26,7 @@ export interface DemoPiar {
 }
 
 export const DEMO_PIAR: Record<string, DemoPiar> = {
-  "P-03": {
+  "8A-03": {
     learningStyle: "visual",
     strengths: ["Buena memoria visual", "Mantiene el orden cuando la tarea es una sola", "Colabora y escucha en trabajo de a dos"],
     barriers: ["Pierde la atención con instrucciones extensas", "Ansiedad al leer en voz alta frente al curso", "Le cuesta pasar de una tarea a otra sin una pausa"],
@@ -41,7 +41,7 @@ export const DEMO_PIAR: Record<string, DemoPiar> = {
     professional: "PR-01, psicología educativa externa (simulado)",
     notes: "Dividir instrucciones en pasos cortos; anticipar cambios de actividad con una señal visual; no forzar la exposición oral; ofrecer entrega grabada.",
   },
-  "P-07": {
+  "8A-07": {
     learningStyle: "visual",
     strengths: ["Cálculo mental ágil", "Perseverante cuando entiende el contexto", "Ordenado con sus cuadernos"],
     barriers: ["Vocabulario técnico nuevo (razón, escala, proporción)", "Ritmo más lento con enunciados largos", "Evita preguntar delante del curso"],
@@ -54,7 +54,7 @@ export const DEMO_PIAR: Record<string, DemoPiar> = {
     professional: "PR-02, fonoaudiología externa (simulado)",
     notes: "Presentar el vocabulario nuevo con imagen y ejemplo antes de la actividad; tiempo adicional en enunciados largos; verificar la comprensión del enunciado.",
   },
-  "P-02": {
+  "8A-02": {
     learningStyle: "kinestesico",
     strengths: ["Curiosidad por los seres vivos", "Manipula material con facilidad", "Asume bien el rol de líder del grupo"],
     barriers: ["Dificultad para permanecer quieto más de 25 minutos", "Se pierde si las instrucciones son solo orales", "Le cuesta organizar tareas de varios pasos"],
@@ -68,7 +68,7 @@ export const DEMO_PIAR: Record<string, DemoPiar> = {
     professional: "PR-03, terapia ocupacional externa (simulado)",
     notes: "Pausas activas programadas; instrucciones por dos canales; roles activos en el trabajo en grupo.",
   },
-  "P-05": {
+  "8A-05": {
     learningStyle: "auditivo",
     strengths: ["Imaginación y vocabulario amplio al conversar", "Escucha con atención", "Cuida el detalle de sus dibujos"],
     barriers: ["Bloqueo al leer en voz alta frente al curso", "Dificultad para organizar ideas en textos largos"],
@@ -81,7 +81,7 @@ export const DEMO_PIAR: Record<string, DemoPiar> = {
     professional: "PR-01, psicología educativa externa (simulado)",
     notes: "Evitar la exposición pública forzada; ofrecer formatos de entrega alternativos desde el diseño de la actividad.",
   },
-  "P-08": {
+  "8A-08": {
     learningStyle: "visual",
     strengths: ["Interés por las historias y los personajes", "Buen dibujo", "Pregunta cuando algo no le queda claro"],
     barriers: ["Ubicar hechos en secuencia temporal", "Hacer varias tareas a la vez"],
@@ -92,7 +92,7 @@ export const DEMO_PIAR: Record<string, DemoPiar> = {
     professional: "PR-02, fonoaudiología externa (simulado)",
     notes: "Usar apoyos visuales de secuencia; entregar una tarea cada vez (propuesto, en revisión).",
   },
-  "P-04": {
+  "8A-04": {
     learningStyle: "visual",
     strengths: ["Creatividad visual", "Constancia con retos cuyo resultado se ve", "Buen compañero de pareja"],
     barriers: ["Instrucciones abstractas de varios pasos (sintaxis)", "Se frustra y se detiene ante el primer error"],
