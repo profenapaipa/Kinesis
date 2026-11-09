@@ -141,7 +141,9 @@ export interface DemoActivity {
   date: string;
 }
 
-// Seis actividades: Tecnología como caso principal y las cinco de la exposición.
+// Siete actividades: Tecnología como caso principal, las cinco de la exposición y
+// una séptima con el DUA a medias (falta cómo sostener el interés) a propósito:
+// es la que «Niky sugiere» le señala al docente para completar.
 export const DEMO_ACTIVITIES: DemoActivity[] = [
   {
     key: "tecnologia",
@@ -220,5 +222,18 @@ export const DEMO_ACTIVITIES: DemoActivity[] = [
     engagement: "Elegir cuál hecho explicar; pareja de revisión: cada una verifica el orden de la línea de la otra.",
     evidence: "Línea de tiempo con cinco hechos en orden y la explicación de uno",
     date: "2026-11-17",
+  },
+  {
+    key: "hoja-calculo",
+    subjectId: "tecnologia-informatica",
+    topic: "Hoja de cálculo para el presupuesto de la feria",
+    objective: "Organizar los gastos y los ingresos de un puesto de feria en una hoja de cálculo con sumas y un gráfico sencillo.",
+    instructions: "Abre la plantilla de presupuesto\nEscribe los gastos del puesto\nSuma la columna con una fórmula\nHaz un gráfico de barras con los datos\nExplica qué gasto pesa más",
+    resources: ["Plantilla de presupuesto", "Guía con capturas de pantalla"],
+    representation: "Plantilla con un ejemplo resuelto; guía con capturas paso a paso y demostración en vivo.",
+    expression: "Entregar la hoja, una captura con el gráfico o explicar el presupuesto hablando.",
+    engagement: "",
+    evidence: "Hoja con gastos, una suma y un gráfico de barras",
+    date: "2026-11-18",
   },
 ];

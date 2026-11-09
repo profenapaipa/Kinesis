@@ -5,6 +5,8 @@ import { EmptyState, PanelCard, PanelHeader, SectionTitle } from "@/components/p
 import { Badge } from "@/components/ui/badge";
 import { PreferencesEditor } from "@/components/bitacora/PreferencesEditor";
 import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { NikyInsights } from "@/components/NikyInsights";
+import { getNikyInsights } from "@/lib/data/nikyInsights";
 import { requireRole } from "@/lib/auth/session";
 import { getRoleSummary } from "@/lib/data/roleSummary";
 import { listLatestActivityPerSubject } from "@/lib/data/activities";
@@ -22,6 +24,7 @@ export default async function EstudiantePage() {
   const session = await requireRole("estudiante");
   const profile = await getMyStudentProfile(session);
   const summary = await getRoleSummary(session);
+  const insights = await getNikyInsights(session);
   const pedagogical = await getMyPedagogicalSummary(session);
   const latestActivityBySubject = profile.courseId
     ? await listLatestActivityPerSubject(profile.courseId)
@@ -64,6 +67,8 @@ export default async function EstudiantePage() {
           ) : undefined
         }
       />
+
+      <NikyInsights data={insights} />
 
       <RoleSummaryCard
         summary={summary}

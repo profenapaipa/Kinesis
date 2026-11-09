@@ -5,6 +5,8 @@ import { CheckCircle2, ClipboardCheck, UserRound, Users } from "lucide-react";
 import { EmptyState, NextStepCard, PanelHeader, SectionTitle, StatStrip } from "@/components/panel/Panel";
 import { requireRole } from "@/lib/auth/session";
 import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { NikyInsights } from "@/components/NikyInsights";
+import { getNikyInsights } from "@/lib/data/nikyInsights";
 import { getRoleSummary } from "@/lib/data/roleSummary";
 import { getSupportDashboard } from "@/lib/data/supportDashboard";
 
@@ -16,6 +18,7 @@ export const metadata: Metadata = { title: "Inicio" };
 export default async function OrientacionPage() {
   const session = await requireRole("orientador");
   const summary = await getRoleSummary(session);
+  const insights = await getNikyInsights(session);
   const data = await getSupportDashboard(session);
   const firstName = session.fullName.split(" ")[0] ?? session.fullName;
   const first = data.profilesToComplete[0];
@@ -56,6 +59,8 @@ export default async function OrientacionPage() {
           />
         }
       />
+
+      <NikyInsights data={insights} />
 
       <RoleSummaryCard summary={summary} />
 

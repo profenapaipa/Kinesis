@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { callNiky, type NikyTask } from "@/lib/nikyBridge";
+import { callNiky, preparedExample, type NikyTask } from "@/lib/nikyBridge";
 
 // Botón «Pídele a Niky»: la plataforma Sinapsis es quien tiene a Niky (la única
 // IA), así que aquí solo se le avisa con un mensaje y es ella quien abre la
@@ -29,7 +29,7 @@ export function NikyButton({
     setNote(
       sent
         ? "Niky abrió la conversación en la plataforma."
-        : "Niky vive en la plataforma Sinapsis. Ábrela desde allí para conversar con ella."
+        : `${preparedExample(task)} Es una sugerencia preparada, no una respuesta en vivo: Niky conversa en la plataforma Sinapsis.`
     );
   }
 
@@ -40,7 +40,7 @@ export function NikyButton({
         {children}
       </Button>
       {note && (
-        <span role="status" className="max-w-xs text-xs text-muted-foreground">
+        <span role="status" className="max-w-md text-xs text-muted-foreground">
           {note}
         </span>
       )}

@@ -236,7 +236,7 @@ async function main() {
           resources: demo.resources,
           representationNotes: demo.representation,
           expressionNotes: demo.expression,
-          engagementNotes: demo.engagement,
+          engagementNotes: demo.engagement || null,
           evidenceRequested: demo.evidence,
           scheduledDate: demo.date,
         })
@@ -397,6 +397,12 @@ async function main() {
       { by: "docente", student: "8A-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Armar la cadena con tarjetas le ayudó a entender quién come a quién.", viaNiky: true, days: 1 },
       { by: "docente", student: "8A-02", kind: "observacion", body: "Revisar la próxima semana cómo se organiza al trabajar en pareja.", days: 1 },
       { by: "docente", student: "8A-08", act: "sociales", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La línea con imágenes le ayudó a ubicar los hechos en orden; faltó probar una sola tarea a la vez.", shared: true, days: 1 },
+      // «No funcionó» a propósito: el panel de Niky distingue lo que sirvió de lo que conviene ajustar.
+      { by: "docente", student: "8A-04", act: "hoja-calculo", kind: "lo_que_funciono", modality: "auditiva", outcome: "no_funciono", body: "Solo con la explicación oral de las fórmulas se perdió; con la guía de capturas retomó.", days: 2 },
+      // Tres registros en dos actividades con el trabajo en pareja: lo que el equipo de apoyo podría confirmar como apoyo.
+      { by: "docente", student: "8A-03", act: "matematicas", kind: "lo_que_funciono", modality: "en_pareja", outcome: "funciono", body: "Midiendo y anotando en pareja avanzó con más seguridad.", days: 3 },
+      { by: "docente", student: "8A-03", act: "matematicas", kind: "lo_que_funciono", modality: "en_pareja", outcome: "funciono", body: "Con quien anota y quien mide, terminó la receta a la mitad.", days: 2 },
+      { by: "docente", student: "8A-03", act: "tecnologia", kind: "lo_que_funciono", modality: "en_pareja", outcome: "funciono", body: "En el Turtle, trabajando de a dos con roles que rotan, se sintió tranquilo.", days: 1 },
       { by: "padre", student: "8A-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "En casa, la lista con dibujos le ayudó a organizar su tarde.", days: 2 },
       { by: "estudiante", student: "8A-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con las imágenes entendí mejor los pasos.", days: 1 },
     ];
@@ -493,8 +499,8 @@ async function main() {
       { student: "8A-04", by: "docente", kind: "seguimiento", body: "Tecnología, periodo 3: con el diagrama antes del código terminó el cuadrado con Turtle; corrigió un error con su pareja y explicó qué pasó. Va a por la figura propia.", shared: true, days: 3 },
       { student: "8A-02", by: "orientador", kind: "recomendacion", body: "Programar las pausas activas (cada 25 minutos) en lugar de esperar a que se agote, dar las instrucciones por dos canales y asignarle roles activos en el trabajo de grupo.", shared: true, review: "2026-11-27", days: 11 },
       { student: "8A-02", by: "docente", kind: "seguimiento", body: "En Ciencias naturales armó la cadena alimentaria con tarjetas y mantuvo la atención con una sola pausa. Seguimos con el mismo apoyo.", days: 2 },
-      { student: "8A-07", by: "orientador", kind: "recomendacion", body: "Presentar el vocabulario nuevo con imagen y ejemplo antes de la actividad, y verificar que entiende el enunciado antes de pedir la solución.", shared: true, review: "2026-11-27", days: 10 },
-      { student: "8A-05", by: "orientador", kind: "recomendacion", body: "Ofrecer formatos de entrega alternativos desde el diseño de la actividad y reconocer por escrito sus avances; evitar la lectura pública forzada.", shared: true, review: "2026-11-27", days: 9 },
+      { student: "8A-07", by: "orientador", kind: "recomendacion", body: "Presentar el vocabulario nuevo con imagen y ejemplo antes de la actividad, y verificar que entiende el enunciado antes de pedir la solución.", shared: true, review: "2026-11-05", days: 10 },
+      { student: "8A-05", by: "orientador", kind: "recomendacion", body: "Ofrecer formatos de entrega alternativos desde el diseño de la actividad y reconocer por escrito sus avances; evitar la lectura pública forzada.", shared: true, review: "2026-11-12", days: 9 },
       { student: "8A-08", by: "orientador", kind: "acuerdo", body: "El docente propone entregar una tarea a la vez en Ciencias sociales; orientación lo revisa y responde antes del próximo periodo.", days: 1 },
     ];
     for (const seed of followSeeds) {
@@ -540,7 +546,7 @@ async function main() {
       { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "8A-02", fileName: "03_PIAR_8A-02.pdf", sizeBytes: 4_200, mimeType: PDF, days: 8 },
       { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "8A-04", fileName: "06_PIAR_8A-04.pdf", sizeBytes: 4_400, mimeType: PDF, days: 8 },
       { docType: "acta-familia", title: "Acta de socialización del PIAR con la familia", by: orientador.id, student: "8A-03", fileName: "07_Acta_socializacion_PIAR_8A-03.pdf", sizeBytes: 2_800, mimeType: PDF, days: 6 },
-      { docType: "autorizacion-datos-menores", title: "Autorización de tratamiento de datos de menores", by: guardian.id, student: "8A-03", fileName: "02_Autorizacion_datos_8A-03_firmada.pdf", sizeBytes: 2_500, mimeType: PDF, days: 5 },
+      // La autorización de 8A-03 no se siembra a propósito: es el documento que a la familia de la demostración le falta cargar.
       { docType: "soporte-clinico", title: "Soporte clínico o informe de un profesional externo", by: orientador.id, student: "8A-03", fileName: "01_Soporte_clinico_8A-03.pdf", sizeBytes: 2_700, mimeType: PDF, days: 5 },
     ];
     for (const doc of docSeeds) {
