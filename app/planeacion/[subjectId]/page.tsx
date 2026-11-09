@@ -77,7 +77,8 @@ export default async function SubjectPlanningPage({ params }: PageProps) {
         }
       />
 
-      <CreateActivityForm subjectId={subjectId} courses={courses} />
+      {/* Las actividades de esta asignatura sirven de plantilla: «Niky sugiere» enlaza con #plantilla=<id>. */}
+      <CreateActivityForm subjectId={subjectId} courses={courses} templates={plans} />
 
       {plans.length === 0 ? (
         <Card>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useSyncExternalStore, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,24 +19,82 @@ const INPUT_CLASS =
 const TEXTAREA_CLASS =
   "rounded-xl border border-input bg-muted/60 px-3 py-2 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
+// Es la demostración estática: no hay servidor al que guardar, así que el
+// formulario solo se precarga y se dice con claridad.
+const IS_DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
+
+/** Una actividad existente que sirve de base: «Niky sugiere» la ofrece como plantilla. */
+export interface ActivityTemplateSource {
+  id: string;
+  topic: string;
+  objective: string;
+  instructions: string;
+  resources: string[];
+  representationNotes: string | null;
+  expressionNotes: string | null;
+  engagementNotes: string | null;
+  evidenceRequested: string | null;
+}
+
+// El enlace de una plantilla trae `#plantilla=<id>&fecha=<AAAA-MM-DD>`. Va en el
+// hash y no en searchParams porque la demostración es un sitio estático: el
+// servidor no ve el hash, pero el navegador sí, y no obliga a regenerar páginas.
+function subscribeHash(onChange: () => void) {
+  window.addEventListener("hashchange", onChange);
+  return () => window.removeEventListener("hashchange", onChange);
+}
+const readHash = () => window.location.hash;
+
 export function CreateActivityForm({
   subjectId,
   courses,
+  templates = [],
 }: {
   subjectId: SubjectId;
   courses: TeacherCourseOption[];
+  templates?: ActivityTemplateSource[];
+}) {
+  const hash = useSyncExternalStore(subscribeHash, readHash, () => "");
+  const params = new URLSearchParams(hash.replace(/^#/, ""));
+  const template = templates.find((item) => item.id === params.get("plantilla")) ?? null;
+  const date = /^\d{4}-\d{2}-\d{2}$/.test(params.get("fecha") ?? "") ? (params.get("fecha") as string) : "";
+  // La `key` reinicia el formulario cuando cambia la plantilla: los campos se
+  // precargan una vez y después son de quien escribe.
+  return (
+    <CreateActivityFormFields
+      key={template ? `${template.id}|${date}` : "vacio"}
+      subjectId={subjectId}
+      courses={courses}
+      template={template}
+      templateDate={date}
+    />
+  );
+}
+
+function CreateActivityFormFields({
+  subjectId,
+  courses,
+  template,
+  templateDate,
+}: {
+  subjectId: SubjectId;
+  courses: TeacherCourseOption[];
+  template: ActivityTemplateSource | null;
+  templateDate: string;
 }) {
   const router = useRouter();
   const [courseId, setCourseId] = useState(courses[0]?.courseId ?? "");
-  const [topic, setTopic] = useState("");
-  const [objective, setObjective] = useState("");
-  const [instructions, setInstructions] = useState("");
-  const [resources, setResources] = useState("");
-  const [representationNotes, setRepresentationNotes] = useState("");
-  const [expressionNotes, setExpressionNotes] = useState("");
-  const [engagementNotes, setEngagementNotes] = useState("");
-  const [evidenceRequested, setEvidenceRequested] = useState("");
-  const [scheduledDate, setScheduledDate] = useState("");
+  // Duplicar el tema es partir de la misma idea con otro rótulo: se marca como nueva versión.
+  const [topic, setTopic] = useState(template ? `${template.topic} (nueva versión)` : "");
+  const [objective, setObjective] = useState(template?.objective ?? "");
+  const [instructions, setInstructions] = useState(template?.instructions ?? "");
+  const [resources, setResources] = useState(template?.resources.join("\n") ?? "");
+  const [representationNotes, setRepresentationNotes] = useState(template?.representationNotes ?? "");
+  const [expressionNotes, setExpressionNotes] = useState(template?.expressionNotes ?? "");
+  const [engagementNotes, setEngagementNotes] = useState(template?.engagementNotes ?? "");
+  const [evidenceRequested, setEvidenceRequested] = useState(template?.evidenceRequested ?? "");
+  const [scheduledDate, setScheduledDate] = useState(templateDate);
+  const [demoNote, setDemoNote] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,6 +104,11 @@ export function CreateActivityForm({
 
     if (!courseId || !topic.trim() || !objective.trim() || !instructions.trim()) {
       setError("Tema, objetivo e instrucciones son obligatorios.");
+      return;
+    }
+    if (IS_DEMO) {
+      // Sin servidor no se guarda nada; se avisa en lugar de fallar en silencio.
+      setDemoNote(true);
       return;
     }
 
@@ -97,6 +160,11 @@ export function CreateActivityForm({
         <CardTitle>Nueva actividad</CardTitle>
       </CardHeader>
       <CardContent>
+        {template && (
+          <p role="status" className="mb-3 rounded-xl bg-primary/10 px-3 py-2 text-sm">
+            Precargado desde «{template.topic}»: el tema, los tres principios del DUA y la fecha propuesta. Revisa y cambia lo que haga falta antes de guardar.
+          </p>
+        )}
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {courses.length > 1 && (
@@ -245,6 +313,11 @@ export function CreateActivityForm({
           </div>
 
           {error && <p className="text-sm text-destructive">{error}</p>}
+          {demoNote && (
+            <p role="status" className="rounded-xl bg-muted px-3 py-2 text-sm">
+              En la demostración no se guarda: aquí solo se precarga. En Kinesis, al guardar, la actividad queda en tu planeación.
+            </p>
+          )}
 
           <Button type="submit" disabled={isSubmitting} className="w-fit">
             {isSubmitting ? "Guardando..." : "Guardar actividad"}

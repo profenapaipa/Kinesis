@@ -13,6 +13,8 @@ import {
 } from "lucide-react";
 import { NextStepCard, PanelHeader, SectionTitle, StatStrip } from "@/components/panel/Panel";
 import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { NikyInsights } from "@/components/NikyInsights";
+import { getNikyInsights } from "@/lib/data/nikyInsights";
 import { getRoleSummary } from "@/lib/data/roleSummary";
 import { requireSession } from "@/lib/auth/session";
 import { getAdminDashboardStats, type AdminDashboardStats } from "@/lib/data/adminDashboard";
@@ -61,6 +63,7 @@ const SHORTCUTS: Array<{ href: string; label: string; description: string; icon:
 export default async function AdminDashboardPage() {
   const session = await requireSession();
   const summary = await getRoleSummary(session);
+  const insights = await getNikyInsights(session);
   const stats = await getAdminDashboardStats(session);
 
   const alerts = [
@@ -97,6 +100,8 @@ export default async function AdminDashboardPage() {
           />
         }
       />
+
+      <NikyInsights data={insights} />
 
       <RoleSummaryCard summary={summary} />
 

@@ -19,6 +19,8 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { requireRole } from "@/lib/auth/session";
 import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { NikyInsights } from "@/components/NikyInsights";
+import { getNikyInsights } from "@/lib/data/nikyInsights";
 import { getRoleSummary } from "@/lib/data/roleSummary";
 import { BRAND } from "@/lib/brand";
 import { formatToday } from "@/lib/format";
@@ -106,6 +108,7 @@ export default async function Home() {
   const session = await requireRole("docente");
   const data = await getTeacherDashboard(session);
   const summary = await getRoleSummary(session);
+  const insights = await getNikyInsights(session);
   const firstName = session.fullName.split(" ")[0] ?? session.fullName;
   const step = nextStep(data);
   const duaPercent =
@@ -129,6 +132,8 @@ export default async function Home() {
           />
         }
       />
+
+      <NikyInsights data={insights} />
 
       <RoleSummaryCard summary={summary} />
 

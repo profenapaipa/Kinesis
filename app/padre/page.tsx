@@ -13,6 +13,8 @@ import { FollowUpCard } from "@/components/followup/FollowUpCard";
 import { requireRole, type Session } from "@/lib/auth/session";
 import { listFollowUp } from "@/lib/data/followUp";
 import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { NikyInsights } from "@/components/NikyInsights";
+import { getNikyInsights } from "@/lib/data/nikyInsights";
 import { getRoleSummary } from "@/lib/data/roleSummary";
 import { listLatestActivityPerSubject, type StudentActivityView } from "@/lib/data/activities";
 import {
@@ -213,6 +215,7 @@ function ChildSection({ data, showStats }: { data: ChildData; showStats: boolean
 export default async function PadrePage() {
   const session = await requireRole("padre");
   const summary = await getRoleSummary(session);
+  const insights = await getNikyInsights(session);
   const children = await getGuardianChildren(session);
   const loaded = await Promise.all(children.map((child) => loadChild(session, child)));
   const only = loaded.length === 1 ? loaded[0] : null;
@@ -229,6 +232,8 @@ export default async function PadrePage() {
         }
         footer={only ? <StatStrip items={childStats(only)} /> : undefined}
       />
+
+      <NikyInsights data={insights} />
 
       <RoleSummaryCard summary={summary} />
 

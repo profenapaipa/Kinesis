@@ -23,6 +23,27 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-11-09] — «Niky sugiere»: una presencia útil por rol, sin desplazar a quien enseña
+
+**Fase activa:** presencia de Niky dentro de Kinesis (rama `niky-sugiere`, sin publicar).
+
+### Cambios implementados
+- `lib/data/nikyInsights.ts`: por rol, de 3 a 5 «cosas por mirar» (alerta, sugerencia o resumen), preguntas rápidas con respuesta ya calculada y, para el docente, 3 plantillas de actividad.
+- `components/NikyInsights.tsx`: tarjeta «Niky sugiere» en el inicio de los cinco roles (enlazada con un cambio mínimo en cada página de inicio).
+- Plantillas de actividad: enlazan a `/planeacion/<asignatura>#plantilla=<id>&fecha=<AAAA-MM-DD>`; `CreateActivityForm` lee el hash con `useSyncExternalStore` y precarga los campos (en la demostración no guarda, lo dice).
+- Datos de ejemplo: una actividad con DUA a medias, un registro de «no funcionó», tres registros de trabajo en pareja para 8A-03, revisiones con fechas distintas (una vencida, una próxima) y sin la autorización de datos de 8A-03 (es lo que le falta a la familia).
+- `scripts/probar-insights.ts`: prueba contra una base nueva y sembrada (`npx tsx scripts/probar-insights.ts`).
+
+### Decisiones de arquitectura
+- No es la IA generando en vivo: son reglas y cuentas sobre la base, y la tarjeta lo dice. Lo que es de Niky es la conversación, que se abre con `callNiky`.
+- Es una composición de los módulos que ya revisan permisos (`listClassLog`, `listProgress`, `listFollowUp`, `getDocumentsOverview`); las consultas propias van acotadas por la sesión. No se importa `clinical_info`.
+- Ningún ítem modifica datos. «Lo confirma una persona»: un apoyo repetido en la bitácora solo se propone al equipo de apoyo (umbral de 3 registros en 2 actividades) y no se agrega solo.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores nuevos (el error de `LayoutProps` en `app/layout.tsx` es previo)
+
+---
+
 ## [2026-11-08] — Bitácora de clase, documentos con lista de verificación, «mi forma de aprender», resumen por rol y guía por rol
 
 **Fase activa:** preparación de la muestra de la Cámara de Comercio del 9 de noviembre (rama `feature/kinesis-bitacora`, sin publicar).
