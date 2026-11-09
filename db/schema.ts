@@ -347,6 +347,75 @@ export const progressEntries = sqliteTable("progress_entries", {
 });
 
 // ---------------------------------------------------------------------------
+// Bitácora de clase: registros rápidos que se escriben durante o después de la
+// clase, a mano o con ayuda de Niky. Distinta de tracking_entries, que ata un
+// resultado a UNA actividad y a UNA adaptación con campos obligatorios: aquí
+// basta una frase («hoy con la actividad visual avanzó más»), con o sin
+// estudiante. Lo que se acumula alimenta «lo que le ha funcionado»
+// (lib/data/workedSummary.ts), que describe EVIDENCIA y nunca etiqueta a nadie:
+// el proyecto decidió el 2 de octubre de 2026 tratar visual/auditivo/kinestésico
+// como preferencia y no como prescripción (docs/HOJA_DE_RUTA.md).
+// ---------------------------------------------------------------------------
+
+export const classLogEntries = sqliteTable("class_log_entries", {
+  id: id(),
+  authorUserId: text("author_user_id")
+    .notNull()
+    .references(() => users.id),
+  authorRole: text("author_role", {
+    enum: ["administrador", "docente", "estudiante", "padre", "orientador"],
+  }).notNull(),
+  courseId: text("course_id").references(() => courses.id),
+  activityId: text("activity_id").references(() => activities.id, { onDelete: "set null" }),
+  // Sin estudiante = nota general del curso o de la clase.
+  studentUserId: text("student_user_id").references(() => users.id, { onDelete: "cascade" }),
+  kind: text("kind", { enum: ["novedad", "lo_que_funciono", "observacion"] }).notNull(),
+  // Cómo se presentó la actividad cuando pasó lo que se anota. Es una
+  // característica de la ACTIVIDAD, no del estudiante.
+  modality: text("modality", {
+    enum: ["visual", "auditiva", "kinestesica", "lectoescritura", "digital", "en_pareja"],
+  }),
+  outcome: text("outcome", {
+    enum: ["funciono", "funciono_parcialmente", "no_funciono"],
+  }),
+  body: text("body").notNull(),
+  // "niky" = la redactó Niky y la persona la revisó antes de guardarla.
+  source: text("source", { enum: ["manual", "niky"] })
+    .notNull()
+    .default("manual"),
+  // Solo lo marcado como compartido llega a la familia del estudiante.
+  sharedWithGuardian: integer("shared_with_guardian", { mode: "boolean" })
+    .notNull()
+    .default(false),
+  createdAt: createdAt(),
+});
+
+// ---------------------------------------------------------------------------
+// Documentos que el colegio carga para que Kinesis pueda personalizar de
+// verdad (malla curricular, PIAR, autorizaciones...). Qué documentos se piden,
+// quién los carga y cuáles son imprescindibles vive en
+// lib/documents/catalog.ts; aquí solo están los archivos cargados.
+// ---------------------------------------------------------------------------
+
+export const institutionDocuments = sqliteTable("institution_documents", {
+  id: id(),
+  // Clave del catálogo (por ejemplo "malla_curricular"). Se valida contra el
+  // catálogo al guardar, no con un enum, para poder agregar tipos sin migrar.
+  docType: text("doc_type").notNull(),
+  courseId: text("course_id").references(() => courses.id),
+  studentUserId: text("student_user_id").references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  fileName: text("file_name").notNull(),
+  mimeType: text("mime_type").notNull(),
+  sizeBytes: integer("size_bytes").notNull(),
+  // Ruta dentro de data/uploads/. Nula en los datos de ejemplo (no hay archivo).
+  storagePath: text("storage_path"),
+  uploadedBy: text("uploaded_by").references(() => users.id),
+  notes: text("notes"),
+  createdAt: createdAt(),
+});
+
+// ---------------------------------------------------------------------------
 // Auditoría — quién hizo qué (útil sobre todo para acciones de administrador
 // y accesos a información restringida).
 // ---------------------------------------------------------------------------

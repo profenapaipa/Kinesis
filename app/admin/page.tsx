@@ -12,6 +12,8 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { NextStepCard, PanelHeader, SectionTitle, StatStrip } from "@/components/panel/Panel";
+import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { getRoleSummary } from "@/lib/data/roleSummary";
 import { requireSession } from "@/lib/auth/session";
 import { getAdminDashboardStats, type AdminDashboardStats } from "@/lib/data/adminDashboard";
 
@@ -58,6 +60,7 @@ const SHORTCUTS: Array<{ href: string; label: string; description: string; icon:
 
 export default async function AdminDashboardPage() {
   const session = await requireSession();
+  const summary = await getRoleSummary(session);
   const stats = await getAdminDashboardStats(session);
 
   const alerts = [
@@ -94,6 +97,8 @@ export default async function AdminDashboardPage() {
           />
         }
       />
+
+      <RoleSummaryCard summary={summary} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         <section className="flex flex-col gap-3">

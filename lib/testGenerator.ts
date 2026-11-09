@@ -98,7 +98,9 @@ export function generateAdaptedTest(
 
   const baseMinutesPerQuestion = 8;
   const rawMinutes = questions.length * baseMinutesPerQuestion;
-  const estimatedMinutes = extendedTime ? Math.round(rawMinutes * 1.4) : rawMinutes;
+  // «Tiempos extendidos»: hasta un 50 % más, que es lo que dicen los PIAR de
+  // ejemplo («hasta un 50 % más del tiempo»). Antes era 1,4 y no coincidía.
+  const estimatedMinutes = extendedTime ? Math.round(rawMinutes * 1.5) : rawMinutes;
 
   return {
     studentId: student.id,

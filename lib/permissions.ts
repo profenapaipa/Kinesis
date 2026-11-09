@@ -16,6 +16,8 @@ export type ResourceCategory =
   | "adaptaciones"
   | "seguimiento_pedagogico"
   | "observaciones_docentes"
+  | "bitacora"
+  | "documentos"
   | "configuracion";
 
 export type AccessLevel = "no" | "ver" | "crear_editar" | "parcial" | "resumen";
@@ -69,6 +71,29 @@ const MATRIX: Record<ResourceCategory, Record<Role, AccessLevel>> = {
     estudiante: "no",
     padre: "no",
     orientador: "no", // son notas privadas del docente, no del equipo de apoyo
+  },
+  // Bitácora de clase (class_log_entries). A diferencia de
+  // `observaciones_docentes` (notas privadas del docente), aquí se registra
+  // "lo que funcionó": se comparte con el equipo de apoyo y, solo si el
+  // docente lo marca, con la familia. El estudiante y la familia también
+  // pueden escribir su propia nota ("¿qué te ayudó hoy?"). El administrador
+  // no la ve: no necesita saber qué le funcionó a quién.
+  bitacora: {
+    administrador: "no",
+    docente: "crear_editar",
+    estudiante: "parcial",
+    padre: "parcial",
+    orientador: "ver",
+  },
+  // Documentos institucionales (malla, DUA, PIAR, autorizaciones). Qué sube
+  // cada rol y qué ve lo decide lib/documents/catalog.ts por tipo de
+  // documento; el nivel de aquí es solo el techo por rol.
+  documentos: {
+    administrador: "crear_editar",
+    docente: "crear_editar",
+    estudiante: "no",
+    padre: "parcial",
+    orientador: "crear_editar",
   },
   configuracion: {
     administrador: "crear_editar",

@@ -59,3 +59,6 @@ logs/
 # demostración estática para GitHub Pages (scripts/build-demo.mjs)
 /.demo-build/
 /demo-out/
+
+# archivos subidos por la app (documentos institucionales; pueden ser sensibles)
+/data/uploads/

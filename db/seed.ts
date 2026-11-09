@@ -1,8 +1,8 @@
 // Script de semilla — idempotente (se puede correr varias veces sin
 // duplicar datos). Uso: npm run db:seed
 //
-// Migra lib/mockData.ts (10 estudiantes ficticios del curso 8°-A, 3 con
-// PIAR) a usuarios/matrículas/perfil-pedagógico/información-clínica reales,
+// Siembra 10 estudiantes simulados del curso 8°-A (solo código P-01 a P-10, 6 con
+// PIAR; ver db/demoRoster.ts) a usuarios/matrículas/perfil-pedagógico/información-clínica reales,
 // y siembra un administrador y un docente de demostración.
 
 import { and, eq } from "drizzle-orm";
@@ -10,45 +10,29 @@ import { db } from "./index";
 import {
   academicPeriods,
   activities,
+  classLogEntries,
   clinicalInfo,
   courses,
   courseTeachers,
   effectiveSupports,
   enrollments,
   guardianStudents,
+  institutionDocuments,
   pedagogicalBarriers,
   pedagogicalProfiles,
   pedagogicalStrengths,
+  studentLearningPreferences,
   subjects,
   supportCategories,
   users,
 } from "./schema";
 import { hashPassword } from "../lib/auth/password";
-import { mockStudents } from "../lib/mockData";
+import { DEMO_ACTIVITIES, DEMO_GUARDIAN_CHILD, DEMO_PIAR, DEMO_STUDENT_CODES, NEW_SUPPORT_CATEGORIES } from "./demoRoster";
 import { MEN_SUBJECTS } from "../lib/subjects";
-import type { AdjustmentType, Role } from "../types";
-
-// Barreras observadas de demostración — el modelo anterior no separaba
-// "barrera" de "estrategia", así que para los 3 estudiantes con PIAR se
-// redactan aquí barreras plausibles y coherentes con su diagnóstico previo,
-// dejando claro que son datos ficticios para la semilla, igual que el resto.
-const DEMO_BARRIERS: Record<string, string[]> = {
-  "std-001": [
-    "Dificultad para mantener la atención durante instrucciones extensas",
-    "Se distrae con facilidad ante estímulos del entorno",
-  ],
-  "std-002": [
-    "Dificultad para permanecer quieto durante actividades largas",
-    "Dificultad para organizar tareas con varios pasos",
-  ],
-  "std-003": [
-    "Dificultad para comprender instrucciones abstractas o de varios pasos",
-    "Necesita más tiempo para procesar información nueva",
-  ],
-};
+import type { Role } from "../types";
 
 const SUPPORT_CATEGORY_SEED: Array<{
-  name: AdjustmentType;
+  name: string;
   description: string;
   studentFriendlyText: string;
 }> = [
@@ -114,17 +98,6 @@ const SUPPORT_CATEGORY_SEED: Array<{
   },
 ];
 
-function slugifyUsername(fullName: string): string {
-  return fullName
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .toLowerCase()
-    .trim()
-    .split(/\s+/)
-    .slice(0, 2)
-    .join(".");
-}
-
 async function upsertUser(input: {
   username: string;
   password: string;
@@ -164,7 +137,7 @@ async function main() {
 
   console.log("Sembrando categorías de apoyo...");
   const supportCategoryIdByName = new Map<string, string>();
-  for (const category of SUPPORT_CATEGORY_SEED) {
+  for (const category of [...SUPPORT_CATEGORY_SEED, ...NEW_SUPPORT_CATEGORIES]) {
     let row = await db
       .select()
       .from(supportCategories)
@@ -192,7 +165,7 @@ async function main() {
   }
 
   console.log("Sembrando administrador de demostración...");
-  await upsertUser({
+  const adminUser = await upsertUser({
     username: "admin",
     password: "admin123",
     fullName: "Administrador del Sistema",
@@ -234,78 +207,56 @@ async function main() {
     }
   }
 
-  console.log("Sembrando actividades de demostración...");
-  const DEMO_ACTIVITIES: Array<{
-    subjectId: (typeof MEN_SUBJECTS)[number]["id"];
-    topic: string;
-    objective: string;
-    instructions: string;
-    resources: string[];
-    evidenceRequested: string;
-    scheduledDate: string;
-  }> = [
-    {
-      subjectId: "matematicas",
-      topic: "Sistemas de ecuaciones lineales 2x2",
-      objective:
-        "Resolver sistemas de ecuaciones lineales con dos incógnitas mediante los métodos de sustitución y reducción, aplicándolos a problemas cotidianos.",
-      instructions:
-        "Repaso de ecuaciones de primer grado con una incógnita\nResolver sistemas 2x2 por el método de sustitución\nResolver sistemas 2x2 por el método de reducción\nAplicar lo aprendido a dos problemas de la vida real",
-      resources: ["Guía de ejercicios", "Calculadora científica", "Tablero cuadriculado"],
-      evidenceRequested: "Taller resuelto en parejas + 3 problemas individuales",
-      scheduledDate: "2026-08-10",
-    },
-    {
-      subjectId: "ciencias-naturales",
-      topic: "Genética y herencia mendeliana",
-      objective:
-        "Comprender los principios básicos de la herencia genética mediante el análisis de cruces monohíbridos y la interpretación de cuadros de Punnett.",
-      instructions:
-        "Exposición sobre genotipo, fenotipo, alelos dominantes y recesivos\nTaller de cuadros de Punnett en parejas\nLectura de un artículo corto sobre enfermedades hereditarias\nSocialización de resultados y retroalimentación grupal",
-      resources: ["Presentación en diapositivas", "Guía impresa de cuadros de Punnett", "Artículo de lectura"],
-      evidenceRequested: "Quiz corto individual + guía de trabajo en parejas",
-      scheduledDate: "2026-08-11",
-    },
-  ];
+  console.log("Sembrando actividades de demostración (Tecnología y los cinco casos)...");
+  const activityIdByKey = new Map<string, string>();
   for (const demo of DEMO_ACTIVITIES) {
-    const existingActivity = await db
+    let activity = await db
       .select()
       .from(activities)
       .where(
         and(
           eq(activities.teacherUserId, teacher.id),
           eq(activities.courseId, course.id),
-          eq(activities.subjectId, demo.subjectId)
+          eq(activities.topic, demo.topic)
         )
       )
       .get();
-    if (!existingActivity) {
-      await db.insert(activities).values({
-        teacherUserId: teacher.id,
-        courseId: course.id,
-        subjectId: demo.subjectId,
-        topic: demo.topic,
-        objective: demo.objective,
-        instructions: demo.instructions,
-        resources: demo.resources,
-        evidenceRequested: demo.evidenceRequested,
-        scheduledDate: demo.scheduledDate,
-      });
+    if (!activity) {
+      activity = await db
+        .insert(activities)
+        .values({
+          teacherUserId: teacher.id,
+          courseId: course.id,
+          subjectId: demo.subjectId,
+          topic: demo.topic,
+          objective: demo.objective,
+          instructions: demo.instructions,
+          resources: demo.resources,
+          representationNotes: demo.representation,
+          expressionNotes: demo.expression,
+          engagementNotes: demo.engagement,
+          evidenceRequested: demo.evidence,
+          scheduledDate: demo.date,
+        })
+        .returning()
+        .get();
     }
+    activityIdByKey.set(demo.key, activity.id);
   }
 
-  console.log(`Sembrando ${mockStudents.length} estudiantes de lib/mockData.ts...`);
+  console.log(`Sembrando ${DEMO_STUDENT_CODES.length} estudiantes simulados (solo código)...`);
   let demoGuardianChildId: string | undefined;
-  for (const student of mockStudents) {
-    const username = slugifyUsername(student.fullName);
+  const studentIdByMock = new Map<string, string>();
+  for (const code of DEMO_STUDENT_CODES) {
     const studentUser = await upsertUser({
-      username,
+      username: code.toLowerCase(),
       password: "estudiante123",
-      fullName: student.fullName,
+      fullName: `Estudiante ${code}`,
       role: "estudiante",
     });
 
-    if (student.id === "std-001") {
+    studentIdByMock.set(code, studentUser.id);
+    if (code === DEMO_GUARDIAN_CHILD) {
       demoGuardianChildId = studentUser.id;
     }
 
@@ -322,7 +273,8 @@ async function main() {
       });
     }
 
-    if (!student.hasPiar || !student.piarProfile) continue;
+    const piar = DEMO_PIAR[code];
+    if (!piar) continue;
 
     const existingProfile = await db
       .select()
@@ -333,44 +285,39 @@ async function main() {
 
     const profile = await db
       .insert(pedagogicalProfiles)
-      .values({
-        studentUserId: studentUser.id,
-        learningStyle: student.piarProfile.learningStyle,
-      })
+      .values({ studentUserId: studentUser.id, learningStyle: piar.learningStyle })
       .returning()
       .get();
 
-    for (const strength of student.piarProfile.strengths) {
+    for (const strength of piar.strengths) {
       await db.insert(pedagogicalStrengths).values({
         profileId: profile.id,
         description: strength,
         createdBy: teacher.id,
       });
     }
-
-    for (const barrier of DEMO_BARRIERS[student.id] ?? []) {
+    for (const barrier of piar.barriers) {
       await db.insert(pedagogicalBarriers).values({
         profileId: profile.id,
         description: barrier,
         createdBy: teacher.id,
       });
     }
-
-    for (const adjustment of student.piarProfile.adjustmentTypes) {
+    for (const [categoryName, how] of piar.supports) {
       await db.insert(effectiveSupports).values({
         profileId: profile.id,
-        supportCategoryId: supportCategoryIdByName.get(adjustment),
-        description: `Ha funcionado en actividades previas (migrado del PIAR anterior).`,
+        supportCategoryId: supportCategoryIdByName.get(categoryName),
+        description: how,
         createdBy: teacher.id,
       });
     }
 
     await db.insert(clinicalInfo).values({
       studentUserId: studentUser.id,
-      diagnosis: student.piarProfile.diagnosis,
-      responsibleProfessional: student.piarProfile.responsibleProfessional,
-      lastReviewDate: student.piarProfile.lastReview,
-      notes: student.piarProfile.supportNeeds.join("; "),
+      diagnosis: piar.impresion,
+      responsibleProfessional: piar.professional,
+      lastReviewDate: "2026-09-04",
+      notes: piar.notes,
     });
   }
 
@@ -404,7 +351,7 @@ async function main() {
   }
 
   console.log("Sembrando orientador de demostración...");
-  await upsertUser({
+  const orientador = await upsertUser({
     username: "orientador.demo",
     password: "orientador123",
     fullName: "Equipo de Apoyo Pedagógico",
@@ -412,11 +359,139 @@ async function main() {
     mustChangePassword: false,
   });
 
+  // -------------------------------------------------------------------------
+  // Bitácora, preferencias y documentos de demostración. Todo ficticio, sin
+  // diagnósticos ni nombres: solo códigos de estudiante. Solo se siembra si las
+  // tablas están vacías, para no duplicar en corridas repetidas.
+  // -------------------------------------------------------------------------
+  const daysAgo = (days: number) => new Date(Date.now() - days * 24 * 3600 * 1000).toISOString();
+
+  const existingLog = await db.select({ id: classLogEntries.id }).from(classLogEntries).get();
+  if (!existingLog) {
+    console.log("Sembrando bitácora de demostración...");
+    type LogInsert = typeof classLogEntries.$inferInsert;
+    type LogSeed = {
+      by: "docente" | "padre" | "estudiante";
+      student: string;
+      act?: string;
+      kind: LogInsert["kind"];
+      modality?: LogInsert["modality"];
+      outcome?: LogInsert["outcome"];
+      body: string;
+      shared?: boolean;
+      viaNiky?: boolean;
+      days: number;
+    };
+    const logSeeds: LogSeed[] = [
+      { by: "docente", student: "P-04", act: "tecnologia", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con el diagrama de flujo antes del código terminó el cuadrado con Turtle.", viaNiky: true, days: 6 },
+      { by: "docente", student: "P-04", act: "tecnologia", kind: "lo_que_funciono", modality: "en_pareja", outcome: "funciono", body: "En pareja, con roles que rotan, corrigió el error y explicó qué pasó.", days: 5 },
+      { by: "docente", student: "P-04", act: "tecnologia", kind: "novedad", body: "Se detuvo ante el primer error; la pareja le recordó «error, pista, nuevo intento» y siguió.", days: 5 },
+      { by: "docente", student: "P-03", act: "ingles", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con una tarjeta de imágenes por cada paso terminó «Mi rutina del día» sin pedir ayuda.", shared: true, viaNiky: true, days: 4 },
+      { by: "docente", student: "P-03", act: "ingles", kind: "lo_que_funciono", modality: "digital", outcome: "funciono", body: "Entregó la rutina grabada y se mostró tranquilo.", shared: true, days: 3 },
+      { by: "docente", student: "P-03", act: "ingles", kind: "lo_que_funciono", modality: "auditiva", outcome: "funciono_parcialmente", body: "Escuchar el vocabulario sin la tarjeta le sirvió a medias.", days: 3 },
+      { by: "docente", student: "P-07", act: "matematicas", kind: "novedad", body: "Pidió el glosario dos veces durante la clase de razón y proporción.", days: 2 },
+      { by: "docente", student: "P-07", act: "matematicas", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La tabla de datos le ayudó a ubicar la razón antes de resolver.", days: 2 },
+      { by: "docente", student: "P-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Con la pausa activa a mitad de clase volvió a la cadena alimentaria.", days: 1 },
+      { by: "docente", student: "P-02", act: "ciencias", kind: "lo_que_funciono", modality: "kinestesica", outcome: "funciono", body: "Armar la cadena con tarjetas le ayudó a entender quién come a quién.", viaNiky: true, days: 1 },
+      { by: "docente", student: "P-02", kind: "observacion", body: "Revisar la próxima semana cómo se organiza al trabajar en pareja.", days: 1 },
+      { by: "docente", student: "P-08", act: "sociales", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "La línea con imágenes le ayudó a ubicar los hechos en orden; faltó probar una sola tarea a la vez.", shared: true, days: 1 },
+      { by: "padre", student: "P-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "En casa, la lista con dibujos le ayudó a organizar su tarde.", days: 2 },
+      { by: "estudiante", student: "P-03", kind: "lo_que_funciono", modality: "visual", outcome: "funciono", body: "Con las imágenes entendí mejor los pasos.", days: 1 },
+    ];
+    for (const seed of logSeeds) {
+      const studentUserId = studentIdByMock.get(seed.student);
+      if (!studentUserId) continue;
+      const authorId =
+        seed.by === "docente" ? teacher.id : seed.by === "padre" ? guardian.id : studentUserId;
+      await db.insert(classLogEntries).values({
+        authorUserId: authorId,
+        authorRole: seed.by,
+        courseId: course.id,
+        activityId: seed.by === "docente" && seed.act ? (activityIdByKey.get(seed.act) ?? null) : null,
+        studentUserId,
+        kind: seed.kind,
+        modality: seed.modality ?? null,
+        outcome: seed.outcome ?? null,
+        body: seed.body,
+        source: seed.viaNiky ? "niky" : "manual",
+        sharedWithGuardian: seed.shared ?? false,
+        createdAt: daysAgo(seed.days),
+      });
+    }
+  }
+
+  const existingPreference = await db
+    .select({ id: studentLearningPreferences.id })
+    .from(studentLearningPreferences)
+    .get();
+  if (!existingPreference) {
+    console.log("Sembrando «mi forma de aprender» de demostración...");
+    type PreferenceOption = (typeof studentLearningPreferences.$inferInsert)["option"];
+    const preferences: Array<[string, PreferenceOption[]]> = [
+      ["P-03", ["imagenes", "instrucciones_paso_a_paso"]],
+      ["P-02", ["explicaciones_profesor", "practicar_directamente"]],
+      ["P-04", ["imagenes", "trabajar_con_companero"]],
+    ];
+    for (const [key, options] of preferences) {
+      const studentUserId = studentIdByMock.get(key);
+      if (!studentUserId) continue;
+      for (const option of options) {
+        await db.insert(studentLearningPreferences).values({ studentUserId, option, selected: true });
+      }
+    }
+  }
+
+  const existingDocument = await db.select({ id: institutionDocuments.id }).from(institutionDocuments).get();
+  if (!existingDocument) {
+    console.log("Sembrando documentos de demostración (sin archivo)...");
+    const PDF = "application/pdf";
+    const XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+    const techActivityCourse = true;
+    const docSeeds: Array<{
+      docType: string;
+      title: string;
+      by: string;
+      student?: string;
+      forCourse?: boolean;
+      fileName: string;
+      sizeBytes: number;
+      mimeType: string;
+      days: number;
+    }> = [
+      { docType: "listado-estudiantes", title: "Listado oficial de estudiantes por curso y periodo", by: adminUser.id, fileName: "01_Listado_estudiantes_8A_2026.xlsx", sizeBytes: 6_000, mimeType: XLSX, days: 40 },
+      { docType: "asignacion-academica", title: "Asignación académica (docente, curso y área)", by: adminUser.id, fileName: "02_Asignacion_academica_2026.xlsx", sizeBytes: 6_000, mimeType: XLSX, days: 39 },
+      { docType: "calendario-periodos", title: "Calendario escolar y periodos académicos", by: adminUser.id, fileName: "03_Calendario_escolar_y_periodos_2026.pdf", sizeBytes: 2_700, mimeType: PDF, days: 38 },
+      { docType: "malla-curricular", title: "Malla curricular por área y grado", by: teacher.id, forCourse: techActivityCourse, fileName: "MALLA_TECNOLOGIA_1_a_11_2026.xlsx", sizeBytes: 1_361_535, mimeType: XLSX, days: 30 },
+      { docType: "plan-aula-dua", title: "Plan de aula con DUA", by: teacher.id, forCourse: techActivityCourse, fileName: "02_Plan_de_aula_DUA_Tecnologia_8A_Python_Turtle.pdf", sizeBytes: 5_800, mimeType: PDF, days: 12 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-03", fileName: "01_PIAR_P-03.pdf", sizeBytes: 4_300, mimeType: PDF, days: 9 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-07", fileName: "02_PIAR_P-07.pdf", sizeBytes: 4_100, mimeType: PDF, days: 9 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-02", fileName: "03_PIAR_P-02.pdf", sizeBytes: 4_200, mimeType: PDF, days: 8 },
+      { docType: "piar", title: "PIAR del estudiante", by: orientador.id, student: "P-04", fileName: "06_PIAR_P-04.pdf", sizeBytes: 4_400, mimeType: PDF, days: 8 },
+      { docType: "acta-familia", title: "Acta de socialización del PIAR con la familia", by: orientador.id, student: "P-03", fileName: "07_Acta_socializacion_PIAR_P-03.pdf", sizeBytes: 2_800, mimeType: PDF, days: 6 },
+      { docType: "autorizacion-datos-menores", title: "Autorización de tratamiento de datos de menores", by: guardian.id, student: "P-03", fileName: "02_Autorizacion_datos_P-03_firmada.pdf", sizeBytes: 2_500, mimeType: PDF, days: 5 },
+      { docType: "soporte-clinico", title: "Soporte clínico o informe de un profesional externo", by: orientador.id, student: "P-03", fileName: "01_Soporte_clinico_P-03.pdf", sizeBytes: 2_700, mimeType: PDF, days: 5 },
+    ];
+    for (const doc of docSeeds) {
+      await db.insert(institutionDocuments).values({
+        docType: doc.docType,
+        courseId: doc.forCourse ? course.id : null,
+        studentUserId: doc.student ? (studentIdByMock.get(doc.student) ?? null) : null,
+        title: doc.title,
+        fileName: doc.fileName,
+        mimeType: doc.mimeType,
+        sizeBytes: doc.sizeBytes,
+        storagePath: null, // documento de ejemplo: no hay archivo detrás
+        uploadedBy: doc.by,
+        createdAt: daysAgo(doc.days),
+      });
+    }
+  }
+
   console.log("\nListo. Credenciales de demostración:");
   console.log("  Administrador -> usuario: admin           contraseña: admin123");
   console.log("  Docente       -> usuario: docente         contraseña: docente123");
-  console.log("  Estudiantes   -> usuario: <nombre.apellido>  contraseña: estudiante123");
-  console.log("  Acudiente     -> usuario: padre.demo      contraseña: padre123 (vinculado a Valentina Rodríguez Gómez)");
+  console.log("  Estudiantes   -> usuario: p-01 a p-10  contraseña: estudiante123");
+  console.log("  Acudiente     -> usuario: padre.demo      contraseña: padre123 (vinculado al estudiante P-03)");
   console.log("  Orientador/a  -> usuario: orientador.demo contraseña: orientador123 (acceso institucional completo)");
 }
 

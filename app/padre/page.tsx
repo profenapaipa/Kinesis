@@ -10,6 +10,8 @@ import {
 } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { requireRole, type Session } from "@/lib/auth/session";
+import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { getRoleSummary } from "@/lib/data/roleSummary";
 import { listLatestActivityPerSubject, type StudentActivityView } from "@/lib/data/activities";
 import {
   getChildPedagogicalSummary,
@@ -197,6 +199,7 @@ function ChildSection({ data, showStats }: { data: ChildData; showStats: boolean
 
 export default async function PadrePage() {
   const session = await requireRole("padre");
+  const summary = await getRoleSummary(session);
   const children = await getGuardianChildren(session);
   const loaded = await Promise.all(children.map((child) => loadChild(session, child)));
   const only = loaded.length === 1 ? loaded[0] : null;
@@ -213,6 +216,8 @@ export default async function PadrePage() {
         }
         footer={only ? <StatStrip items={childStats(only)} /> : undefined}
       />
+
+      <RoleSummaryCard summary={summary} />
 
       {loaded.length === 0 ? (
         <EmptyState

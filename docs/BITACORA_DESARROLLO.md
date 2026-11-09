@@ -23,6 +23,39 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-11-08] — Bitácora de clase, documentos con lista de verificación, «mi forma de aprender», resumen por rol y guía por rol
+
+**Fase activa:** preparación de la muestra de la Cámara de Comercio del 9 de noviembre (rama `feature/kinesis-bitacora`, sin publicar).
+
+### Cambios implementados
+- **Bitácora** (`/bitacora`, `class_log_entries`): registros rápidos de novedades, «lo que funcionó» y observaciones privadas, a mano o con «Ordenar con Niky». Escriben docente, familia (sobre su hijo o hija) y estudiante (sobre sí mismo). La lee el equipo de apoyo, nunca el administrador ni las observaciones privadas de otro docente.
+- **Mi forma de aprender**: el estudiante marca lo que le gusta (`/api/estudiante/preferencias`); docente, orientación y familia lo ven como «dijo que le gusta…», aparte de lo que el docente observa.
+- **Documentos** (`/documentos`, `institution_documents`, `lib/documents/catalog.ts`): 15 tipos de documento, 10 imprescindibles en orden para empezar a operar, carga con revisión por rol y descarga por `/api/documentos/[id]` (archivos en `data/uploads/`, fuera de `public/`, ignorado por git).
+- **Resumen por rol** (`RoleSummaryCard`, `lib/data/roleSummary.ts`): herramientas, resultados y novedades en el inicio de los cinco roles.
+- **Guía por rol** (`/guia`): 25 ejemplos (5 casos de la exposición por 5 roles), cada paso marcado como «ya funciona», «nuevo» o «próximamente».
+- Permisos: categorías `bitacora` y `documentos` en `lib/permissions.ts`; cada función de `lib/data/*` repite su propia revisión.
+- Demo estática: carpetas nuevas en los `keep` de `scripts/build-demo.mjs`; en la demostración lo que se escribe o se «carga» se ve solo en esa pantalla y se dice.
+
+### Decisiones de arquitectura
+- Estilos de aprendizaje (decisión del 2 de octubre): la modalidad describe la ACTIVIDAD, no a la persona. El resumen se redacta en pasado y con fecha («funcionó en 2 de 3 registros»). No se escribe en `pedagogical_profiles.learning_style`.
+- «Ordenar con Niky» envía `{ tipo: 'niky:abrir', portal: 'kinesis', tarea, contexto }` a la plataforma cuando Kinesis va dentro de un iframe; sin plataforma usa reglas de palabras y lo dice en pantalla. No hay modelo conectado.
+- Los registros no importan `clinical_info` ni copian diagnóstico; el formulario avisa que no se escriban diagnósticos ni nombres de otros estudiantes.
+
+### Actualización del mismo día: estudiantes solo con código y documentos de ejemplo
+- La semilla ya no usa `lib/mockData.ts` (queda sin uso): `db/demoRoster.ts` trae 10 estudiantes con código P-01 a P-10, seis con PIAR (P-02, P-03, P-04, P-05, P-07, P-08), seis actividades con DUA completo (Tecnología como caso principal y los cinco casos de la exposición) y tres categorías de apoyo nuevas.
+- Los perfiles salen de los documentos de ejemplo (planes con DUA, PIAR, actas, soportes clínicos simulados) construidos sobre la malla de Tecnología de 8° y las Orientaciones Curriculares del MEN (2022). La guía por rol suma el caso principal de Tecnología.
+- «Tiempos extendidos» ahora calcula 1,5 veces (antes 1,4), igual que dicen los PIAR de ejemplo.
+
+### Pendiente (no existe todavía)
+- Editar el PIAR desde la pantalla, ajustes devueltos con nota de orientación, IA conectada, `audit_log` en la lectura clínica, aplicar la matriz de permisos con `requireAccess()` en todo el código (hoy solo en lo nuevo), pruebas automáticas de permisos.
+- Normas citadas en el catálogo de documentos: por confirmar en la fuente oficial.
+
+### Estado de `npx tsc --noEmit`
+- [x] Sin errores nuevos (queda `LayoutProps` en `app/layout.tsx`, que ya estaba antes: el tipo lo genera `next dev`/`next build`).
+- [x] `npm run lint` sin errores; `npm run demo:build` compila los cinco roles.
+
+---
+
 ## [2026-10-16, cuarta tanda] — Referencia final de diseño y apariencia configurable
 
 **Fase activa:** Pista de Diseño UX/UI

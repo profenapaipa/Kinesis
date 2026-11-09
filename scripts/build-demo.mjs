@@ -59,7 +59,7 @@ const ROLES = [
     role: "docente",
     label: "Docente",
     home: "/",
-    keep: ["page.tsx", "estudiantes", "planeacion", "generador"],
+    keep: ["page.tsx", "estudiantes", "planeacion", "generador", "bitacora", "documentos", "guia"],
     blurb:
       "Su lista de estudiantes, la planeación por asignatura con los tres principios del DUA y el generador de ajustes.",
   },
@@ -67,7 +67,7 @@ const ROLES = [
     role: "orientador",
     label: "Orientador/a",
     home: "/orientacion",
-    keep: ["orientacion", "estudiantes"],
+    keep: ["orientacion", "estudiantes", "bitacora", "documentos", "guia"],
     blurb:
       "Equipo de apoyo pedagógico (Decreto 1421 de 2017): ve a los estudiantes de todo el colegio, con diagnóstico completo.",
   },
@@ -75,7 +75,7 @@ const ROLES = [
     role: "administrador",
     label: "Administrador",
     home: "/admin",
-    keep: ["admin"],
+    keep: ["admin", "documentos", "guia"],
     blurb:
       "Usuarios, cursos, vínculos de acudientes, categorías de apoyo y periodos académicos. No ve diagnósticos clínicos.",
   },
@@ -83,7 +83,7 @@ const ROLES = [
     role: "estudiante",
     label: "Estudiante",
     home: "/estudiante",
-    keep: ["estudiante"],
+    keep: ["estudiante", "bitacora", "guia"],
     blurb:
       "Su propio panel: sus asignaturas, sus apoyos explicados en lenguaje cercano y su prueba adaptada.",
   },
@@ -91,7 +91,7 @@ const ROLES = [
     role: "padre",
     label: "Acudiente",
     home: "/padre",
-    keep: ["padre"],
+    keep: ["padre", "bitacora", "documentos", "guia"],
     blurb:
       "Panel de la familia: el resumen pedagógico de su hijo o hija, sin acceso al diagnóstico clínico.",
   },

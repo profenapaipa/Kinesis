@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, CheckCircle2, ChevronRight, HeartHandshake } from "lucide-react";
+import { CheckCircle2, ChevronRight, HeartHandshake } from "lucide-react";
 import { EmptyState, PanelCard, PanelHeader, SectionTitle } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
+import { PreferencesEditor } from "@/components/bitacora/PreferencesEditor";
+import { RoleSummaryCard } from "@/components/RoleSummaryCard";
 import { requireRole } from "@/lib/auth/session";
+import { getRoleSummary } from "@/lib/data/roleSummary";
 import { listLatestActivityPerSubject } from "@/lib/data/activities";
 import { getMyPedagogicalSummary, getMyStudentProfile } from "@/lib/data/students";
 import { firstName } from "@/lib/format";
-import { LEARNING_PREFERENCE_LABEL } from "@/lib/studentFriendlyText";
 import { MEN_SUBJECTS } from "@/lib/subjects";
 
 export const metadata: Metadata = { title: "Mi panel" };
@@ -19,6 +21,7 @@ export const metadata: Metadata = { title: "Mi panel" };
 export default async function EstudiantePage() {
   const session = await requireRole("estudiante");
   const profile = await getMyStudentProfile(session);
+  const summary = await getRoleSummary(session);
   const pedagogical = await getMyPedagogicalSummary(session);
   const latestActivityBySubject = profile.courseId
     ? await listLatestActivityPerSubject(profile.courseId)
@@ -60,6 +63,11 @@ export default async function EstudiantePage() {
             </section>
           ) : undefined
         }
+      />
+
+      <RoleSummaryCard
+        summary={summary}
+        description="Lo que tienes a mano y lo último que contaste."
       />
 
       <section className="flex flex-col gap-3">
@@ -138,23 +146,11 @@ export default async function EstudiantePage() {
         <PanelCard>
           <SectionTitle
             title="Tu forma de aprender"
-            description="Así dijiste que aprendes mejor. Igual vas a aprender de muchas formas."
+            description="Marca lo que te gusta. Tu docente lo lee, y puedes cambiarlo cuando quieras."
           />
-          {profile.learningPreferences.length > 0 ? (
-            <div className="flex flex-wrap gap-1.5">
-              {profile.learningPreferences.map((option) => (
-                <Badge key={option} variant="secondary">
-                  {LEARNING_PREFERENCE_LABEL[option] ?? option}
-                </Badge>
-              ))}
-            </div>
-          ) : (
-            <EmptyState
-              icon={BookOpen}
-              title="Todavía no lo has contado"
-              description="Con tu docente puedes decir si aprendes mejor viendo, escuchando o haciendo."
-            />
-          )}
+          <div id="mi-forma-de-aprender">
+            <PreferencesEditor initial={profile.learningPreferences} />
+          </div>
         </PanelCard>
       </div>
     </div>

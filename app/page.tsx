@@ -18,6 +18,8 @@ import {
 } from "@/components/panel/Panel";
 import { Badge } from "@/components/ui/badge";
 import { requireRole } from "@/lib/auth/session";
+import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { getRoleSummary } from "@/lib/data/roleSummary";
 import { BRAND } from "@/lib/brand";
 import { formatToday } from "@/lib/format";
 import { getTeacherDashboard, type DashboardActivity, type TeacherDashboard } from "@/lib/data/teacherDashboard";
@@ -103,6 +105,7 @@ function ActivityRow({ activity, detail }: { activity: DashboardActivity; detail
 export default async function Home() {
   const session = await requireRole("docente");
   const data = await getTeacherDashboard(session);
+  const summary = await getRoleSummary(session);
   const firstName = session.fullName.split(" ")[0] ?? session.fullName;
   const step = nextStep(data);
   const duaPercent =
@@ -126,6 +129,8 @@ export default async function Home() {
           />
         }
       />
+
+      <RoleSummaryCard summary={summary} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border">

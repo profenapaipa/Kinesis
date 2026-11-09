@@ -6,9 +6,12 @@ import { usePathname, useRouter } from "next/navigation";
 import {
   CalendarRange,
   ClipboardList,
+  Compass,
+  FolderCheck,
   LayoutDashboard,
   Link2,
   LogOut,
+  NotebookPen,
   Shapes,
   Sparkles,
   Users,
@@ -45,6 +48,9 @@ const DOCENTE_NAV: NavItem[] = [
   { href: "/estudiantes", label: "Estudiantes", icon: Users },
   { href: "/planeacion", label: "Planeación", icon: ClipboardList },
   { href: "/generador", label: "Ajustes PIAR", shortLabel: "Ajustes", icon: Sparkles },
+  { href: "/bitacora", label: "Bitácora", icon: NotebookPen },
+  { href: "/documentos", label: "Documentos", shortLabel: "Docs", icon: FolderCheck },
+  { href: "/guia", label: "Guía", icon: Compass },
 ];
 
 const ADMIN_NAV: NavItem[] = [
@@ -54,16 +60,30 @@ const ADMIN_NAV: NavItem[] = [
   { href: "/admin/acudientes", label: "Acudientes", icon: Link2 },
   { href: "/admin/categorias-apoyo", label: "Categorías de apoyo", shortLabel: "Apoyos", icon: Sparkles },
   { href: "/admin/periodos", label: "Periodos académicos", shortLabel: "Periodos", icon: CalendarRange },
+  { href: "/documentos", label: "Documentos", shortLabel: "Docs", icon: FolderCheck },
+  { href: "/guia", label: "Guía", icon: Compass },
 ];
 
 const NAV_BY_ROLE: Record<Role, NavItem[]> = {
   docente: DOCENTE_NAV,
   administrador: ADMIN_NAV,
-  estudiante: [{ href: "/estudiante", label: "Mi panel", icon: LayoutDashboard }],
-  padre: [{ href: "/padre", label: "Mi panel", icon: LayoutDashboard }],
+  estudiante: [
+    { href: "/estudiante", label: "Mi panel", icon: LayoutDashboard },
+    { href: "/bitacora", label: "Lo que me ayuda", shortLabel: "Me ayuda", icon: NotebookPen },
+    { href: "/guia", label: "Guía", icon: Compass },
+  ],
+  padre: [
+    { href: "/padre", label: "Mi panel", icon: LayoutDashboard },
+    { href: "/bitacora", label: "Bitácora", icon: NotebookPen },
+    { href: "/documentos", label: "Documentos", shortLabel: "Docs", icon: FolderCheck },
+    { href: "/guia", label: "Guía", icon: Compass },
+  ],
   orientador: [
     { href: "/orientacion", label: "Inicio", icon: LayoutDashboard },
     { href: "/estudiantes", label: "Estudiantes", icon: Users },
+    { href: "/bitacora", label: "Bitácora", icon: NotebookPen },
+    { href: "/documentos", label: "Documentos", shortLabel: "Docs", icon: FolderCheck },
+    { href: "/guia", label: "Guía", icon: Compass },
   ],
 };
 

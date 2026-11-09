@@ -3,6 +3,8 @@ import Link from "next/link";
 import { CheckCircle2, ClipboardCheck, UserRound, Users } from "lucide-react";
 import { EmptyState, NextStepCard, PanelHeader, SectionTitle, StatStrip } from "@/components/panel/Panel";
 import { requireRole } from "@/lib/auth/session";
+import { RoleSummaryCard } from "@/components/RoleSummaryCard";
+import { getRoleSummary } from "@/lib/data/roleSummary";
 import { getSupportDashboard } from "@/lib/data/supportDashboard";
 
 export const metadata: Metadata = { title: "Inicio" };
@@ -12,6 +14,7 @@ export const metadata: Metadata = { title: "Inicio" };
 // cruzar en "Ajustes PIAR".
 export default async function OrientacionPage() {
   const session = await requireRole("orientador");
+  const summary = await getRoleSummary(session);
   const data = await getSupportDashboard(session);
   const firstName = session.fullName.split(" ")[0] ?? session.fullName;
   const first = data.profilesToComplete[0];
@@ -52,6 +55,8 @@ export default async function OrientacionPage() {
           />
         }
       />
+
+      <RoleSummaryCard summary={summary} />
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)]">
         <section className="flex flex-col gap-3 rounded-2xl bg-card p-5 shadow-card ring-1 ring-border">
