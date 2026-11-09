@@ -4,7 +4,7 @@ import { useId, useState } from "react";
 import Link from "next/link";
 import { AlertTriangle, ArrowUpRight, Lightbulb, ListChecks, MessageCircleQuestion, PlusCircle, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { callNiky } from "@/lib/nikyBridge";
+import { callNiky, preparedExample } from "@/lib/nikyBridge";
 import type { InsightAction, InsightKind, NikyInsights as NikyInsightsData, QuickAnswer } from "@/lib/data/nikyInsights";
 import { cn } from "@/lib/utils";
 
@@ -48,7 +48,7 @@ export function NikyInsights({ data }: { data: NikyInsightsData }) {
     setNote(
       sent
         ? "Niky abrió la conversación en la plataforma."
-        : "Niky vive en la plataforma Sinapsis. Ábrela desde allí para conversar con ella."
+        : `${preparedExample(task)} Es una sugerencia preparada, no una respuesta en vivo: Niky conversa en la plataforma Sinapsis.`
     );
   }
 

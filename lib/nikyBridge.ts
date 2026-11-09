@@ -8,6 +8,23 @@ export const PLATFORM_URL = "https://profenapaipa.github.io/sinapsis-education/"
 
 export type NikyTask = "pista" | "explicar" | "ajustar-actividad" | "ordenar-nota-bitacora";
 
+/**
+ * Sugerencia preparada que se muestra cuando Kinesis se abre solo y no hay a
+ * quién avisar. No la genera Niky en vivo: es un ejemplo escrito de antemano,
+ * y el texto lo dice. Quien enseña decide.
+ */
+export function preparedExample(task: NikyTask): string {
+  const examples: Record<NikyTask, string> = {
+    "ajustar-actividad":
+      "Ejemplo preparado: ofrece la instrucción también con imágenes o un paso a paso corto, deja que cada estudiante muestre lo aprendido de más de una forma (oral, escrita o con dibujo) y ofrece dos opciones de tema para sostener el interés. Revisa cuáles aplican en tu clase.",
+    "ordenar-nota-bitacora":
+      "Ejemplo preparado: una nota ordenada dice qué se hizo, cómo respondió el grupo y qué apoyo ayudó, en dos o tres frases. Tú la escribes y la confirmas.",
+    pista: "Ejemplo preparado: empieza por lo que ya sabes de este tema y escribe el primer paso con tus palabras.",
+    explicar: "Ejemplo preparado: pide la explicación con un caso concreto de tu clase y compara con lo registrado en la bitácora.",
+  };
+  return examples[task];
+}
+
 export function insidePlatform(): boolean {
   return typeof window !== "undefined" && window.parent !== window;
 }
