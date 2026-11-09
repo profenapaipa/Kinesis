@@ -1,6 +1,6 @@
 "use client";
 
-import type { ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -114,6 +114,27 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const navItems = NAV_BY_ROLE[session.role];
+  // Con el teclado del celular abierto la barra inferior fija taparía el campo:
+  // se oculta mientras un campo de texto tiene el foco.
+  const [typing, setTyping] = useState(false);
+  const bottomNavRef = useRef<HTMLElement>(null);
+  useEffect(() => {
+    const isField = (el: EventTarget | null) =>
+      el instanceof HTMLElement && /^(INPUT|TEXTAREA|SELECT)$/.test(el.tagName) && (el as HTMLInputElement).type !== "checkbox";
+    const on = (event: FocusEvent) => setTyping(isField(event.target));
+    const off = () => setTyping(false);
+    document.addEventListener("focusin", on);
+    document.addEventListener("focusout", off);
+    return () => {
+      document.removeEventListener("focusin", on);
+      document.removeEventListener("focusout", off);
+    };
+  }, []);
+  // La barra se desliza cuando hay muchos ítems: el activo debe quedar a la vista.
+  useEffect(() => {
+    const active = bottomNavRef.current?.querySelector<HTMLElement>('[aria-current="page"]');
+    active?.scrollIntoView({ inline: "center", block: "nearest" });
+  }, [pathname]);
   const displayName = session.fullName;
   const roleLabel = ROLE_LABEL[session.role];
 
@@ -234,8 +255,10 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Barra inferior flotante — celular */}
       {showBottomNav && (
         <nav
+          ref={bottomNavRef}
           aria-label="Navegación principal"
-          className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom,0px))] z-40 mx-auto flex max-w-md gap-1 overflow-x-auto rounded-[1.75rem] border bg-card/95 p-2 shadow-2xl backdrop-blur md:hidden"
+          hidden={typing}
+          className="fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom,0px))] z-40 mx-auto flex max-w-md gap-1 overflow-x-auto rounded-[1.75rem] border bg-card/95 p-2 shadow-2xl backdrop-blur md:hidden [&[hidden]]:hidden"
         >
           {navItems.map((item) => {
             const isActive = isNavActive(pathname, item.href, home);
@@ -246,7 +269,7 @@ export function AppShell({ children }: { children: ReactNode }) {
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
                 className={cn(
-                  "flex min-w-14 flex-1 flex-col items-center gap-0.5 rounded-2xl px-1.5 py-1.5 text-[0.7rem] font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
+                  "flex min-h-12 min-w-14 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1.5 py-1.5 text-[0.7rem] font-semibold transition-colors outline-none focus-visible:ring-3 focus-visible:ring-ring/50",
                   isActive ? "bg-primary text-primary-foreground" : "text-muted-foreground"
                 )}
               >

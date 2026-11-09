@@ -182,7 +182,7 @@ export function DocumentChecklist({ items }: { items: ChecklistItemView[] }) {
                   {item.documents.length > 0 && (
                     <ul className="mt-1 flex flex-col gap-1">
                       {item.documents.map((doc) => (
-                        <li key={doc.id} className="flex flex-wrap items-center gap-x-2 text-xs">
+                        <li key={doc.id} className="flex min-w-0 flex-wrap items-center gap-x-2 text-xs [overflow-wrap:anywhere]">
                           {doc.hasFile ? (
                             <a
                               href={`/api/documentos/${doc.id}`}
@@ -192,7 +192,7 @@ export function DocumentChecklist({ items }: { items: ChecklistItemView[] }) {
                               {doc.fileName}
                             </a>
                           ) : (
-                            <span className="font-semibold">{doc.fileName} (archivo de ejemplo)</span>
+                            <span className="min-w-0 font-semibold [overflow-wrap:anywhere]">{doc.fileName} (archivo de ejemplo)</span>
                           )}
                           <span className="text-muted-foreground">
                             {formatSize(doc.sizeBytes)} · {doc.targetLabel}
@@ -235,7 +235,7 @@ export function DocumentChecklist({ items }: { items: ChecklistItemView[] }) {
                         id={`target-${item.type.id}`}
                         value={targetId}
                         onChange={(event) => setTargetId(event.target.value)}
-                        className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+                        className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
                       >
                         {item.uploadTargets.map((target) => (
                           <option key={target.id} value={target.id}>

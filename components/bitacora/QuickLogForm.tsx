@@ -52,7 +52,7 @@ interface LocalEntry {
 }
 
 const fieldClass =
-  "h-10 rounded-xl border border-input bg-muted/60 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
+  "h-10 rounded-xl border border-input bg-muted/60 px-3 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50";
 
 export function QuickLogForm({
   role,
@@ -257,7 +257,7 @@ export function QuickLogForm({
                 ? "Ej.: con las tarjetas de imágenes entendí mejor los pasos."
                 : "Ej.: con una tarjeta por paso terminó la tarea; no se le pidió leer al curso."
             }
-            className="min-h-24 rounded-xl border border-input bg-muted/60 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="min-h-24 rounded-xl border border-input bg-muted/60 px-3 py-2 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           />
           <p id="logHint" className="text-xs text-muted-foreground">
             {NO_NAMES_WARNING}

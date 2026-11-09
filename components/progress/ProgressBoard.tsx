@@ -107,7 +107,7 @@ function GradeForm({
             value={score}
             onChange={(event) => setScore(event.target.value)}
             placeholder="4,2"
-            className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           />
         </div>
         <div className="flex flex-col gap-1.5">
@@ -120,7 +120,7 @@ function GradeForm({
             maxLength={MAX_FEEDBACK}
             onChange={(event) => setFeedback(event.target.value)}
             placeholder="Qué hizo bien y qué sigue"
-            className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           />
         </div>
       </div>

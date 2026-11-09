@@ -230,7 +230,7 @@ export function FollowUpCard({
             maxLength={MAX_FOLLOW_BODY}
             onChange={(event) => setBody(event.target.value)}
             rows={3}
-            className="min-h-20 rounded-xl border border-input bg-muted/60 px-3 py-2 text-sm outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="min-h-20 rounded-xl border border-input bg-muted/60 px-3 py-2 text-base outline-none sm:text-sm focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
           />
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <label className="flex items-center gap-2 text-sm">
@@ -239,7 +239,7 @@ export function FollowUpCard({
                 type="date"
                 value={review}
                 onChange={(event) => setReview(event.target.value)}
-                className="h-10 rounded-xl border border-input bg-muted/60 px-3 text-sm"
+                className="h-11 rounded-xl border border-input bg-muted/60 px-3 text-base sm:text-sm"
               />
             </label>
             <label className="flex items-center gap-2 text-sm">

@@ -38,7 +38,7 @@ export function DemoBanner() {
   const roles = demoRoles();
 
   return (
-    <div className="flex flex-col gap-2 border-b border-amber-500/30 bg-amber-50 px-4 py-2 text-amber-950 sm:px-6 md:flex-row md:items-center md:justify-between dark:bg-amber-950/40 dark:text-amber-100">
+    <div className="flex min-w-0 flex-col gap-2 border-b border-amber-500/30 bg-amber-50 px-4 py-2 text-amber-950 sm:px-6 md:flex-row md:items-center md:justify-between dark:bg-amber-950/40 dark:text-amber-100">
       <p className="flex items-start gap-2 text-xs leading-snug">
         <FlaskConical className="mt-0.5 size-3.5 shrink-0" />
         <span>
@@ -50,7 +50,7 @@ export function DemoBanner() {
       </p>
 
       {roles.length > 0 && (
-        <div className="flex shrink-0 flex-wrap items-center gap-1.5">
+        <div className="flex min-w-0 flex-wrap items-center gap-1.5 md:shrink-0">
           <span className="text-xs font-medium">Ver como:</span>
           {roles.map((item) => {
             const isCurrent = item.role === CURRENT_ROLE;
@@ -60,7 +60,7 @@ export function DemoBanner() {
                 href={`${DEMO_ROOT}${item.path}`}
                 aria-current={isCurrent ? "page" : undefined}
                 className={cn(
-                  "rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
+                  "rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
                   isCurrent
                     ? "bg-amber-600 text-white"
                     : "bg-amber-500/15 hover:bg-amber-500/30"
