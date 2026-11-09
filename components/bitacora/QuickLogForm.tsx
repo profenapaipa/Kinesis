@@ -19,6 +19,7 @@ import {
   type LogModality,
   type LogOutcome,
 } from "@/lib/classLogShared";
+import { callNiky } from "@/lib/nikyBridge";
 import type { Role } from "@/types";
 
 // Registro rápido. Se escribe a mano o se pide a Niky que ordene la nota; en
@@ -31,11 +32,6 @@ import type { Role } from "@/types";
 //    mostrar el flujo completo en una presentación.
 
 const IS_DEMO = process.env.NEXT_PUBLIC_DEMO === "1";
-
-// Contrato con la plataforma Sinapsis (Niky es la única IA): la plataforma que
-// envuelve a Kinesis en un iframe escucha este mensaje. Si Kinesis se abre
-// solo, no pasa nada y se usa la sugerencia local de abajo.
-const PLATFORM_ORIGIN = "https://profenapaipa.github.io";
 
 interface Option {
   id: string;
@@ -89,18 +85,8 @@ export function QuickLogForm({
       setHint("Escribe primero tu nota, aunque sea desordenada, y Niky la ordena.");
       return;
     }
-    // Con la plataforma: se le pide a Niky que abra el panel con la tarea.
-    if (typeof window !== "undefined" && window.parent !== window) {
-      window.parent.postMessage(
-        {
-          tipo: "niky:abrir",
-          portal: "kinesis",
-          tarea: "ordenar-nota-bitacora",
-          contexto: { rol: role, pantalla: "bitacora", borrador: body.trim().slice(0, MAX_BODY_LENGTH) },
-        },
-        PLATFORM_ORIGIN
-      );
-    }
+    // Con la plataforma: Niky abre la conversación con la nota como contexto.
+    const inPlatform = callNiky("ordenar-nota-bitacora", body);
     // Sin modelo conectado: reglas de palabras. Se dice en pantalla.
     const suggestion = suggestFromText(body);
     if (suggestion.kind && kinds.includes(suggestion.kind)) setKind(suggestion.kind);
@@ -108,9 +94,10 @@ export function QuickLogForm({
     if (suggestion.outcome) setOutcome(suggestion.outcome);
     setViaNiky(true);
     setHint(
-      suggestion.modality || suggestion.outcome
-        ? "Niky propone: revisa el tipo de actividad y el resultado, cámbialos si no es así, y guarda."
-        : "Niky no encontró tipo de actividad ni resultado en tu nota. Puedes elegirlos tú."
+      (inPlatform ? "Niky abrió la conversación en la plataforma. " : "") +
+        (suggestion.modality || suggestion.outcome
+          ? "Aquí te propongo el tipo de actividad y el resultado: revísalos, cámbialos si no es así, y guarda."
+          : "No encontré tipo de actividad ni resultado en tu nota. Puedes elegirlos tú.")
     );
   }
 
@@ -330,7 +317,7 @@ export function QuickLogForm({
           <p role="status" className="rounded-xl bg-primary/10 px-3 py-2 text-sm">
             {hint}{" "}
             <span className="text-xs text-muted-foreground">
-              (Sugerencia de ejemplo por palabras clave: Niky todavía no está conectada a este botón.)
+              (La sugerencia de aquí se arma con palabras clave de tu nota; la decisión es tuya.)
             </span>
           </p>
         )}

@@ -1,3 +1,4 @@
+import { NikyButton } from "@/components/NikyButton";
 import { Clock, MessageCircle, Puzzle } from "lucide-react";
 import { MemoryPuzzle } from "@/components/MemoryPuzzle";
 import { PanelHeader } from "@/components/panel/Panel";
@@ -145,6 +146,11 @@ export default async function EstudianteSubjectPage({
                 <p className="whitespace-pre-line text-sm text-muted-foreground">
                   {plan.instructions}
                 </p>
+                <div className="mt-2">
+                  <NikyButton task="explicar" context={plan.topic}>
+                    Explícamelo con otras palabras
+                  </NikyButton>
+                </div>
               </div>
 
               <Separator />

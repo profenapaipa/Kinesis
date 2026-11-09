@@ -1,3 +1,4 @@
+import { NikyButton } from "@/components/NikyButton";
 import Link from "next/link";
 import { ClipboardList, Layers, ShieldCheck, Sparkles, UserRound } from "lucide-react";
 import { EmptyState, PanelHeader, SectionTitle } from "@/components/panel/Panel";
@@ -122,6 +123,11 @@ export async function AdjustmentsView({
               <span className="font-bold">Objetivo: </span>
               {activity.objective}
             </p>
+            <div>
+              <NikyButton task="ajustar-actividad" context={activity.topic}>
+                Pedirle a Niky ideas de ajuste
+              </NikyButton>
+            </div>
 
             <div className="flex flex-col gap-3">
               <SectionTitle title="Para todo el curso" description="Diseño Universal de Aprendizaje" />

@@ -52,6 +52,11 @@ verificación del proyecto. Las entradas más recientes van arriba.
 - **Seguimiento por estudiante** (`follow_up_notes`): síntesis de recomendaciones de orientación, acuerdos y seguimiento, con fecha de revisión; la familia ve solo lo compartido. Sin información clínica.
 - Se retiró el rótulo «para estudiantes con PIAR» de la actividad de repaso.
 
+### Actualización del 9 de noviembre: Niky desde Kinesis y recorrido guiado
+- `lib/nikyBridge.ts` y `NikyButton`: Kinesis avisa a la plataforma con `niky:abrir` (tareas `pista`, `explicar`, `ajustar-actividad`, `ordenar-nota-bitacora`); Niky, la única IA, abre la conversación. Sin plataforma, el botón lo dice en lugar de fingir una respuesta.
+- Botones: «Explícame con otras palabras» (actividad del estudiante), «Pedirle a Niky ideas de ajuste» (Ajustes PIAR), «Ordenar con Niky» (bitácora) y «Recorrido guiado» en la cabecera, que abre `#/tutorial/<rol>` de la plataforma y avisa con `recorrido:abrir`.
+- Vista móvil: documentos sin desborde, barra inferior oculta con el teclado y centrada en el ítem activo, campos de 16 px, banner de demostración en horizontal.
+
 ### Pendiente (no existe todavía)
 - Editar el PIAR desde la pantalla, ajustes devueltos con nota de orientación, IA conectada, `audit_log` en la lectura clínica, aplicar la matriz de permisos con `requireAccess()` en todo el código (hoy solo en lo nuevo), pruebas automáticas de permisos.
 - Normas citadas en el catálogo de documentos: por confirmar en la fuente oficial.
