@@ -31,9 +31,9 @@ const TUTORIAL_ROLE: Record<string, string> = {
   estudiante: "estudiante",
 };
 
-/** Enlace directo al recorrido guiado del rol (si la plataforma aún no lo conoce, cae en su portada). */
-export function tourUrl(role: string): string {
-  return `${PLATFORM_URL}#/tutorial/${TUTORIAL_ROLE[role] ?? "docente"}`;
+/** Portada de la plataforma. Sinapsis no tiene ruta de tutorial por rol (`#/tutorial/<rol>` cae en su portada sin decir nada), así que el enlace va a la raíz y no promete un recorrido que no existe. El principal es el de Kinesis (/recorrido). */
+export function tourUrl(): string {
+  return PLATFORM_URL;
 }
 
 /** Dentro del marco, avisa a la plataforma para abrir el recorrido sin recargar; el enlace queda siempre. */

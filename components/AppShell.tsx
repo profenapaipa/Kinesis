@@ -26,7 +26,9 @@ import { ThemeMenu } from "@/components/theme/ThemeMenu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { BRAND } from "@/lib/brand";
+import { VolverAlRecorrido } from "@/components/tour/VolverAlRecorrido";
 import { openGuidedTour, tourUrl } from "@/lib/nikyBridge";
+import { ROLES_RECORRIDO } from "@/lib/tour/tipos";
 import { ROLE_HOME, ROLE_LABEL } from "@/lib/roles";
 import { cn } from "@/lib/utils";
 import type { Role } from "@/types";
@@ -152,6 +154,9 @@ export function AppShell({ children }: { children: ReactNode }) {
   }
 
   const home = ROLE_HOME[session.role];
+  const hasOwnTour = (ROLES_RECORRIDO as readonly string[]).includes(session.role);
+  const tourButtonClass =
+    "inline-flex h-10 items-center gap-1.5 rounded-xl bg-muted px-3 text-sm font-semibold outline-none hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 group-has-[.kn-hero]/col:bg-white/15 group-has-[.kn-hero]/col:hover:bg-white/25";
   // Con una sola sección (estudiante, familia) la barra inferior no aporta.
   const showBottomNav = navItems.length > 1;
 
@@ -225,17 +230,29 @@ export function AppShell({ children }: { children: ReactNode }) {
           </span>
 
           <div className="flex items-center gap-2">
-            <a
-              href={tourUrl(session.role)}
-              target="_blank"
-              rel="noopener"
-              onClick={() => openGuidedTour(session.role)}
-              className="inline-flex h-10 items-center gap-1.5 rounded-xl bg-muted px-3 text-sm font-semibold outline-none hover:bg-accent focus-visible:ring-3 focus-visible:ring-ring/50 group-has-[.kn-hero]/col:bg-white/15 group-has-[.kn-hero]/col:hover:bg-white/25"
-            >
-              <Compass className="size-4" aria-hidden />
-              <span className="hidden sm:inline">Recorrido guiado</span>
-              <span className="sr-only sm:hidden">Recorrido guiado</span>
-            </a>
+            {/* Con recorrido propio (docente, orientación, familia y coordinación)
+                el botón abre primero el de Kinesis; el de la plataforma queda
+                como enlace secundario dentro de esa pantalla. El estudiante
+                usa Wisfox y sigue yendo al de la plataforma. */}
+            {hasOwnTour ? (
+              <Link href="/recorrido" className={tourButtonClass} aria-current={pathname === "/recorrido" ? "page" : undefined}>
+                <Compass className="size-4" aria-hidden />
+                <span className="hidden sm:inline">Recorrido guiado</span>
+                <span className="sr-only sm:hidden">Recorrido guiado</span>
+              </Link>
+            ) : (
+              <a
+                href={tourUrl()}
+                target="_blank"
+                rel="noopener"
+                onClick={() => openGuidedTour(session.role)}
+                className={tourButtonClass}
+              >
+                <Compass className="size-4" aria-hidden />
+                <span className="hidden sm:inline">Recorrido guiado</span>
+                <span className="sr-only sm:hidden">Recorrido guiado</span>
+              </a>
+            )}
             <ThemeMenu tone="auto" />
             <div className="hidden items-center gap-2.5 md:flex">
               <span className="text-sm font-semibold">{displayName}</span>
@@ -263,6 +280,8 @@ export function AppShell({ children }: { children: ReactNode }) {
           <div className="kn-stagger mx-auto w-full max-w-6xl">{children}</div>
         </main>
       </div>
+
+      <VolverAlRecorrido rol={session.role} />
 
       {/* Barra inferior flotante — celular */}
       {showBottomNav && (

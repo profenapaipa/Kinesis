@@ -50,6 +50,8 @@ const OUT_DIR = join(ROOT, "demo-out");
 // "/Kinesis". El workflow la calcula del nombre del repo.
 const BASE_PATH = (process.env.DEMO_BASE_PATH ?? "/Kinesis").replace(/\/+$/, "");
 
+// `recorrido` (tutorial guiado) va en los cuatro roles de Kinesis; el estudiante
+// usa Wisfox y no lo lleva.
 // Un sub-sitio por rol. `keep` son las entradas de `app/` que ese rol puede
 // ver, derivadas de NAV_BY_ROLE/ROLE_HOME en components/AppShell.tsx. El resto
 // se borra antes de compilar: así cada sub-sitio contiene solo sus propias
@@ -59,7 +61,7 @@ const ROLES = [
     role: "docente",
     label: "Docente",
     home: "/",
-    keep: ["page.tsx", "estudiantes", "planeacion", "generador", "progreso", "bitacora", "documentos", "guia"],
+    keep: ["page.tsx", "estudiantes", "planeacion", "generador", "progreso", "bitacora", "documentos", "guia", "recorrido"],
     blurb:
       "Su lista de estudiantes, la planeación por asignatura con los tres principios del DUA y el generador de ajustes.",
   },
@@ -67,7 +69,7 @@ const ROLES = [
     role: "orientador",
     label: "Orientador/a",
     home: "/orientacion",
-    keep: ["orientacion", "estudiantes", "bitacora", "documentos", "guia"],
+    keep: ["orientacion", "estudiantes", "bitacora", "documentos", "guia", "recorrido"],
     blurb:
       "Equipo de apoyo pedagógico (Decreto 1421 de 2017): ve a los estudiantes de todo el colegio, con diagnóstico completo.",
   },
@@ -75,7 +77,7 @@ const ROLES = [
     role: "administrador",
     label: "Administrador",
     home: "/admin",
-    keep: ["admin", "documentos", "guia"],
+    keep: ["admin", "documentos", "guia", "recorrido"],
     blurb:
       "Usuarios, cursos, vínculos de acudientes, categorías de apoyo y periodos académicos. No ve diagnósticos clínicos.",
   },
@@ -91,7 +93,7 @@ const ROLES = [
     role: "padre",
     label: "Acudiente",
     home: "/padre",
-    keep: ["padre", "progreso", "bitacora", "documentos", "guia"],
+    keep: ["padre", "progreso", "bitacora", "documentos", "guia", "recorrido"],
     blurb:
       "Panel de la familia: el resumen pedagógico de su hijo o hija, sin acceso al diagnóstico clínico.",
   },

@@ -23,6 +23,29 @@ verificación del proyecto. Las entradas más recientes van arriba.
 
 ---
 
+## [2026-11-09] — Recorrido guiado de Kinesis por rol, personajes y barra de demostración reducida
+
+**Fase activa:** muestra de la Cámara de Comercio (rama `tutorial-guiado`, sin publicar).
+
+### Cambios implementados
+- **Recorrido guiado** (`/recorrido`, `components/tour/`, `lib/tour/`): para docente, orientación, familia y coordinación. Cinco casos por rol (20 en total, copiados de `recorrido_por_rol.json` a `lib/tour/recorridos.ts`). Seis pasos por caso: el caso, dos decisiones con la consecuencia de cada opción, la ventana de Niky con su respuesta preparada y tres propuestas, la pantalla real de Kinesis (botón «Ir a esa pantalla») y el cierre. Atrás y Siguiente, barra de progreso y puntos de paso.
+- **Estado en el navegador** (`lib/tour/estado.ts`, sessionStorage con useSyncExternalStore): funciona en el sitio estático sin cookies ni API. Al salir a otra pantalla aparece la banda «Volver al recorrido» (`VolverAlRecorrido`), que no atrapa el foco y se puede cerrar.
+- **Personajes** (`components/personajes/`): Sinapso, Kinesis, Wisfox y Niky en vectores propios, cinco poses y siete emociones, con la misma firma que `MT.mascotas.mascota` de la plataforma. Único punto de reemplazo: `dibujos.tsx`. Van sobre una baldosa clara para leerse igual en modo claro y oscuro.
+- **Botón «Recorrido guiado»** de la cabecera: abre primero el de Kinesis; el de la plataforma (`tourUrl`) queda como enlace secundario dentro de la pantalla. El estudiante conserva el de la plataforma.
+- **DemoBanner** reducido a una barra delgada con «Ver como»; se quitó el aviso amarillo y la palabra «simulado». En `origin/main` no había un modo guion o presentación aparte: esa cinta era lo más parecido.
+- `scripts/build-demo.mjs`: `recorrido` en las listas `keep` de los cuatro roles.
+- Auditoría de honestidad: «Recorrido guiado» ya no enlaza a `#/tutorial/<rol>` (no existe en Sinapsis); el de Kinesis es el principal y el de la plataforma queda como enlace secundario a su raíz. La información clínica sigue la regla de `canViewDiagnosis()`: orientación siempre, docente solo si está asignado al curso, nunca administración, familia ni estudiante. El docente sembrado pasó a llamarse «Docente de ejemplo».
+- Contraste de personajes (`reportes/mascotas-contraste.md`): contorno fijo #1A1714, baldosa blanca en claro y #13201A en oscuro, halo crema #F4F0E8 en oscuro (`.pj-fig`), `--m-trazo` y los hilos fijados en `globals.css`.
+
+### Decisiones de arquitectura
+- Honestidad ante inversionistas: cada caso es un ejemplo preparado; la interfaz no dice «en vivo» ni «Niky acaba de generar», aclara que Niky propone y quien enseña decide, que nada se guarda sin confirmación y que no hay información clínica. Estudiantes solo con código 8A-NN.
+- Las descripciones de pantalla (`lib/tour/pantallas.ts`) están aparte de los datos del caso porque describen la interfaz, que cambia con más frecuencia.
+
+### Estado de `npx tsc --noEmit`
+- Solo el error previo de `LayoutProps` en `app/layout.tsx`. `npm run lint` sin errores.
+
+---
+
 ## [2026-11-08] — Bitácora de clase, documentos con lista de verificación, «mi forma de aprender», resumen por rol y guía por rol
 
 **Fase activa:** preparación de la muestra de la Cámara de Comercio del 9 de noviembre (rama `feature/kinesis-bitacora`, sin publicar).

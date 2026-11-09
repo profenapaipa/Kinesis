@@ -66,6 +66,9 @@
 
 /* Valores por defecto = color de la marca (Kinesis, verde bosque). */
 :root {
+  /* Baldosa de los personajes (components/personajes): clara en los dos modos para que el contorno oscuro se lea siempre. */
+  --pj-baldosa: #e8f2ed;
+  --pj-borde: #b9d3c7;
   --accent-light: #1b7f56;
   --accent-dark: #6fd08c;
   --accent-on-light: #ffffff;
@@ -155,6 +158,8 @@
 /* Modo oscuro: casi negro con el matiz del color principal, tarjetas un
    paso más claras y el tono claro del color como acción. */
 [data-mode="dark"] {
+  --pj-baldosa: #d3e5dc;
+  --pj-borde: #8fb3a3;
   --background: color-mix(in oklab, var(--accent-dark) 5%, #060a09);
   --foreground: color-mix(in oklab, var(--accent-dark) 8%, #eef3f1);
   --card: color-mix(in oklab, var(--accent-dark) 9%, #0b1210);
@@ -307,4 +312,10 @@
   .kn-grow {
     animation: none;
   }
+}
+
+/* Halo crema de los personajes en fondos oscuros: cuatro sombras sin
+   desenfoque (≈2 px a 64 px de ancho; las unidades son las del lienzo de 120). */
+[data-mode="dark"] .pj-fig {
+  filter: drop-shadow(3px 0 0 #f4f0e8) drop-shadow(-3px 0 0 #f4f0e8) drop-shadow(0 3px 0 #f4f0e8) drop-shadow(0 -3px 0 #f4f0e8);
 }

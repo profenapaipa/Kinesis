@@ -179,7 +179,7 @@ async function main() {
   const teacher = await upsertUser({
     username: "docente",
     password: "docente123",
-    fullName: "Camila Ortiz",
+    fullName: "Docente de ejemplo",
     role: "docente",
     mustChangePassword: false,
   });
